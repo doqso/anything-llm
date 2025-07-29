@@ -9,7 +9,7 @@ const { tokenizeString } = require("../../tokenizer");
 const path = require("path");
 const fs = require("fs");
 
-async function discoverLinks(startUrl, maxDepth = 1, maxLinks = 20) {
+async function discoverLinks(startUrl, maxDepth = 1, maxLinks = 20, customHeaders = {}) {
   const baseUrl = new URL(startUrl);
   const discoveredLinks = new Set([startUrl]);
   let queue = [[startUrl, 0]]; // [url, currentDepth]
@@ -24,7 +24,7 @@ async function discoverLinks(startUrl, maxDepth = 1, maxLinks = 20) {
 
       if (!scrapedUrls.has(currentUrl)) {
         scrapedUrls.add(currentUrl);
-        const newLinks = await getPageLinks(currentUrl, baseUrl);
+        const newLinks = await getPageLinks(currentUrl, baseUrl, customHeaders);
 
         for (const link of newLinks) {
           if (!discoveredLinks.has(link) && discoveredLinks.size < maxLinks) {
@@ -44,11 +44,21 @@ async function discoverLinks(startUrl, maxDepth = 1, maxLinks = 20) {
   return Array.from(discoveredLinks);
 }
 
-async function getPageLinks(url, baseUrl) {
+async function getPageLinks(url, baseUrl, customHeaders = {}) {
   try {
     const loader = new PuppeteerWebBaseLoader(url, {
-      launchOptions: { headless: "new" },
+      launchOptions: { 
+        headless: "new",
+        args: [
+          '--ignore-certificate-errors',
+          '--ignore-ssl-errors',
+          '--ignore-certificate-errors-spki-list',
+          '--disable-features=VizDisplayCompositor'
+        ]
+      },
       gotoOptions: { waitUntil: "networkidle2" },
+      headerTemplate: Object.keys(customHeaders).length > 0 ? customHeaders : undefined,
+      customHeaders: Object.keys(customHeaders).length > 0 ? customHeaders : undefined,
     });
     const docs = await loader.load();
     const html = docs[0].pageContent;
@@ -82,7 +92,7 @@ function extractLinks(html, baseUrl) {
   return Array.from(extractedLinks);
 }
 
-async function bulkScrapePages(links, outFolderPath) {
+async function bulkScrapePages(links, outFolderPath, customHeaders = {}) {
   const scrapedData = [];
 
   for (let i = 0; i < links.length; i++) {
@@ -91,8 +101,18 @@ async function bulkScrapePages(links, outFolderPath) {
 
     try {
       const loader = new PuppeteerWebBaseLoader(link, {
-        launchOptions: { headless: "new" },
+        launchOptions: { 
+          headless: "new",
+          args: [
+            '--ignore-certificate-errors',
+            '--ignore-ssl-errors',
+            '--ignore-certificate-errors-spki-list',
+            '--disable-features=VizDisplayCompositor'
+          ]
+        },
         gotoOptions: { waitUntil: "networkidle2" },
+        headerTemplate: Object.keys(customHeaders).length > 0 ? customHeaders : undefined,
+        customHeaders: Object.keys(customHeaders).length > 0 ? customHeaders : undefined,
         async evaluate(page, browser) {
           const result = await page.evaluate(() => document.body.innerText);
           await browser.close();
@@ -137,7 +157,7 @@ async function bulkScrapePages(links, outFolderPath) {
   return scrapedData;
 }
 
-async function websiteScraper(startUrl, depth = 1, maxLinks = 20) {
+async function websiteScraper(startUrl, depth = 1, maxLinks = 20, customHeaders = {}) {
   const websiteName = new URL(startUrl).hostname;
   const outFolder = slugify(
     `${slugify(websiteName)}-${v4().slice(0, 4)}`
@@ -151,13 +171,13 @@ async function websiteScraper(startUrl, depth = 1, maxLinks = 20) {
       : path.resolve(process.env.STORAGE_DIR, `documents/${outFolder}`);
 
   console.log("Discovering links...");
-  const linksToScrape = await discoverLinks(startUrl, depth, maxLinks);
+  const linksToScrape = await discoverLinks(startUrl, depth, maxLinks, customHeaders);
   console.log(`Found ${linksToScrape.length} links to scrape.`);
 
   if (!fs.existsSync(outFolderPath))
     fs.mkdirSync(outFolderPath, { recursive: true });
   console.log("Starting bulk scraping...");
-  const scrapedData = await bulkScrapePages(linksToScrape, outFolderPath);
+  const scrapedData = await bulkScrapePages(linksToScrape, outFolderPath, customHeaders);
   console.log(`Scraped ${scrapedData.length} pages.`);
 
   return scrapedData;

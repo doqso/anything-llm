@@ -20,12 +20,17 @@ async function scrapeGenericUrl({
   captureAs = "text",
   processAsDocument = true,
   scraperHeaders = {},
+  customHeaders = {},
 }) {
   console.log(`-- Working URL ${link} => (${captureAs}) --`);
   const content = await getPageContent({
     link,
     captureAs,
-    headers: scraperHeaders,
+    headers: {
+      ...scraperHeaders,
+      ...customHeaders,
+    },
+    customHeaders,
   });
 
   if (!content.length) {
@@ -101,17 +106,25 @@ function validatedHeaders(headers = {}) {
  * @param {{[key: string]: string}} config.headers - Custom headers to use when making the request
  * @returns {Promise<string>} - The content of the page
  */
-async function getPageContent({ link, captureAs = "text", headers = {} }) {
+async function getPageContent({ link, captureAs = "text", headers = {}, customHeaders = {} }) {
   try {
     let pageContents = [];
     const loader = new PuppeteerWebBaseLoader(link, {
       launchOptions: {
         headless: "new",
         ignoreHTTPSErrors: true,
+        args: [
+          '--ignore-certificate-errors',
+          '--ignore-ssl-errors',
+          '--ignore-certificate-errors-spki-list',
+          '--disable-features=VizDisplayCompositor'
+        ]
       },
       gotoOptions: {
         waitUntil: "networkidle2",
       },
+      headerTemplate: Object.keys(customHeaders).length > 0 ? customHeaders : undefined,
+      customHeaders: Object.keys(customHeaders).length > 0 ? customHeaders : undefined,
       async evaluate(page, browser) {
         const result = await page.evaluate((captureAs) => {
           if (captureAs === "text") return document.body.innerText;
@@ -132,10 +145,21 @@ async function getPageContent({ link, captureAs = "text", headers = {} }) {
           headless: "new",
           defaultViewport: null,
           ignoreDefaultArgs: ["--disable-extensions"],
+          ignoreHTTPSErrors: true,
+          args: [
+            '--ignore-certificate-errors',
+            '--ignore-ssl-errors',
+            '--ignore-certificate-errors-spki-list',
+            '--disable-features=VizDisplayCompositor'
+          ],
           ...this.options?.launchOptions,
         });
         const page = await browser.newPage();
         await page.setExtraHTTPHeaders(overrideHeaders);
+        // If customHeaders are present, merge them with existing headers
+        if (Object.keys(customHeaders).length > 0) {
+          await page.setExtraHTTPHeaders({ ...overrideHeaders, ...customHeaders });
+        }
 
         await page.goto(this.webPath, {
           timeout: 180000,
@@ -170,6 +194,7 @@ async function getPageContent({ link, captureAs = "text", headers = {} }) {
         "User-Agent":
           "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36,gzip(gfe)",
         ...validatedHeaders(headers),
+        ...customHeaders,
       },
     }).then((res) => res.text());
     return pageText;
