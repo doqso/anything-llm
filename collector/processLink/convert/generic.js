@@ -1,10 +1,10 @@
 const { v4 } = require("uuid");
-const { writeToServerDocuments } = require("../../utils/files");
-const { tokenizeString } = require("../../utils/tokenizer");
-const { default: slugify } = require("slugify");
 const {
   PuppeteerWebBaseLoader,
 } = require("langchain/document_loaders/web/puppeteer");
+const { writeToServerDocuments } = require("../../utils/files");
+const { tokenizeString } = require("../../utils/tokenizer");
+const { default: slugify } = require("slugify");
 
 /**
  * Scrape a generic URL and return the content in the specified format
@@ -20,17 +20,12 @@ async function scrapeGenericUrl({
   captureAs = "text",
   processAsDocument = true,
   scraperHeaders = {},
-  customHeaders = {},
 }) {
   console.log(`-- Working URL ${link} => (${captureAs}) --`);
   const content = await getPageContent({
     link,
     captureAs,
-    headers: {
-      ...scraperHeaders,
-      ...customHeaders,
-    },
-    customHeaders,
+    headers: scraperHeaders,
   });
 
   if (!content.length) {
@@ -106,24 +101,17 @@ function validatedHeaders(headers = {}) {
  * @param {{[key: string]: string}} config.headers - Custom headers to use when making the request
  * @returns {Promise<string>} - The content of the page
  */
-async function getPageContent({ link, captureAs = "text", headers = {}, customHeaders = {} }) {
+async function getPageContent({ link, captureAs = "text", headers = {} }) {
   try {
     let pageContents = [];
-    const loader = new   PuppeteerWebBaseLoader(link, {
+    const loader = new PuppeteerWebBaseLoader(link, {
       launchOptions: {
         headless: "new",
         ignoreHTTPSErrors: true,
-        args: [
-          '--ignore-certificate-errors',
-          '--ignore-ssl-errors',
-          '--ignore-certificate-errors-spki-list',
-          '--disable-features=VizDisplayCompositor'
-        ]
       },
       gotoOptions: {
         waitUntil: "networkidle2",
       },
-      customHeaders: Object.keys(customHeaders).length > 0 ? customHeaders : undefined,
       async evaluate(page, browser) {
         const result = await page.evaluate((captureAs) => {
           if (captureAs === "text") return document.body.innerText;
@@ -144,21 +132,10 @@ async function getPageContent({ link, captureAs = "text", headers = {}, customHe
           headless: "new",
           defaultViewport: null,
           ignoreDefaultArgs: ["--disable-extensions"],
-          ignoreHTTPSErrors: true,
-          args: [
-            '--ignore-certificate-errors',
-            '--ignore-ssl-errors',
-            '--ignore-certificate-errors-spki-list',
-            '--disable-features=VizDisplayCompositor'
-          ],
           ...this.options?.launchOptions,
         });
         const page = await browser.newPage();
         await page.setExtraHTTPHeaders(overrideHeaders);
-        // If customHeaders are present, merge them with existing headers
-        if (Object.keys(customHeaders).length > 0) {
-          await page.setExtraHTTPHeaders({ ...overrideHeaders, ...customHeaders });
-        }
 
         await page.goto(this.webPath, {
           timeout: 180000,
@@ -193,7 +170,6 @@ async function getPageContent({ link, captureAs = "text", headers = {}, customHe
         "User-Agent":
           "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36,gzip(gfe)",
         ...validatedHeaders(headers),
-        ...customHeaders,
       },
     }).then((res) => res.text());
     return pageText;
