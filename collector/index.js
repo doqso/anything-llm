@@ -1,3 +1,5 @@
+require("./utils/extensions/WebsiteDepth/puppeteer-patch");
+
 process.env.NODE_ENV === "development"
   ? require("dotenv").config({ path: `.env.${process.env.NODE_ENV}` })
   : require("dotenv").config();
@@ -17,6 +19,7 @@ const { processRawText } = require("./processRawText");
 const { verifyPayloadIntegrity } = require("./middleware/verifyIntegrity");
 const app = express();
 const FILE_LIMIT = "3GB";
+
 
 app.use(cors({ origin: true }));
 app.use(

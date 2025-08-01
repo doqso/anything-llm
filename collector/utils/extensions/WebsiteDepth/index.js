@@ -9,7 +9,12 @@ const { tokenizeString } = require("../../tokenizer");
 const path = require("path");
 const fs = require("fs");
 
-async function discoverLinks(startUrl, maxDepth = 1, maxLinks = 20, customHeaders = {}) {
+async function discoverLinks(
+  startUrl,
+  maxDepth = 1,
+  maxLinks = 20,
+  customHeaders = {}
+) {
   const baseUrl = new URL(startUrl);
   const discoveredLinks = new Set([startUrl]);
   let queue = [[startUrl, 0]]; // [url, currentDepth]
@@ -47,19 +52,19 @@ async function discoverLinks(startUrl, maxDepth = 1, maxLinks = 20, customHeader
 async function getPageLinks(url, baseUrl, customHeaders = {}) {
   try {
     const loader = new PuppeteerWebBaseLoader(url, {
-      launchOptions: { 
+      launchOptions: {
         headless: "new",
         args: [
-          '--ignore-certificate-errors',
-          '--ignore-ssl-errors',
-          '--ignore-certificate-errors-spki-list',
-          '--disable-features=VizDisplayCompositor'
-        ]
+          "--ignore-certificate-errors",
+          "--ignore-ssl-errors",
+          "--ignore-certificate-errors-spki-list",
+          "--disable-features=VizDisplayCompositor",
+        ],
       },
       gotoOptions: { waitUntil: "networkidle2" },
-      headerTemplate: Object.keys(customHeaders).length > 0 ? customHeaders : undefined,
-      customHeaders: Object.keys(customHeaders).length > 0 ? customHeaders : undefined,
     });
+    PuppeteerWebBaseLoader.prototype.customHeaders = customHeaders;
+
     const docs = await loader.load();
     const html = docs[0].pageContent;
     const links = extractLinks(html, baseUrl);
@@ -92,7 +97,7 @@ function extractLinks(html, baseUrl) {
   return Array.from(extractedLinks);
 }
 
-async function bulkScrapePages(links, outFolderPath, customHeaders = {}) {
+async function bulkScrapePages(links, outFolderPath, customHeaders = null) {
   const scrapedData = [];
 
   for (let i = 0; i < links.length; i++) {
@@ -101,24 +106,24 @@ async function bulkScrapePages(links, outFolderPath, customHeaders = {}) {
 
     try {
       const loader = new PuppeteerWebBaseLoader(link, {
-        launchOptions: { 
+        launchOptions: {
           headless: "new",
           args: [
-            '--ignore-certificate-errors',
-            '--ignore-ssl-errors',
-            '--ignore-certificate-errors-spki-list',
-            '--disable-features=VizDisplayCompositor'
-          ]
+            "--ignore-certificate-errors",
+            "--ignore-ssl-errors",
+            "--ignore-certificate-errors-spki-list",
+            "--disable-features=VizDisplayCompositor",
+          ],
         },
         gotoOptions: { waitUntil: "networkidle2" },
-        headerTemplate: Object.keys(customHeaders).length > 0 ? customHeaders : undefined,
-        customHeaders: Object.keys(customHeaders).length > 0 ? customHeaders : undefined,
         async evaluate(page, browser) {
           const result = await page.evaluate(() => document.body.innerText);
           await browser.close();
           return result;
         },
       });
+      PuppeteerWebBaseLoader.prototype.customHeaders = customHeaders;
+      
       const docs = await loader.load();
       const content = docs[0].pageContent;
 
@@ -157,7 +162,12 @@ async function bulkScrapePages(links, outFolderPath, customHeaders = {}) {
   return scrapedData;
 }
 
-async function websiteScraper(startUrl, depth = 1, maxLinks = 20, customHeaders = {}) {
+async function websiteScraper(
+  startUrl,
+  depth = 1,
+  maxLinks = 20,
+  customHeaders = null
+) {
   const websiteName = new URL(startUrl).hostname;
   const outFolder = slugify(
     `${slugify(websiteName)}-${v4().slice(0, 4)}`
@@ -171,13 +181,22 @@ async function websiteScraper(startUrl, depth = 1, maxLinks = 20, customHeaders 
       : path.resolve(process.env.STORAGE_DIR, `documents/${outFolder}`);
 
   console.log("Discovering links...");
-  const linksToScrape = await discoverLinks(startUrl, depth, maxLinks, customHeaders);
+  const linksToScrape = await discoverLinks(
+    startUrl,
+    depth,
+    maxLinks,
+    customHeaders
+  );
   console.log(`Found ${linksToScrape.length} links to scrape.`);
 
   if (!fs.existsSync(outFolderPath))
     fs.mkdirSync(outFolderPath, { recursive: true });
   console.log("Starting bulk scraping...");
-  const scrapedData = await bulkScrapePages(linksToScrape, outFolderPath, customHeaders);
+  const scrapedData = await bulkScrapePages(
+    linksToScrape,
+    outFolderPath,
+    customHeaders
+  );
   console.log(`Scraped ${scrapedData.length} pages.`);
 
   return scrapedData;

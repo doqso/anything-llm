@@ -1,10 +1,10 @@
 const { v4 } = require("uuid");
-const {
-  PuppeteerWebBaseLoader,
-} = require("langchain/document_loaders/web/puppeteer");
 const { writeToServerDocuments } = require("../../utils/files");
 const { tokenizeString } = require("../../utils/tokenizer");
 const { default: slugify } = require("slugify");
+const {
+  PuppeteerWebBaseLoader,
+} = require("langchain/document_loaders/web/puppeteer");
 
 /**
  * Scrape a generic URL and return the content in the specified format
@@ -109,7 +109,7 @@ function validatedHeaders(headers = {}) {
 async function getPageContent({ link, captureAs = "text", headers = {}, customHeaders = {} }) {
   try {
     let pageContents = [];
-    const loader = new PuppeteerWebBaseLoader(link, {
+    const loader = new   PuppeteerWebBaseLoader(link, {
       launchOptions: {
         headless: "new",
         ignoreHTTPSErrors: true,
@@ -123,7 +123,6 @@ async function getPageContent({ link, captureAs = "text", headers = {}, customHe
       gotoOptions: {
         waitUntil: "networkidle2",
       },
-      headerTemplate: Object.keys(customHeaders).length > 0 ? customHeaders : undefined,
       customHeaders: Object.keys(customHeaders).length > 0 ? customHeaders : undefined,
       async evaluate(page, browser) {
         const result = await page.evaluate((captureAs) => {
