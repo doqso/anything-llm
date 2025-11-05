@@ -83,7 +83,7 @@ const KEY_MAPPING = {
   },
   LMStudioTokenLimit: {
     envKey: "LMSTUDIO_MODEL_TOKEN_LIMIT",
-    checks: [nonZero],
+    checks: [],
   },
 
   // LocalAI Settings
@@ -114,7 +114,7 @@ const KEY_MAPPING = {
   },
   OllamaLLMTokenLimit: {
     envKey: "OLLAMA_MODEL_TOKEN_LIMIT",
-    checks: [nonZero],
+    checks: [],
   },
   OllamaLLMPerformanceMode: {
     envKey: "OLLAMA_PERFORMANCE_MODE",
@@ -330,6 +330,20 @@ const KEY_MAPPING = {
   ChromaApiKey: {
     envKey: "CHROMA_API_KEY",
     checks: [],
+  },
+
+  // ChromaCloud Options
+  ChromaCloudApiKey: {
+    envKey: "CHROMACLOUD_API_KEY",
+    checks: [isNotEmpty],
+  },
+  ChromaCloudTenant: {
+    envKey: "CHROMACLOUD_TENANT",
+    checks: [isNotEmpty],
+  },
+  ChromaCloudDatabase: {
+    envKey: "CHROMACLOUD_DATABASE",
+    checks: [isNotEmpty],
   },
 
   // Weaviate Options
@@ -563,6 +577,10 @@ const KEY_MAPPING = {
     envKey: "AGENT_TAVILY_API_KEY",
     checks: [],
   },
+  AgentExaApiKey: {
+    envKey: "AGENT_EXA_API_KEY",
+    checks: [],
+  },
 
   // TTS/STT Integration ENVS
   TextToSpeechProvider: {
@@ -686,6 +704,42 @@ const KEY_MAPPING = {
     envKey: "MOONSHOT_AI_MODEL_PREF",
     checks: [isNotEmpty],
   },
+
+  // Foundry Options
+  FoundryBasePath: {
+    envKey: "FOUNDRY_BASE_PATH",
+    checks: [isNotEmpty],
+  },
+  FoundryModelPref: {
+    envKey: "FOUNDRY_MODEL_PREF",
+    checks: [isNotEmpty],
+    postUpdate: [
+      // On new model selection, re-cache the context windows
+      async (_, prevValue, __) => {
+        const { FoundryLLM } = require("../AiProviders/foundry");
+        await FoundryLLM.unloadModelFromEngine(prevValue);
+        await FoundryLLM.cacheContextWindows(true);
+      },
+    ],
+  },
+  FoundryModelTokenLimit: {
+    envKey: "FOUNDRY_MODEL_TOKEN_LIMIT",
+    checks: [],
+  },
+
+  // CometAPI Options
+  CometApiLLMApiKey: {
+    envKey: "COMETAPI_LLM_API_KEY",
+    checks: [isNotEmpty],
+  },
+  CometApiLLMModelPref: {
+    envKey: "COMETAPI_LLM_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
+  CometApiLLMTimeout: {
+    envKey: "COMETAPI_LLM_TIMEOUT_MS",
+    checks: [],
+  },
 };
 
 function isNotEmpty(input = "") {
@@ -795,6 +849,8 @@ function supportedLLM(input = "") {
     "ppio",
     "dpais",
     "moonshotai",
+    "cometapi",
+    "foundry",
   ].includes(input);
   return validSelection ? null : `${input} is not a valid LLM provider.`;
 }
@@ -841,6 +897,7 @@ function supportedEmbeddingModel(input = "") {
 function supportedVectorDB(input = "") {
   const supported = [
     "chroma",
+    "chromacloud",
     "pinecone",
     "lancedb",
     "weaviate",
@@ -1118,6 +1175,7 @@ function dumpENV() {
     // Simple SSO
     "SIMPLE_SSO_ENABLED",
     "SIMPLE_SSO_NO_LOGIN",
+    "SIMPLE_SSO_NO_LOGIN_REDIRECT",
     // Community Hub
     "COMMUNITY_HUB_BUNDLE_DOWNLOADS_ENABLED",
 
@@ -1132,6 +1190,12 @@ function dumpENV() {
 
     // Allow disabling of streaming for generic openai
     "GENERIC_OPENAI_STREAMING_DISABLED",
+
+    // Specify Chromium args for collector
+    "ANYTHINGLLM_CHROMIUM_ARGS",
+
+    // Allow setting a custom response timeout for Ollama
+    "OLLAMA_RESPONSE_TIMEOUT",
   ];
 
   // Simple sanitization of each value to prevent ENV injection via newline or quote escaping.
