@@ -9,6 +9,16 @@ const { tokenizeString } = require("../../tokenizer");
 const path = require("path");
 const fs = require("fs");
 
+var filters = {
+  "bookstack": [
+    /.\/edit$/, /.\/copy$/, /.\/move$/, /.\/revisions$/,  /.\/sort$/,
+    /.\/permissions$/, /.\/delete$/, /.\/update$/, /.\/add$/,
+    /.\/search$/, /.\/shelves$/, /.\/settings$/, /.\/favourites$/,
+    /.\/user\/./, /.\/my-account$/, /.\/export\/./, /.\/create-page$/,
+    /.\/create-chapter$/
+  ]
+}
+
 async function discoverLinks(
   startUrl,
   maxDepth = 1,
@@ -83,6 +93,8 @@ function extractLinks(html, baseUrl) {
   for (const link of links) {
     const href = link.getAttribute("href");
     if (href) {
+      var isIgnoredLink = filters.bookstack.findIndex(d => d.test(a.href)) !== -1;
+      if (isIgnoredLink) continue;
       const absoluteUrl = new URL(href, baseUrl.href).href;
       if (
         absoluteUrl.startsWith(
