@@ -15,7 +15,7 @@ var filters = {
     /.\/permissions$/, /.\/delete$/, /.\/update$/, /.\/add$/,
     /.\/search$/, /.\/shelves$/, /.\/settings$/, /.\/favourites$/,
     /.\/user\/./, /.\/my-account$/, /.\/export\/./, /.\/create-page$/,
-    /.\/create-chapter$/
+    /.\/create-chapter$/, /.\/create-book$/
   ]
 }
 
@@ -93,8 +93,9 @@ function extractLinks(html, baseUrl) {
   for (const link of links) {
     const href = link.getAttribute("href");
     if (href) {
-      var isIgnoredLink = filters.bookstack.findIndex(d => d.test(a.href)) !== -1;
+      var isIgnoredLink = filters.bookstack.findIndex(d => d.test(href)) !== -1;
       if (isIgnoredLink) continue;
+      
       const absoluteUrl = new URL(href, baseUrl.href).href;
       if (
         absoluteUrl.startsWith(
