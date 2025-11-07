@@ -11,11 +11,11 @@ const fs = require("fs");
 
 var filters = {
   "bookstack": [
-    /.\/edit$/, /.\/copy$/, /.\/move$/, /.\/revisions$/,  /.\/sort$/,
+    /.\/edit$/, /.\/copy$/, /.\/move$/, /.\/revisions$/,  /.\/sort$/, /.\/books$/,
     /.\/permissions$/, /.\/delete$/, /.\/update$/, /.\/add$/,
-    /.\/search$/, /.\/shelves$/, /.\/settings$/, /.\/favourites$/,
+    /.\/search$/, /.\/settings$/, /.\/favourites$/,
     /.\/user\/./, /.\/my-account$/, /.\/export\/./, /.\/create-page$/,
-    /.\/create-chapter$/, /.\/create-book$/
+    /.\/create-chapter$/, /.\/create-book$/, /.\/create-book$/, /.\/search?./, /.\/tags?./ 
   ]
 }
 
@@ -95,7 +95,7 @@ function extractLinks(html, baseUrl) {
     if (href) {
       var isIgnoredLink = filters.bookstack.findIndex(d => d.test(href)) !== -1;
       if (isIgnoredLink) continue;
-      
+
       const absoluteUrl = new URL(href, baseUrl.href).href;
       if (
         absoluteUrl.startsWith(
