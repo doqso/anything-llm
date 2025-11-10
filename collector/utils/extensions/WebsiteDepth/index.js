@@ -11,11 +11,28 @@ const fs = require("fs");
 
 var filters = {
   "bookstack": [
-    /.\/edit$/, /.\/copy$/, /.\/move$/, /.\/revisions$/,  /.\/sort$/, /.\/books$/,
-    /.\/permissions$/, /.\/delete$/, /.\/update$/, /.\/add$/,
-    /.\/search$/, /.\/settings$/, /.\/favourites$/,
-    /.\/user\/./, /.\/my-account$/, /.\/export\/./, /.\/create-page$/,
-    /.\/create-chapter$/, /.\/create-book$/, /.\/create-book$/, /.\/search?./, /.\/tags?./ 
+    /https?:\/\/bookstack\..+\/edit$/, 
+    /https?:\/\/bookstack\..+\/copy$/, 
+    /https?:\/\/bookstack\..+\/move$/,
+    /https?:\/\/bookstack\..+\/revisions$/,
+    /https?:\/\/bookstack\..+\/sort$/,
+    /https?:\/\/bookstack\..+\/books$/,
+    /https?:\/\/bookstack\..+\/permissions$/,
+    /https?:\/\/bookstack\..+\/delete$/,
+    /https?:\/\/bookstack\..+\/update$/,
+    /https?:\/\/bookstack\..+\/add$/,
+    /https?:\/\/bookstack\..+\/search$/,
+    /https?:\/\/bookstack\..+\/settings$/,
+    /https?:\/\/bookstack\..+\/favourites$/,
+    /https?:\/\/bookstack\..+\/user\/.+/,
+    /https?:\/\/bookstack\..+\/my-account$/,
+    /https?:\/\/bookstack\..+\/export\/.+/,
+    /https?:\/\/bookstack\..+\/create-page$/,
+    /https?:\/\/bookstack\..+\/create-chapter$/,
+    /https?:\/\/bookstack\..+\/create-book$/,
+    /https?:\/\/bookstack\..+\/create-book$/,
+    /https?:\/\/bookstack\..+\/search?.+/,
+    /https?:\/\/bookstack\..+\/tags?.+/ 
   ]
 }
 
