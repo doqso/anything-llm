@@ -72,7 +72,7 @@ async function loadBookStack(
             const pageData = await loader.fetchPageContent(page.id);
             if (!pageData || !pageData.html) continue;
 
-            const doc = loader.createDocumentFromPage(pageData);
+            const doc = await loader.createDocumentFromPage(pageData);
             const data = {
                 id: v4(),
                 url: doc.metadata.url,
@@ -163,7 +163,7 @@ async function fetchBookStackPage({
             };
         }
 
-        const doc = loader.createDocumentFromPage(pageData);
+        const doc = await loader.createDocumentFromPage(pageData);
         return {
             success: true,
             reason: null,
