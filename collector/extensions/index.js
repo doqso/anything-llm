@@ -118,10 +118,15 @@ function extensions(app) {
     async function (request, response) {
       try {
         const websiteDepth = require("../utils/extensions/WebsiteDepth");
-        const { url, depth = 1, maxLinks = 20 } = reqBody(request);
+        const { url, depth = 1, maxLinks = 20, headers = {} } = reqBody(request);
         const validatedUrl = validateURL(url);
         if (!validURL(validatedUrl)) throw new Error("Not a valid URL.");
-        const scrapedData = await websiteDepth(validatedUrl, depth, maxLinks);
+        const scrapedData = await websiteDepth(
+          validatedUrl,
+          depth,
+          maxLinks,
+          headers
+        );
         response.status(200).json({ success: true, data: scrapedData });
       } catch (e) {
         console.error(e);

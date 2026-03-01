@@ -10,7 +10,35 @@ const path = require("path");
 const fs = require("fs");
 const RuntimeSettings = require("../../runtimeSettings");
 
-async function discoverLinks(startUrl, maxDepth = 1, maxLinks = 20) {
+/**
+ * Validate the headers object
+ * - Keys & Values must be strings and not empty
+ * - Assemble a new object with only the valid keys and values
+ * @param {{[key: string]: string}} headers - The headers object to validate
+ * @returns {{[key: string]: string}} - The validated headers object
+ */
+function validatedHeaders(headers = {}) {
+  try {
+    if (Object.keys(headers).length === 0) return {};
+    let validHeaders = {};
+    for (const key of Object.keys(headers)) {
+      if (!key?.trim()) continue;
+      if (typeof headers[key] !== "string" || !headers[key]?.trim()) continue;
+      validHeaders[key] = headers[key].trim();
+    }
+    return validHeaders;
+  } catch (error) {
+    console.error("Error validating headers", error);
+    return {};
+  }
+}
+
+async function discoverLinks(
+  startUrl,
+  maxDepth = 1,
+  maxLinks = 20,
+  headers = {}
+) {
   const baseUrl = new URL(startUrl);
   const discoveredLinks = new Set([startUrl]);
   let queue = [[startUrl, 0]]; // [url, currentDepth]
@@ -25,7 +53,7 @@ async function discoverLinks(startUrl, maxDepth = 1, maxLinks = 20) {
 
       if (!scrapedUrls.has(currentUrl)) {
         scrapedUrls.add(currentUrl);
-        const newLinks = await getPageLinks(currentUrl, baseUrl);
+        const newLinks = await getPageLinks(currentUrl, baseUrl, headers);
 
         for (const link of newLinks) {
           if (!discoveredLinks.has(link) && discoveredLinks.size < maxLinks) {
@@ -45,7 +73,7 @@ async function discoverLinks(startUrl, maxDepth = 1, maxLinks = 20) {
   return Array.from(discoveredLinks);
 }
 
-async function getPageLinks(url, baseUrl) {
+async function getPageLinks(url, baseUrl, headers = {}) {
   try {
     const runtimeSettings = new RuntimeSettings();
     /** @type {import('puppeteer').PuppeteerLaunchOptions} */
@@ -75,7 +103,41 @@ async function getPageLinks(url, baseUrl) {
         args: runtimeSettings.get("browserLaunchArgs"),
       },
       gotoOptions: { waitUntil: "networkidle2" },
+      async evaluate(page, browser) {
+        const result = await page.evaluate(() => document.documentElement.innerHTML);
+        await browser.close();
+        return result;
+      },
     });
+
+    let overrideHeaders = validatedHeaders(headers);
+    if (Object.keys(overrideHeaders).length > 0) {
+      loader.scrape = async function () {
+        const { launch } = await PuppeteerWebBaseLoader.imports();
+        const browser = await launch({
+          headless: "new",
+          defaultViewport: null,
+          ignoreDefaultArgs: ["--disable-extensions"],
+          ...this.options?.launchOptions,
+        });
+        const page = await browser.newPage();
+        await page.setExtraHTTPHeaders(overrideHeaders);
+
+        await page.goto(this.webPath, {
+          timeout: 180000,
+          waitUntil: "networkidle2",
+          ...this.options?.gotoOptions,
+        });
+
+        const bodyHTML = this.options?.evaluate
+          ? await this.options.evaluate(page, browser)
+          : await page.evaluate(() => document.body.innerHTML);
+
+        await browser.close();
+        return bodyHTML;
+      };
+    }
+
     const docs = await loader.load();
     const html = docs[0].pageContent;
     const links = extractLinks(html, baseUrl);
@@ -108,7 +170,7 @@ function extractLinks(html, baseUrl) {
   return Array.from(extractedLinks);
 }
 
-async function bulkScrapePages(links, outFolderPath) {
+async function bulkScrapePages(links, outFolderPath, headers = {}) {
   const runtimeSettings = new RuntimeSettings();
   /** @type {import('puppeteer').PuppeteerLaunchOptions} */
   let launchConfig = { headless: "new" };
@@ -147,6 +209,35 @@ async function bulkScrapePages(links, outFolderPath) {
           return result;
         },
       });
+
+      let overrideHeaders = validatedHeaders(headers);
+      if (Object.keys(overrideHeaders).length > 0) {
+        loader.scrape = async function () {
+          const { launch } = await PuppeteerWebBaseLoader.imports();
+          const browser = await launch({
+            headless: "new",
+            defaultViewport: null,
+            ignoreDefaultArgs: ["--disable-extensions"],
+            ...this.options?.launchOptions,
+          });
+          const page = await browser.newPage();
+          await page.setExtraHTTPHeaders(overrideHeaders);
+
+          await page.goto(this.webPath, {
+            timeout: 180000,
+            waitUntil: "networkidle2",
+            ...this.options?.gotoOptions,
+          });
+
+          const bodyHTML = this.options?.evaluate
+            ? await this.options.evaluate(page, browser)
+            : await page.evaluate(() => document.body.innerHTML);
+
+          await browser.close();
+          return bodyHTML;
+        };
+      }
+
       const docs = await loader.load();
       const content = docs[0].pageContent;
 
@@ -189,23 +280,28 @@ async function bulkScrapePages(links, outFolderPath) {
   return scrapedData;
 }
 
-async function websiteScraper(startUrl, depth = 1, maxLinks = 20) {
+async function websiteScraper(startUrl, depth = 1, maxLinks = 20, headers = {}) {
   const websiteName = new URL(startUrl).hostname;
   const outFolder = slugify(
     `${slugify(websiteName)}-${v4().slice(0, 4)}`
   ).toLowerCase();
   const outFolderPath = path.resolve(documentsFolder, outFolder);
   console.log("Discovering links...");
-  const linksToScrape = await discoverLinks(startUrl, depth, maxLinks);
+  const linksToScrape = await discoverLinks(startUrl, depth, maxLinks, headers);
   console.log(`Found ${linksToScrape.length} links to scrape.`);
 
   if (!fs.existsSync(outFolderPath))
     fs.mkdirSync(outFolderPath, { recursive: true });
   console.log("Starting bulk scraping...");
-  const scrapedData = await bulkScrapePages(linksToScrape, outFolderPath);
+  const scrapedData = await bulkScrapePages(
+    linksToScrape,
+    outFolderPath,
+    headers
+  );
   console.log(`Scraped ${scrapedData.length} pages.`);
 
   return scrapedData;
 }
 
 module.exports = websiteScraper;
+

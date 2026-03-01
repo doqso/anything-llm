@@ -3,14 +3,38 @@ import System from "@/models/system";
 import showToast from "@/utils/toast";
 import pluralize from "pluralize";
 import { useTranslation } from "react-i18next";
+import { Plus, Trash } from "@phosphor-icons/react";
+import { v4 } from "uuid";
 
 export default function WebsiteDepthOptions() {
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
+  const [headers, setHeaders] = useState([]);
+
+  const addHeader = () => {
+    setHeaders([...headers, { id: v4(), key: "", value: "" }]);
+  };
+
+  const removeHeader = (id) => {
+    setHeaders(headers.filter((h) => h.id !== id));
+  };
+
+  const updateHeader = (id, field, value) => {
+    setHeaders(
+      headers.map((h) => (h.id === id ? { ...h, [field]: value } : h))
+    );
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const form = new FormData(e.target);
+
+    const headerObject = {};
+    headers.forEach((h) => {
+      if (h.key.trim() && h.value.trim()) {
+        headerObject[h.key.trim()] = h.value.trim();
+      }
+    });
 
     try {
       setLoading(true);
@@ -23,6 +47,7 @@ export default function WebsiteDepthOptions() {
         url: form.get("url"),
         depth: parseInt(form.get("depth")),
         maxLinks: parseInt(form.get("maxLinks")),
+        headers: headerObject,
       });
 
       if (!!error) {
@@ -40,6 +65,7 @@ export default function WebsiteDepthOptions() {
         { clear: true }
       );
       e.target.reset();
+      setHeaders([]);
       setLoading(false);
     } catch (e) {
       console.error(e);
@@ -111,6 +137,60 @@ export default function WebsiteDepthOptions() {
                   defaultValue="20"
                 />
               </div>
+
+              {/* Custom Headers Section */}
+              <div className="flex flex-col pr-10">
+                <div className="flex flex-col gap-y-1 mb-4">
+                  <label className="text-white text-sm font-bold text-theme-text-primary">
+                    {t("connectors.website-depth.headers")}
+                  </label>
+                  <p className="text-xs font-normal text-theme-text-secondary">
+                    {t("connectors.website-depth.headers_explained")}
+                  </p>
+                </div>
+
+                <div className="flex flex-col gap-y-2">
+                  {headers.map((header) => (
+                    <div key={header.id} className="flex gap-x-2 items-center">
+                      <input
+                        type="text"
+                        value={header.key}
+                        onChange={(e) =>
+                          updateHeader(header.id, "key", e.target.value)
+                        }
+                        placeholder={t("connectors.website-depth.header_key")}
+                        className="bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg border-none focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                      />
+                      <input
+                        type="text"
+                        value={header.value}
+                        onChange={(e) =>
+                          updateHeader(header.id, "value", e.target.value)
+                        }
+                        placeholder={t("connectors.website-depth.header_value")}
+                        className="bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg border-none focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => removeHeader(header.id)}
+                        className="p-2.5 text-sm font-medium text-white bg-red-500/20 hover:bg-red-500/40 rounded-lg transition-all duration-300"
+                      >
+                        <Trash className="h-5 w-5 text-red-500" />
+                      </button>
+                    </div>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={addHeader}
+                    className="flex w-fit items-center gap-x-2 text-primary-button hover:text-primary-button-hover transition-all duration-300 px-1 py-1"
+                  >
+                    <Plus className="h-4 w-4" />
+                    <span className="text-xs font-bold">
+                      {t("connectors.website-depth.add_header")}
+                    </span>
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -133,3 +213,4 @@ export default function WebsiteDepthOptions() {
     </div>
   );
 }
+

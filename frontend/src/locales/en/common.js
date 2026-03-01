@@ -828,6 +828,12 @@ const TRANSLATIONS = {
         "This is the number of child-links that the worker should follow from the origin URL.",
       max_pages: "Maximum Pages",
       max_pages_explained: "Maximum number of links to scrape.",
+      headers: "Custom Headers",
+      headers_explained:
+        "Add custom HTTP headers to be sent with each request. Useful for authenticated scraping.",
+      header_key: "Header Name",
+      header_value: "Value",
+      add_header: "Add Header",
       task_explained:
         "Once complete, all scraped content will be available for embedding into workspaces in the document picker.",
     },

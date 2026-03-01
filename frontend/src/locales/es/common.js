@@ -777,6 +777,12 @@ const TRANSLATIONS = {
         "Este es el número de enlaces secundarios que el trabajador debe seguir desde la URL de origen.",
       max_pages: "Páginas máximas",
       max_pages_explained: "Número máximo de enlaces a extraer.",
+      headers: "Encabezados personalizados",
+      headers_explained:
+        "Añade encabezados HTTP personalizados para enviar con cada petición. Útil para scraping con autenticación.",
+      header_key: "Nombre del encabezado",
+      header_value: "Valor",
+      add_header: "Añadir encabezado",
       task_explained:
         "Una vez completado, todo el contenido extraído estará disponible para incrustar en los espacios de trabajo en el selector de documentos.",
     },
