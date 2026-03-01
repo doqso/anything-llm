@@ -175,6 +175,36 @@ async function resyncPaperlessNgx({ chunkSource }, response) {
   }
 }
 
+/**
+ * Fetches the content of a specific BookStack page via its chunkSource.
+ * Returns the content as a text string of the page.
+ * @param {object} data - metadata from document (eg: chunkSource)
+ * @param {import("../../middleware/setDataSigner").ResponseWithSigner} response
+ */
+async function resyncBookStack({ chunkSource }, response) {
+  if (!chunkSource) throw new Error('Invalid source property provided');
+  try {
+    const source = response.locals.encryptionWorker.expandPayload(chunkSource);
+    const { fetchBookStackPage } = require("../../utils/extensions/BookStack");
+    const { success, reason, content } = await fetchBookStackPage({
+      pageId: source.pathname.split('//')[1],
+      baseUrl: source.searchParams.get('baseUrl'),
+      tokenId: source.searchParams.get('tokenId'),
+      tokenSecret: source.searchParams.get('tokenSecret'),
+      bypassSSL: source.searchParams.get('bypassSSL') === 'true',
+    });
+
+    if (!success) throw new Error(`Failed to sync BookStack page content. ${reason}`);
+    response.status(200).json({ success, content });
+  } catch (e) {
+    console.error(e);
+    response.status(200).json({
+      success: false,
+      content: null,
+    });
+  }
+}
+
 module.exports = {
   link: resyncLink,
   youtube: resyncYouTube,
@@ -182,4 +212,5 @@ module.exports = {
   github: resyncGithub,
   drupalwiki: resyncDrupalWiki,
   "paperless-ngx": resyncPaperlessNgx,
+  bookstack: resyncBookStack,
 }

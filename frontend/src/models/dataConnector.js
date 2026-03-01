@@ -228,6 +228,24 @@ const DataConnector = {
         });
     },
   },
+  bookstack: {
+    collect: async function ({ baseUrl, tokenId, tokenSecret, bypassSSL }) {
+      return await fetch(`${API_BASE}/ext/bookstack`, {
+        method: "POST",
+        headers: baseHeaders(),
+        body: JSON.stringify({ baseUrl, tokenId, tokenSecret, bypassSSL }),
+      })
+        .then((res) => res.json())
+        .then((res) => {
+          if (!res.success) throw new Error(res.reason);
+          return { data: res.data, error: null };
+        })
+        .catch((e) => {
+          console.error(e);
+          return { data: null, error: e.message };
+        });
+    },
+  },
 };
 
 export default DataConnector;

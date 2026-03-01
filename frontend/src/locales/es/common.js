@@ -818,6 +818,20 @@ const TRANSLATIONS = {
       bypass_ssl_explained:
         "Habilite esta opción para omitir la validación del certificado SSL para instancias de Confluence autohospedadas con certificados auto-firmados.",
     },
+    bookstack: {
+      name: "BookStack",
+      description: "Importa todas las páginas de tu instancia de BookStack a través de su API REST.",
+      base_url: "URL base de BookStack",
+      base_url_explained: "Esta es la URL base de tu instancia de BookStack (ej., https://bookstack.ejemplo.com).",
+      token_id: "ID de Token de API",
+      token_id_explained: "El ID del token de API generado en tu perfil de usuario de BookStack.",
+      token_secret: "Secreto de Token de API",
+      token_secret_explained: "El secreto del token de API generado en tu perfil de usuario de BookStack.",
+      bypass_ssl: "Omitir la validación del certificado SSL",
+      bypass_ssl_explained: "Habilita esta opción si tu instancia de BookStack utiliza un certificado auto-firmado.",
+      submit: "Enviar",
+      collecting: "Recopilando páginas...",
+    },
     manage: {
       documents: "Documentos",
       "data-connectors": "Conectores de datos",

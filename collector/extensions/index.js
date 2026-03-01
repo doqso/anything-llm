@@ -189,6 +189,31 @@ function extensions(app) {
   );
 
   app.post(
+    "/ext/bookstack",
+    [verifyPayloadIntegrity, setDataSigner],
+    async function (request, response) {
+      try {
+        const { loadBookStack } = require("../utils/extensions/BookStack");
+        const { success, reason, data } = await loadBookStack(
+          reqBody(request),
+          response
+        );
+        response.status(200).json({ success, reason, data });
+      } catch (e) {
+        console.error(e);
+        response.status(400).json({
+          success: false,
+          reason: e.message,
+          data: {
+            destination: null,
+          },
+        });
+      }
+      return;
+    }
+  );
+
+  app.post(
     "/ext/obsidian/vault",
     [verifyPayloadIntegrity, setDataSigner],
     async function (request, response) {

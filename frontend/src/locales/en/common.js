@@ -868,6 +868,20 @@ const TRANSLATIONS = {
       task_explained:
         "Once complete, the page content will be available for embedding into workspaces in the document picker.",
     },
+    bookstack: {
+      name: "BookStack",
+      description: "Import all pages from your BookStack instance via its REST API.",
+      base_url: "BookStack base URL",
+      base_url_explained: "This is the base URL of your BookStack instance (e.g., https://bookstack.example.com).",
+      token_id: "API Token ID",
+      token_id_explained: "The ID of the API token generated in your BookStack user profile.",
+      token_secret: "API Token Secret",
+      token_secret_explained: "The secret of the API token generated in your BookStack user profile.",
+      bypass_ssl: "Bypass SSL Certificate Validation",
+      bypass_ssl_explained: "Enable this option if your BookStack instance uses a self-signed certificate.",
+      submit: "Submit",
+      collecting: "Collecting pages...",
+    },
 
     manage: {
       documents: "Documents",

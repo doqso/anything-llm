@@ -11,6 +11,7 @@ import ConnectorOption from "./ConnectorOption";
 import WebsiteDepthOptions from "./Connectors/WebsiteDepth";
 import ObsidianOptions from "./Connectors/Obsidian";
 import PaperlessNgxOptions from "./Connectors/PaperlessNgx";
+import BookStackOptions from "./Connectors/BookStack";
 
 export const getDataConnectors = (t) => ({
   github: {
@@ -60,6 +61,12 @@ export const getDataConnectors = (t) => ({
     image: ConnectorImages.paperlessNgx,
     description: "Import documents from your Paperless-ngx instance.",
     options: <PaperlessNgxOptions />,
+  },
+  bookstack: {
+    name: "BookStack",
+    image: ConnectorImages.bookstack,
+    description: "Import all pages from your BookStack instance.",
+    options: <BookStackOptions />,
   },
 });
 
