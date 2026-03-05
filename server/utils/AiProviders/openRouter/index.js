@@ -328,6 +328,8 @@ class OpenRouterLLM {
   handleStream(response, stream, responseProps) {
     const timeoutThresholdMs = this.timeout;
     const { uuid = uuidv4(), sources = [] } = responseProps;
+    let hasUsageMetrics = false;
+    let usage = { prompt_tokens: 0, completion_tokens: 0, total_tokens: 0 };
 
     return new Promise(async (resolve) => {
       let fullText = "";
@@ -341,9 +343,7 @@ class OpenRouterLLM {
       // We preserve the generated text but continue as if chat was completed
       // to preserve previously generated content.
       const handleAbort = () => {
-        stream?.endMeasurement({
-          completion_tokens: LLMPerformanceMonitor.countTokens(fullText),
-        });
+        stream?.endMeasurement(usage);
         clientAbortedHandler(resolve, fullText);
       };
       response.on("close", handleAbort);
@@ -375,9 +375,7 @@ class OpenRouterLLM {
           });
           clearInterval(timeoutCheck);
           response.removeListener("close", handleAbort);
-          stream?.endMeasurement({
-            completion_tokens: LLMPerformanceMonitor.countTokens(fullText),
-          });
+          stream?.endMeasurement(usage);
           resolve(fullText);
         }
       }, 500);
@@ -388,6 +386,15 @@ class OpenRouterLLM {
           const token = message?.delta?.content;
           const reasoningToken = message?.delta?.reasoning;
           lastChunkTime = Number(new Date());
+
+          if (chunk.hasOwnProperty("usage") && !hasUsageMetrics) {
+            hasUsageMetrics = true;
+            usage = {
+              prompt_tokens: chunk.usage.prompt_tokens,
+              completion_tokens: chunk.usage.completion_tokens,
+              total_tokens: chunk.usage.total_tokens,
+            };
+          }
 
           // Some models will return citations (e.g. Perplexity) - we should preserve them for inline citations if applicable.
           if (
@@ -464,7 +471,7 @@ class OpenRouterLLM {
             });
           }
 
-          if (message.finish_reason !== null) {
+          if (message?.finish_reason) {
             writeResponseChunk(response, {
               uuid,
               sources,
@@ -473,14 +480,14 @@ class OpenRouterLLM {
               close: true,
               error: false,
             });
-            response.removeListener("close", handleAbort);
-            clearInterval(timeoutCheck);
-            stream?.endMeasurement({
-              completion_tokens: LLMPerformanceMonitor.countTokens(fullText),
-            });
-            resolve(fullText);
           }
         }
+
+        // Stream completed naturally - resolve with final metrics
+        response.removeListener("close", handleAbort);
+        clearInterval(timeoutCheck);
+        stream?.endMeasurement(usage);
+        resolve(fullText);
       } catch (e) {
         writeResponseChunk(response, {
           uuid,
@@ -492,9 +499,7 @@ class OpenRouterLLM {
         });
         response.removeListener("close", handleAbort);
         clearInterval(timeoutCheck);
-        stream?.endMeasurement({
-          completion_tokens: LLMPerformanceMonitor.countTokens(fullText),
-        });
+        stream?.endMeasurement(usage);
         resolve(fullText);
       }
     });
