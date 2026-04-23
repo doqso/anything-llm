@@ -19,7 +19,7 @@ const DocumentSyncQueue = {
     "drupalwiki",
     "bookstack",
   ],
-  defaultStaleAfter: 604800000,
+  defaultStaleAfter: 3600000, // 1 hour
   maxRepeatFailures: 5, // How many times a run can fail in a row before pruning.
   writable: [],
 

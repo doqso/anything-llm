@@ -53,9 +53,7 @@ async function loadBookStack(
             };
         }
 
-        const outFolder = slugify(
-            `bookstack-${hostname}-${v4().slice(0, 4)}`
-        ).toLowerCase();
+        const outFolder = slugify(`bookstack-${hostname}`).toLowerCase();
 
         const outFolderPath =
             process.env.NODE_ENV === "development"
@@ -74,7 +72,7 @@ async function loadBookStack(
 
             const doc = await loader.createDocumentFromPage(pageData);
             const data = {
-                id: v4(),
+                id: `bookstack-${hostname}-${doc.metadata.id}`,
                 url: doc.metadata.url,
                 title: doc.metadata.title,
                 docAuthor: origin,
@@ -101,7 +99,7 @@ async function loadBookStack(
             );
 
             const fileName = sanitizeFileName(
-                `${slugify(doc.metadata.title)}-${data.id}`
+                `${slugify(doc.metadata.title)}-${doc.metadata.id}.json`
             );
             writeToServerDocuments({
                 data,

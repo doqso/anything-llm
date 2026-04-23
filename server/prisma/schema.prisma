@@ -296,7 +296,7 @@ model slash_command_presets {
 
 model document_sync_queues {
   id             Int                        @id @default(autoincrement())
-  staleAfterMs   Int                        @default(604800000) // 7 days
+  staleAfterMs   Int                        @default(3600000) // 1 hour
   nextSyncAt     DateTime
   createdAt      DateTime                   @default(now())
   lastSyncedAt   DateTime                   @default(now())
