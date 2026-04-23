@@ -1,16 +1,16 @@
 import React, { useEffect, useRef, useState } from "react";
 import Admin from "@/models/admin";
-import AnythingLLMIcon from "@/media/logo/anything-llm-icon.png";
-import GoogleSearchIcon from "./icons/google.png";
 import SerpApiIcon from "./icons/serpapi.png";
 import SearchApiIcon from "./icons/searchapi.png";
 import SerperDotDevIcon from "./icons/serper.png";
 import BingSearchIcon from "./icons/bing.png";
+import BaiduSearchIcon from "./icons/baidu.png";
 import SerplySearchIcon from "./icons/serply.png";
 import SearXNGSearchIcon from "./icons/searxng.png";
 import TavilySearchIcon from "./icons/tavily.svg";
 import DuckDuckGoIcon from "./icons/duckduckgo.png";
 import ExaIcon from "./icons/exa.png";
+import PerplexitySearchIcon from "./icons/perplexity.png";
 import {
   CaretUpDown,
   MagnifyingGlass,
@@ -24,37 +24,23 @@ import {
   SerpApiOptions,
   SearchApiOptions,
   SerperDotDevOptions,
-  GoogleSearchOptions,
   BingSearchOptions,
+  BaiduSearchOptions,
   SerplySearchOptions,
   SearXNGOptions,
   TavilySearchOptions,
   DuckDuckGoOptions,
   ExaSearchOptions,
+  PerplexitySearchOptions,
 } from "./SearchProviderOptions";
 
 const SEARCH_PROVIDERS = [
-  {
-    name: "Please make a selection",
-    value: "none",
-    logo: AnythingLLMIcon,
-    options: () => <React.Fragment />,
-    description:
-      "Web search will be disabled until a provider and keys are provided.",
-  },
   {
     name: "DuckDuckGo",
     value: "duckduckgo-engine",
     logo: DuckDuckGoIcon,
     options: () => <DuckDuckGoOptions />,
     description: "Free and privacy-focused web search using DuckDuckGo.",
-  },
-  {
-    name: "Google Search Engine",
-    value: "google-search-engine",
-    logo: GoogleSearchIcon,
-    options: (settings) => <GoogleSearchOptions settings={settings} />,
-    description: "Web search powered by a custom Google Search Engine.",
   },
   {
     name: "SerpApi",
@@ -88,6 +74,14 @@ const SEARCH_PROVIDERS = [
     description: "Web search powered by the Bing Search API (paid service).",
   },
   {
+    name: "Baidu Search",
+    value: "baidu-search",
+    logo: BaiduSearchIcon,
+    options: (settings) => <BaiduSearchOptions settings={settings} />,
+    description:
+      "Web search powered by Baidu Search for stronger zh-CN retrieval.",
+  },
+  {
     name: "Serply.io",
     value: "serply-engine",
     logo: SerplySearchIcon,
@@ -116,12 +110,22 @@ const SEARCH_PROVIDERS = [
     value: "exa-search",
     logo: ExaIcon,
     options: (settings) => <ExaSearchOptions settings={settings} />,
-    description: "AI-powered search engine optimized for LLM use cases.",
+    description:
+      "One of the best web search APIs for AI agents with real-time results and full page contents.",
+  },
+  {
+    name: "Perplexity Search",
+    value: "perplexity-search",
+    logo: PerplexitySearchIcon,
+    options: (settings) => <PerplexitySearchOptions settings={settings} />,
+    description: "AI-powered web search using the Perplexity Search API.",
   },
 ];
 
 export default function AgentWebSearchSelection({
   skill,
+  title,
+  description,
   settings,
   toggleSkill,
   enabled = false,
@@ -129,7 +133,7 @@ export default function AgentWebSearchSelection({
 }) {
   const searchInputRef = useRef(null);
   const [filteredResults, setFilteredResults] = useState([]);
-  const [selectedProvider, setSelectedProvider] = useState("none");
+  const [selectedProvider, setSelectedProvider] = useState("duckduckgo-engine");
   const [searchQuery, setSearchQuery] = useState("");
   const [searchMenuOpen, setSearchMenuOpen] = useState(false);
 
@@ -159,14 +163,16 @@ export default function AgentWebSearchSelection({
   useEffect(() => {
     Admin.systemPreferencesByFields(["agent_search_provider"])
       .then((res) =>
-        setSelectedProvider(res?.settings?.agent_search_provider ?? "none")
+        setSelectedProvider(
+          res?.settings?.agent_search_provider ?? "duckduckgo-engine"
+        )
       )
-      .catch(() => setSelectedProvider("none"));
+      .catch(() => setSelectedProvider("duckduckgo-engine"));
   }, []);
 
-  const selectedSearchProviderObject = SEARCH_PROVIDERS.find(
-    (provider) => provider.value === selectedProvider
-  );
+  const selectedSearchProviderObject =
+    SEARCH_PROVIDERS.find((provider) => provider.value === selectedProvider) ??
+    SEARCH_PROVIDERS[1];
 
   return (
     <div className="p-2">
@@ -182,7 +188,7 @@ export default function AgentWebSearchSelection({
               htmlFor="name"
               className="text-theme-text-primary text-md font-bold"
             >
-              Live web search and browsing
+              {title}
             </label>
           </div>
           <Toggle
@@ -197,9 +203,7 @@ export default function AgentWebSearchSelection({
           className="w-full rounded-md"
         />
         <p className="text-theme-text-secondary text-opacity-60 text-xs font-medium py-1.5">
-          Enable your agent to search the web to answer your questions by
-          connecting to a web-search (SERP) provider. Web search during agent
-          sessions will not work until this is set up.
+          {description}
         </p>
         <div hidden={!enabled}>
           <div className="relative">
@@ -281,11 +285,9 @@ export default function AgentWebSearchSelection({
               </button>
             )}
           </div>
-          {selectedProvider !== "none" && (
-            <div className="mt-4 flex flex-col gap-y-1">
-              {selectedSearchProviderObject.options(settings)}
-            </div>
-          )}
+          <div className="mt-4 flex flex-col gap-y-1">
+            {selectedSearchProviderObject.options(settings)}
+          </div>
         </div>
       </div>
     </div>

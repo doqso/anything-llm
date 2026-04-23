@@ -5,7 +5,6 @@ process.env.NODE_ENV === "development"
 const { default: slugify } = require("slugify");
 const { isValidUrl, safeJsonParse } = require("../utils/http");
 const prisma = require("../utils/prisma");
-const { v4 } = require("uuid");
 const { MetaGenerator } = require("../utils/boot/MetaGenerator");
 const { PGVector } = require("../utils/vectorDbProviders/pgvector");
 const { NativeEmbedder } = require("../utils/EmbeddingEngines/native");
@@ -17,6 +16,21 @@ const {
 function isNullOrNaN(value) {
   if (value === null) return true;
   return isNaN(value);
+}
+
+/**
+ * Merges a string field from source to target if it passes validation.
+ * @param {Object} target - The target object to merge into
+ * @param {Object} source - The source object to read from
+ * @param {string} fieldName - The field name to merge
+ * @param {Function|null} validator - Optional validator function that returns false to reject the value
+ */
+function mergeStringField(target, source, fieldName, validator = null) {
+  const value = source[fieldName];
+  if (value && typeof value === "string" && value.trim()) {
+    if (validator && !validator(value)) return;
+    target[fieldName] = value.trim();
+  }
 }
 
 const SystemSettings = {
@@ -34,6 +48,14 @@ const SystemSettings = {
     "agent_sql_connections",
     "default_agent_skills",
     "disabled_agent_skills",
+    "disabled_filesystem_skills",
+    "disabled_create_files_skills",
+    "disabled_gmail_skills",
+    "gmail_agent_config",
+    "disabled_google_calendar_skills",
+    "google_calendar_agent_config",
+    "disabled_outlook_skills",
+    "outlook_agent_config",
     "imported_agent_skills",
     "custom_app_name",
     "feature_flags",
@@ -51,6 +73,14 @@ const SystemSettings = {
     "agent_search_provider",
     "default_agent_skills",
     "disabled_agent_skills",
+    "disabled_filesystem_skills",
+    "disabled_create_files_skills",
+    "disabled_gmail_skills",
+    "gmail_agent_config",
+    "disabled_google_calendar_skills",
+    "google_calendar_agent_config",
+    "disabled_outlook_skills",
+    "outlook_agent_config",
     "agent_sql_connections",
     "custom_app_name",
     "default_system_prompt",
@@ -72,7 +102,7 @@ const SystemSettings = {
           .filter((setting) => isValidUrl(setting.url))
           .slice(0, 3); // max of 3 items in footer.
         return JSON.stringify(array);
-      } catch (e) {
+      } catch {
         console.error(`Failed to run validation function on footer_data`);
         return JSON.stringify([]);
       }
@@ -117,11 +147,13 @@ const SystemSettings = {
             "searchapi",
             "serper-dot-dev",
             "bing-search",
+            "baidu-search",
             "serply-engine",
             "searxng-engine",
             "tavily-search",
             "duckduckgo-engine",
             "exa-search",
+            "perplexity-search",
           ].includes(update)
         )
           throw new Error("Invalid SERP provider.");
@@ -138,7 +170,7 @@ const SystemSettings = {
       try {
         const skills = updates.split(",").filter((skill) => !!skill);
         return JSON.stringify(skills);
-      } catch (e) {
+      } catch {
         console.error(`Could not validate agent skills.`);
         return JSON.stringify([]);
       }
@@ -147,9 +179,159 @@ const SystemSettings = {
       try {
         const skills = updates.split(",").filter((skill) => !!skill);
         return JSON.stringify(skills);
-      } catch (e) {
+      } catch {
         console.error(`Could not validate disabled agent skills.`);
         return JSON.stringify([]);
+      }
+    },
+    disabled_filesystem_skills: (updates) => {
+      try {
+        const skills = updates.split(",").filter((skill) => !!skill);
+        return JSON.stringify(skills);
+      } catch {
+        console.error(`Could not validate disabled filesystem skills.`);
+        return JSON.stringify([]);
+      }
+    },
+    disabled_create_files_skills: (updates) => {
+      try {
+        const skills = updates.split(",").filter((skill) => !!skill);
+        return JSON.stringify(skills);
+      } catch {
+        console.error(`Could not validate disabled create files skills.`);
+        return JSON.stringify([]);
+      }
+    },
+    disabled_gmail_skills: (updates) => {
+      try {
+        const skills = updates.split(",").filter((skill) => !!skill);
+        return JSON.stringify(skills);
+      } catch {
+        console.error(`Could not validate disabled gmail skills.`);
+        return JSON.stringify([]);
+      }
+    },
+    gmail_agent_config: async (update) => {
+      const GmailBridge = require("../utils/agents/aibitat/plugins/gmail/lib");
+      try {
+        if (!update) return JSON.stringify({});
+
+        const newConfig =
+          typeof update === "string" ? safeJsonParse(update, {}) : update;
+        const existingConfig = safeJsonParse(
+          (await SystemSettings.get({ label: "gmail_agent_config" }))?.value,
+          {}
+        );
+
+        const mergedConfig = { ...existingConfig };
+
+        mergeStringField(mergedConfig, newConfig, "deploymentId");
+        mergeStringField(
+          mergedConfig,
+          newConfig,
+          "apiKey",
+          (v) => !v.match(/^\*+$/)
+        );
+
+        return JSON.stringify(mergedConfig);
+      } catch (e) {
+        console.error(`Could not validate gmail agent config:`, e.message);
+        return JSON.stringify({});
+      } finally {
+        GmailBridge.reset();
+      }
+    },
+    disabled_google_calendar_skills: (updates) => {
+      try {
+        const skills = updates.split(",").filter((skill) => !!skill);
+        return JSON.stringify(skills);
+      } catch {
+        console.error(`Could not validate disabled google calendar skills.`);
+        return JSON.stringify([]);
+      }
+    },
+    google_calendar_agent_config: async (update) => {
+      const GoogleCalendarBridge = require("../utils/agents/aibitat/plugins/google-calendar/lib");
+      try {
+        if (!update) return JSON.stringify({});
+
+        const newConfig =
+          typeof update === "string" ? safeJsonParse(update, {}) : update;
+        const existingConfig = safeJsonParse(
+          (await SystemSettings.get({ label: "google_calendar_agent_config" }))
+            ?.value,
+          {}
+        );
+
+        const mergedConfig = { ...existingConfig };
+
+        mergeStringField(mergedConfig, newConfig, "deploymentId");
+        mergeStringField(
+          mergedConfig,
+          newConfig,
+          "apiKey",
+          (v) => !v.match(/^\*+$/)
+        );
+
+        return JSON.stringify(mergedConfig);
+      } catch (e) {
+        console.error(
+          `Could not validate google calendar agent config:`,
+          e.message
+        );
+        return JSON.stringify({});
+      } finally {
+        GoogleCalendarBridge.reset();
+      }
+    },
+    disabled_outlook_skills: (updates) => {
+      try {
+        const skills = updates.split(",").filter((skill) => !!skill);
+        return JSON.stringify(skills);
+      } catch {
+        console.error(`Could not validate disabled outlook skills.`);
+        return JSON.stringify([]);
+      }
+    },
+    outlook_agent_config: async (update) => {
+      const OutlookBridge = require("../utils/agents/aibitat/plugins/outlook/lib");
+      try {
+        if (!update) return JSON.stringify({});
+
+        const newConfig =
+          typeof update === "string" ? safeJsonParse(update, {}) : update;
+        const existingConfig = safeJsonParse(
+          (await SystemSettings.get({ label: "outlook_agent_config" }))?.value,
+          {}
+        );
+
+        const mergedConfig = { ...existingConfig };
+
+        mergeStringField(mergedConfig, newConfig, "clientId");
+        mergeStringField(mergedConfig, newConfig, "tenantId");
+        mergeStringField(
+          mergedConfig,
+          newConfig,
+          "clientSecret",
+          (v) => !v.match(/^\*+$/)
+        );
+
+        if (newConfig.accessToken !== undefined) {
+          mergedConfig.accessToken = newConfig.accessToken;
+        }
+        if (newConfig.refreshToken !== undefined) {
+          mergedConfig.refreshToken = newConfig.refreshToken;
+        }
+        if (newConfig.tokenExpiry !== undefined) {
+          mergedConfig.tokenExpiry = newConfig.tokenExpiry;
+        }
+
+        return JSON.stringify(mergedConfig);
+      } catch (e) {
+        console.error(`Could not validate outlook agent config:`, e.message);
+        return JSON.stringify({});
+      } finally {
+        OutlookBridge.reset();
       }
     },
     agent_sql_connections: async (updates) => {
@@ -163,7 +345,7 @@ const SystemSettings = {
           safeJsonParse(updates, [])
         );
         return JSON.stringify(updatedConnections);
-      } catch (e) {
+      } catch {
         console.error(`Failed to merge connections`);
         return JSON.stringify(existingConnections ?? []);
       }
@@ -208,6 +390,11 @@ const SystemSettings = {
   },
   currentSettings: async function () {
     const { hasVectorCachedFiles } = require("../utils/files");
+    const {
+      ToolReranker,
+    } = require("../utils/agents/aibitat/utils/toolReranker");
+    const AIbitat = require("../utils/agents/aibitat");
+
     const llmProvider = process.env.LLM_PROVIDER;
     const vectorDB = process.env.VECTOR_DB;
     const embeddingEngine = process.env.EMBEDDING_ENGINE ?? "native";
@@ -291,18 +478,18 @@ const SystemSettings = {
       // --------------------------------------------------------
       // Agent Settings & Configs
       // --------------------------------------------------------
-      AgentGoogleSearchEngineId: process.env.AGENT_GSE_CTX || null,
-      AgentGoogleSearchEngineKey: !!process.env.AGENT_GSE_KEY || null,
       AgentSerpApiKey: !!process.env.AGENT_SERPAPI_API_KEY || null,
       AgentSerpApiEngine: process.env.AGENT_SERPAPI_ENGINE || "google",
       AgentSearchApiKey: !!process.env.AGENT_SEARCHAPI_API_KEY || null,
       AgentSearchApiEngine: process.env.AGENT_SEARCHAPI_ENGINE || "google",
       AgentSerperApiKey: !!process.env.AGENT_SERPER_DEV_KEY || null,
       AgentBingSearchApiKey: !!process.env.AGENT_BING_SEARCH_API_KEY || null,
+      AgentBaiduSearchApiKey: !!process.env.AGENT_BAIDU_SEARCH_API_KEY || null,
       AgentSerplyApiKey: !!process.env.AGENT_SERPLY_API_KEY || null,
       AgentSearXNGApiUrl: process.env.AGENT_SEARXNG_API_URL || null,
       AgentTavilyApiKey: !!process.env.AGENT_TAVILY_API_KEY || null,
       AgentExaApiKey: !!process.env.AGENT_EXA_API_KEY || null,
+      AgentPerplexityApiKey: !!process.env.AGENT_PERPLEXITY_API_KEY || null,
 
       // --------------------------------------------------------
       // Compliance Settings
@@ -317,6 +504,13 @@ const SystemSettings = {
       SimpleSSOEnabled: "SIMPLE_SSO_ENABLED" in process.env || false,
       SimpleSSONoLogin: "SIMPLE_SSO_NO_LOGIN" in process.env || false,
       SimpleSSONoLoginRedirect: this.simpleSSO.noLoginRedirect(),
+
+      // --------------------------------------------------------
+      // Agent Skill Settings
+      // --------------------------------------------------------
+      AgentSkillMaxToolCalls: AIbitat.defaultMaxToolCalls(),
+      AgentSkillRerankerEnabled: ToolReranker.isEnabled(),
+      AgentSkillRerankerTopN: ToolReranker.getTopN(),
     };
   },
 
@@ -368,6 +562,18 @@ const SystemSettings = {
     return this._updateSettings(updates);
   },
 
+  delete: async function (clause = {}) {
+    try {
+      if (!Object.keys(clause).length)
+        throw new Error("Clause cannot be empty");
+      await prisma.system_settings.deleteMany({ where: clause });
+      return true;
+    } catch (error) {
+      console.error(error.message);
+      return false;
+    }
+  },
+
   // Explicit update of settings + key validations.
   // Only use this method when directly setting a key value
   // that takes no user input for the keys being modified.
@@ -383,6 +589,8 @@ const SystemSettings = {
             validatedValue = this.validations[key](updates[key]);
           }
         }
+
+        if (validatedValue === undefined) continue;
 
         updatePromises.push(
           prisma.system_settings.upsert({
@@ -511,7 +719,8 @@ const SystemSettings = {
       // Azure + OpenAI Keys
       AzureOpenAiEndpoint: process.env.AZURE_OPENAI_ENDPOINT,
       AzureOpenAiKey: !!process.env.AZURE_OPENAI_KEY,
-      AzureOpenAiModelPref: process.env.OPEN_MODEL_PREF,
+      AzureOpenAiModelPref:
+        process.env.AZURE_OPENAI_MODEL_PREF || process.env.OPEN_MODEL_PREF,
       AzureOpenAiEmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
       AzureOpenAiTokenLimit: process.env.AZURE_OPENAI_TOKEN_LIMIT || 4096,
       AzureOpenAiModelType: process.env.AZURE_OPENAI_MODEL_TYPE || "default",
@@ -691,6 +900,7 @@ const SystemSettings = {
 
       // Lemonade Keys
       LemonadeLLMBasePath: process.env.LEMONADE_LLM_BASE_PATH,
+      LemonadeLLMApiKey: !!process.env.LEMONADE_LLM_API_KEY,
       LemonadeLLMModelPref: process.env.LEMONADE_LLM_MODEL_PREF,
       LemonadeLLMModelTokenLimit:
         process.env.LEMONADE_LLM_MODEL_TOKEN_LIMIT || 8192,
@@ -791,6 +1001,7 @@ function mergeConnections(existingConnections = [], updates = []) {
       originalDatabaseId,
       connectionString,
       engine,
+      schema,
     } = update;
 
     switch (action) {
@@ -824,6 +1035,7 @@ function mergeConnections(existingConnections = [], updates = []) {
           engine,
           database_id: newId,
           connectionString,
+          ...(schema && { schema }),
         });
         break;
       }
@@ -844,6 +1056,7 @@ function mergeConnections(existingConnections = [], updates = []) {
           engine,
           database_id: slugifiedId,
           connectionString,
+          ...(schema && { schema }),
         });
         break;
       }

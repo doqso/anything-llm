@@ -17,8 +17,8 @@ const TRANSLATIONS = {
         "Giúp chúng tôi xây dựng AnythingLLM phù hợp với nhu cầu của bạn. Tùy chọn.",
     },
     home: {
-      title: "Chào mừng đến",
       getStarted: "Bắt đầu",
+      welcome: "Chào mừng",
     },
     llm: {
       title: "Tùy chọn LLM",
@@ -49,17 +49,9 @@ const TRANSLATIONS = {
       settingsHint:
         "Các cài đặt này có thể được cấu hình lại bất cứ lúc nào trong cài đặt.",
     },
-    workspace: {
-      title: "Tạo không gian làm việc đầu tiên của bạn",
-      description:
-        "Tạo không gian làm việc đầu tiên của bạn và bắt đầu với AnythingLLM.",
-    },
   },
   common: {
     "workspaces-name": "Tên không gian làm việc",
-    error: "Lỗi",
-    success: "Thành công",
-    user: "Người dùng",
     selection: "Lựa chọn mô hình",
     saving: "Đang lưu...",
     save: "Lưu thay đổi",
@@ -71,10 +63,14 @@ const TRANSLATIONS = {
     search: "Tìm kiếm",
     username_requirements:
       "Tên người dùng phải có 2-32 ký tự, bắt đầu bằng chữ cái thường và chỉ chứa chữ cái thường, số, dấu gạch dưới, dấu gạch ngang và dấu chấm.",
+    on: "Về",
+    none: "Không",
+    stopped: "Dừng",
+    loading: "Đang tải",
+    refresh: "Tái tạo",
   },
   settings: {
     title: "Cài đặt hệ thống",
-    system: "Cài đặt chung",
     invites: "Lời mời",
     users: "Người dùng",
     workspaces: "Không gian làm việc",
@@ -88,7 +84,6 @@ const TRANSLATIONS = {
     "voice-speech": "Giọng nói & Phát âm",
     "vector-database": "Cơ sở dữ liệu Vector",
     embeds: "Nhúng hội thoại",
-    "embed-chats": "Lịch sử Nhúng hội thoại",
     security: "Bảo mật",
     "event-logs": "Nhật ký sự kiện",
     privacy: "Quyền riêng tư & Dữ liệu",
@@ -104,6 +99,16 @@ const TRANSLATIONS = {
     branding: "Thương hiệu & Nhãn trắng",
     chat: "Trò chuyện",
     "mobile-app": "AnythingLLM Di động",
+    "community-hub": {
+      title: "Trung tâm cộng đồng",
+      trending: "Khám phá các nội dung đang thịnh hành",
+      "your-account": "Tài khoản của bạn",
+      "import-item": "Nhập hàng",
+    },
+    channels: "Kênh",
+    "available-channels": {
+      telegram: "Telegram",
+    },
   },
   login: {
     "multi-user": {
@@ -120,7 +125,6 @@ const TRANSLATIONS = {
       title: "Đặt lại Mật khẩu",
       description: "Cung cấp thông tin cần thiết dưới đây để đặt lại mật khẩu.",
       "recovery-codes": "Mã khôi phục",
-      "recovery-code": "Mã khôi phục {{index}}",
       "back-to-login": "Quay lại Đăng nhập",
     },
   },
@@ -153,13 +157,6 @@ const TRANSLATIONS = {
       heading: "Giải thích cho tôi",
       body: "các lợi ích của AnythingLLM",
     },
-    pfp: {
-      title: "Hình đại diện trợ lý",
-      description:
-        "Tùy chỉnh hình ảnh hồ sơ của trợ lý cho không gian làm việc này.",
-      image: "Hình ảnh Không gian làm việc",
-      remove: "Xóa Hình ảnh Không gian làm việc",
-    },
     delete: {
       title: "Xóa không gian làm việc",
       description:
@@ -182,21 +179,23 @@ const TRANSLATIONS = {
       title: "Mô hình Trò chuyện Không gian làm việc",
       description:
         "Mô hình trò chuyện cụ thể sẽ được sử dụng cho không gian làm việc này. Nếu để trống, sẽ sử dụng tùy chọn LLM hệ thống.",
-      wait: "-- đang chờ mô hình --",
     },
     mode: {
       title: "Chế độ trò chuyện",
       chat: {
         title: "Trò chuyện",
-        "desc-start": "sẽ cung cấp câu trả lời với kiến thức chung của LLM",
-        and: "và",
-        "desc-end": "ngữ cảnh tài liệu được tìm thấy.",
+        description:
+          "sẽ cung cấp câu trả lời dựa trên kiến thức chung của LLM và ngữ cảnh tài liệu được cung cấp.<br />Bạn sẽ cần sử dụng lệnh @agent để sử dụng các công cụ.",
       },
       query: {
         title: "Truy vấn",
-        "desc-start": "sẽ cung cấp câu trả lời",
-        only: "chỉ",
-        "desc-end": "khi tìm thấy ngữ cảnh tài liệu.",
+        description:
+          "sẽ cung cấp câu trả lời <b>chỉ</b> nếu ngữ cảnh của tài liệu được tìm thấy.<br />Bạn sẽ cần sử dụng lệnh @agent để sử dụng các công cụ.",
+      },
+      automatic: {
+        title: "Tự động",
+        description:
+          "sẽ tự động sử dụng các công cụ nếu mô hình và nhà cung cấp hỗ trợ gọi công cụ gốc. Nếu không hỗ trợ gọi công cụ gốc, bạn sẽ cần sử dụng lệnh `@agent` để sử dụng các công cụ.",
       },
     },
     history: {
@@ -288,9 +287,6 @@ const TRANSLATIONS = {
       wait: "-- đang chờ mô hình --",
     },
     skill: {
-      title: "Kỹ năng agent mặc định",
-      description:
-        "Cải thiện khả năng tự nhiên của agent mặc định với những kỹ năng được xây dựng sẵn này. Thiết lập này áp dụng cho tất cả không gian làm việc.",
       rag: {
         title: "RAG & bộ nhớ dài hạn",
         description:
@@ -311,17 +307,449 @@ const TRANSLATIONS = {
         description:
           "Cho phép agent mặc định tạo các loại biểu đồ khác nhau từ dữ liệu được cung cấp hoặc đưa ra trong trò chuyện.",
       },
-      save: {
-        title: "Tạo & lưu tệp",
-        description:
-          "Cho phép agent mặc định tạo và ghi vào các tệp có thể lưu vào máy tính của bạn.",
-      },
       web: {
         title: "Tìm kiếm web trực tiếp và duyệt web",
-        "desc-start":
-          "Cho phép agent của bạn tìm kiếm web để trả lời câu hỏi bằng cách kết nối với nhà cung cấp tìm kiếm web (SERP).",
-        "desc-end":
-          "Tìm kiếm web trong phiên agent sẽ không hoạt động cho đến khi được thiết lập.",
+        description:
+          "Cho phép đại lý của bạn tìm kiếm trên web để trả lời các câu hỏi của bạn bằng cách kết nối với nhà cung cấp dịch vụ tìm kiếm trên web (SERP).",
+      },
+      sql: {
+        title: "Kết nối SQL",
+        description:
+          "Cho phép đại lý của bạn sử dụng SQL để trả lời các câu hỏi của bạn bằng cách kết nối với nhiều nhà cung cấp cơ sở dữ liệu SQL khác nhau.",
+      },
+      default_skill:
+        "Theo mặc định, kỹ năng này được kích hoạt, nhưng bạn có thể tắt nó nếu không muốn nó được sử dụng bởi người đại diện.",
+      filesystem: {
+        title: "Quyền truy cập hệ thống tệp",
+        description:
+          "Cho phép đại lý của bạn đọc, ghi, tìm kiếm và quản lý các tệp tin trong một thư mục được chỉ định. Hỗ trợ chỉnh sửa tệp, điều hướng thư mục và tìm kiếm nội dung.",
+        learnMore: "Tìm hiểu thêm về cách sử dụng kỹ năng này.",
+        configuration: "Cấu hình",
+        readActions: "Đọc hành động",
+        writeActions: "Các hành động",
+        warning:
+          "Việc truy cập hệ thống tệp có thể gây nguy hiểm vì nó có thể sửa đổi hoặc xóa các tệp. Vui lòng tham khảo tài liệu <link> trước khi kích hoạt.",
+        skills: {
+          "read-text-file": {
+            title: "Đọc tệp",
+            description:
+              "Đọc nội dung của các tệp (văn bản, mã, PDF, hình ảnh, v.v.)",
+          },
+          "read-multiple-files": {
+            title: "Đọc nhiều tệp",
+            description: "Đọc nhiều tệp tin cùng lúc.",
+          },
+          "list-directory": {
+            title: "Danh sách",
+            description: "Liệt kê các tệp tin và thư mục trong một thư mục.",
+          },
+          "search-files": {
+            title: "Tìm kiếm tệp",
+            description: "Tìm kiếm các tệp theo tên hoặc nội dung",
+          },
+          "get-file-info": {
+            title: "Lấy thông tin tệp",
+            description: "Lấy thông tin chi tiết về các tệp tin.",
+          },
+          "edit-file": {
+            title: "Chỉnh sửa tệp",
+            description:
+              "Thực hiện chỉnh sửa dựa trên dòng trong các tệp văn bản.",
+          },
+          "create-directory": {
+            title: "Tạo thư mục",
+            description: "Tạo thư mục mới",
+          },
+          "move-file": {
+            title: "Di chuyển/Đổi tên tệp",
+            description: "Di chuyển hoặc đổi tên các tệp và thư mục.",
+          },
+          "copy-file": {
+            title: "Sao chép tệp",
+            description: "Sao chép các tệp tin và thư mục",
+          },
+          "write-text-file": {
+            title: "Tạo tệp văn bản",
+            description:
+              "Tạo các tệp văn bản mới hoặc ghi đè các tệp văn bản hiện có.",
+          },
+        },
+      },
+      createFiles: {
+        title: "Tạo tài liệu",
+        description:
+          "Cho phép đại lý của bạn tạo các định dạng tài liệu nhị phân như bài thuyết trình PowerPoint, bảng tính Excel, tài liệu Word và PDF. Các tệp có thể tải xuống trực tiếp từ cửa sổ trò chuyện.",
+        configuration: "Các loại tài liệu có sẵn",
+        skills: {
+          "create-text-file": {
+            title: "Tệp văn bản",
+            description:
+              "Tạo các tệp văn bản với bất kỳ nội dung và định dạng nào (ví dụ: .txt, .md, .json, .csv, v.v.)",
+          },
+          "create-pptx": {
+            title: "Bài trình bày bằng PowerPoint",
+            description:
+              "Tạo các bài trình chiếu PowerPoint mới với các slide, tiêu đề và dấu đầu dòng.",
+          },
+          "create-pdf": {
+            title: "Tài liệu PDF",
+            description:
+              "Tạo tài liệu PDF từ Markdown hoặc văn bản thuần túy với các định dạng cơ bản.",
+          },
+          "create-xlsx": {
+            title: "Bảng tính Excel",
+            description:
+              "Tạo các tài liệu Excel cho dữ liệu dạng bảng, bao gồm các sheet và định dạng.",
+          },
+          "create-docx": {
+            title: "Tệp Word",
+            description:
+              "Tạo các tài liệu Word với định dạng và kiểu dáng cơ bản.",
+          },
+        },
+      },
+      gmail: {
+        title: "Kết nối GMail",
+        description:
+          "Cho phép đại lý của bạn tương tác với Gmail – tìm kiếm email, đọc các cuộc trò chuyện, soạn thảo bản nháp, gửi email và quản lý hộp thư. Đọc tài liệu hướng dẫn<a>.",
+        multiUserWarning:
+          "Tính năng tích hợp với Gmail không khả dụng trong chế độ nhiều người dùng vì lý do bảo mật. Vui lòng tắt chế độ nhiều người dùng để sử dụng tính năng này.",
+        configuration: "Cấu hình Gmail",
+        deploymentId: "Mã triển khai",
+        deploymentIdHelp:
+          "Mã triển khai từ ứng dụng web Google Apps Script của bạn",
+        apiKey: "Khóa API",
+        apiKeyHelp:
+          "Khóa API mà bạn đã cấu hình trong quá trình triển khai Google Apps Script của mình.",
+        configurationRequired:
+          "Vui lòng cấu hình ID triển khai và khóa API để kích hoạt các tính năng của Gmail.",
+        configured: "Đã được cấu hình",
+        searchSkills: "Kỹ năng tìm kiếm...",
+        noSkillsFound: "Không có kết quả phù hợp với tìm kiếm của bạn.",
+        categories: {
+          search: {
+            title: "Tìm kiếm và đọc email",
+            description:
+              "Tìm kiếm và đọc các email trong hộp thư Gmail của bạn.",
+          },
+          drafts: {
+            title: "Mẫu email",
+            description: "Tạo, chỉnh sửa và quản lý bản nháp email",
+          },
+          send: {
+            title: "Gửi và trả lời email",
+            description:
+              "Gửi email và trả lời các cuộc thảo luận ngay lập tức.",
+          },
+          threads: {
+            title: "Quản lý các chuỗi email",
+            description:
+              "Quản lý các chuỗi email – đánh dấu là đã đọc/chưa đọc, lưu trữ, xóa",
+          },
+          account: {
+            title: "Thống kê tích hợp",
+            description: "Xem thống kê hộp thư và thông tin tài khoản",
+          },
+        },
+        skills: {
+          search: {
+            title: "Tìm kiếm trong các email",
+            description: "Tìm kiếm trong email bằng cú pháp truy vấn của Gmail",
+          },
+          readThread: {
+            title: "Đọc chủ đề",
+            description: "Đọc toàn bộ chuỗi email theo ID",
+          },
+          createDraft: {
+            title: "Tạo bản nháp",
+            description: "Tạo một bản nháp email mới",
+          },
+          createDraftReply: {
+            title: "Tạo bản nháp trả lời",
+            description: "Tạo một bản dự thảo trả lời cho một chủ đề hiện có.",
+          },
+          updateDraft: {
+            title: "Cập nhật bản nháp",
+            description: "Cập nhật bản nháp email hiện có",
+          },
+          getDraft: {
+            title: "Xem bản nháp",
+            description: "Lấy lại một bản nháp cụ thể theo ID",
+          },
+          listDrafts: {
+            title: "Danh sách dự thảo",
+            description: "Liệt kê tất cả các email đang soạn thảo.",
+          },
+          deleteDraft: {
+            title: "Xóa bản nháp",
+            description: "Xóa bản nháp email",
+          },
+          sendDraft: {
+            title: "Gửi bản nháp",
+            description: "Gửi một bản nháp email đã có",
+          },
+          sendEmail: {
+            title: "Gửi email",
+            description: "Gửi một email ngay lập tức",
+          },
+          replyToThread: {
+            title: "Trả lời cuộc thảo luận",
+            description: "Trả lời một chuỗi email ngay lập tức.",
+          },
+          markRead: {
+            title: "Mark Read",
+            description: "Đánh dấu một chủ đề đã đọc",
+          },
+          markUnread: {
+            title: "Đánh dấu là chưa đọc",
+            description: "Đánh dấu một chủ đề là chưa đọc",
+          },
+          moveToTrash: {
+            title: "Xóa",
+            description: 'Di chuyển một chủ đề vào thư mục "rác"',
+          },
+          moveToArchive: {
+            title: "Thư mục lưu trữ",
+            description: "Lưu trữ một chủ đề",
+          },
+          moveToInbox: {
+            title: "Di chuyển đến mục Thùng thư",
+            description: "Di chuyển một chủ đề vào hộp thư mục",
+          },
+          getMailboxStats: {
+            title: "Thống kê hộp thư",
+            description:
+              "Hiển thị số lượng email chưa đọc và thống kê hộp thư.",
+          },
+          getInbox: {
+            title: "Truy cập hộp thư",
+            description: "Cách đơn giản để lấy các email trong hộp thư Gmail.",
+          },
+        },
+      },
+      outlook: {
+        title: "Kết nối Outlook",
+        description:
+          "Cho phép đại lý của bạn tương tác với Microsoft Outlook – tìm kiếm email, đọc các cuộc thảo luận, soạn thảo bản nháp, gửi email và quản lý hộp thư đến thông qua Microsoft Graph API. Đọc tài liệu hướng dẫn <a>.",
+        multiUserWarning:
+          "Tính năng tích hợp với Outlook không khả dụng trong chế độ nhiều người dùng vì lý do bảo mật. Vui lòng tắt chế độ nhiều người dùng để sử dụng tính năng này.",
+        configuration: "Cấu hình Outlook",
+        authType: "Loại tài khoản",
+        authTypeHelp:
+          'Chọn loại tài khoản Microsoft nào có thể xác thực. "Tất cả các tài khoản" hỗ trợ cả tài khoản cá nhân và tài khoản làm việc/học. "Chỉ tài khoản cá nhân" giới hạn chỉ ở tài khoản Microsoft cá nhân. "Chỉ tài khoản tổ chức" giới hạn ở tài khoản làm việc/học từ một tenant cụ thể của Azure AD.',
+        authTypeCommon:
+          "Tất cả các tài khoản (cá nhân và tài khoản liên quan đến công việc/học tập)",
+        authTypeConsumers: "Chỉ dành cho tài khoản Microsoft cá nhân",
+        authTypeOrganization:
+          "Chỉ dành cho tài khoản tổ chức (cần ID của người thuê).",
+        clientId: "Mã định danh của khách hàng",
+        clientIdHelp:
+          "Mã định danh ứng dụng (Client ID) từ quá trình đăng ký ứng dụng của bạn trong Azure AD",
+        tenantId: "Mã định danh (cho người thuê)",
+        tenantIdHelp:
+          "Mã định danh (Tenant ID) từ ứng dụng Azure AD của bạn. Yêu cầu chỉ khi thực hiện xác thực cho riêng tổ chức.",
+        clientSecret: "Mật khẩu",
+        clientSecretHelp: "Giá trị bí mật của ứng dụng Azure AD của bạn",
+        configurationRequired:
+          "Vui lòng cấu hình ID và bí mật của ứng dụng để kích hoạt các tính năng của Outlook.",
+        authRequired:
+          "Trước tiên, hãy lưu thông tin đăng nhập của bạn, sau đó xác thực với Microsoft để hoàn thành quá trình thiết lập.",
+        authenticateWithMicrosoft: "Xác minh bằng Microsoft",
+        authenticated: "Đã xác thực thành công với Microsoft Outlook.",
+        revokeAccess: "Thu hồi quyền truy cập",
+        configured: "Đã được cấu hình",
+        searchSkills: "Kỹ năng tìm kiếm...",
+        noSkillsFound: "Không có kết quả nào khớp với tìm kiếm của bạn.",
+        categories: {
+          search: {
+            title: "Tìm kiếm và đọc email",
+            description:
+              "Tìm kiếm và đọc các email trong hộp thư Outlook của bạn.",
+          },
+          drafts: {
+            title: "Mẫu email",
+            description: "Tạo, chỉnh sửa và quản lý bản nháp email",
+          },
+          send: {
+            title: "Gửi email",
+            description: "Gửi email mới hoặc trả lời tin nhắn ngay lập tức.",
+          },
+          account: {
+            title: "Thống kê tích hợp",
+            description: "Xem thống kê hộp thư và thông tin tài khoản",
+          },
+        },
+        skills: {
+          getInbox: {
+            title: "Truy cập hộp thư",
+            description: "Lấy các email mới nhất từ hộp thư Outlook của bạn",
+          },
+          search: {
+            title: "Tìm kiếm trong thư điện tử",
+            description:
+              "Tìm kiếm trong các email bằng cú pháp tìm kiếm của Microsoft",
+          },
+          readThread: {
+            title: "Đọc cuộc hội thoại",
+            description: "Đọc toàn bộ chuỗi email.",
+          },
+          createDraft: {
+            title: "Tạo bản nháp",
+            description:
+              "Tạo một bản nháp email mới hoặc một bản nháp trả lời cho một tin nhắn hiện có.",
+          },
+          updateDraft: {
+            title: "Cập nhật bản nháp",
+            description: "Cập nhật một bản nháp email đã có",
+          },
+          listDrafts: {
+            title: "Danh sách dự thảo",
+            description: "Liệt kê tất cả các email đang soạn thảo.",
+          },
+          deleteDraft: {
+            title: "Xóa bản nháp",
+            description: "Xóa bản nháp email",
+          },
+          sendDraft: {
+            title: "Gửi bản nháp",
+            description: "Gửi một bản nháp email đã có",
+          },
+          sendEmail: {
+            title: "Gửi email",
+            description:
+              "Gửi một email mới hoặc trả lời một tin nhắn hiện có ngay lập tức.",
+          },
+          getMailboxStats: {
+            title: "Thống kê hộp thư",
+            description: "Lấy số lượng thư mục và thống kê hộp thư.",
+          },
+        },
+      },
+      googleCalendar: {
+        title: "Kết nối Google Calendar",
+        description:
+          "Cho phép đại lý của bạn tương tác với Google Calendar - xem lịch, lấy thông tin sự kiện, tạo và cập nhật sự kiện, và quản lý xác nhận tham dự. <a>Đọc tài liệu</a>.",
+        multiUserWarning:
+          "Tính năng tích hợp với Google Calendar không khả dụng ở chế độ nhiều người dùng vì lý do bảo mật. Vui lòng tắt chế độ nhiều người dùng để sử dụng tính năng này.",
+        configuration: "Cấu hình Google Calendar",
+        deploymentId: "Mã triển khai",
+        deploymentIdHelp:
+          "Mã định danh ứng dụng từ ứng dụng web Google Apps Script của bạn",
+        apiKey: "Khóa API",
+        apiKeyHelp:
+          "Khóa API mà bạn đã cấu hình trong quá trình triển khai Google Apps Script của mình.",
+        configurationRequired:
+          "Vui lòng cấu hình ID triển khai và khóa API để kích hoạt các tính năng của Google Calendar.",
+        configured: "Đã được cấu hình",
+        searchSkills: "Kỹ năng tìm kiếm...",
+        noSkillsFound:
+          "Không tìm thấy kết quả phù hợp với tiêu chí tìm kiếm của bạn.",
+        categories: {
+          calendars: {
+            title: "Lịch",
+            description: "Xem và quản lý lịch Google của bạn",
+          },
+          readEvents: {
+            title: "Xem sự kiện",
+            description: "Xem và tìm kiếm các sự kiện trong lịch",
+          },
+          writeEvents: {
+            title: "Tạo và cập nhật sự kiện",
+            description:
+              "Tạo các sự kiện mới và chỉnh sửa các sự kiện hiện có.",
+          },
+          rsvp: {
+            title: "Quản lý xác nhận tham dự",
+            description: "Quản lý trạng thái phản hồi của bạn cho các sự kiện",
+          },
+        },
+        skills: {
+          listCalendars: {
+            title: "Danh sách lịch",
+            description: "Liệt kê tất cả các lịch mà bạn sở hữu hoặc đăng ký",
+          },
+          getCalendar: {
+            title: "Lấy thông tin lịch",
+            description: "Lấy thông tin chi tiết về một lịch cụ thể",
+          },
+          getEvent: {
+            title: "Tìm sự kiện",
+            description: "Lấy thông tin chi tiết về một sự kiện cụ thể",
+          },
+          getEventsForDay: {
+            title: "Tìm các sự kiện cho ngày hôm nay",
+            description:
+              "Hiển thị tất cả các sự kiện được lên lịch cho một ngày cụ thể.",
+          },
+          getEvents: {
+            title: "Tìm sự kiện (khoảng thời gian)",
+            description:
+              "Lấy danh sách các sự kiện trong một khoảng thời gian tùy chỉnh.",
+          },
+          getUpcomingEvents: {
+            title: "Xem các sự kiện sắp tới",
+            description:
+              "Tìm kiếm các sự kiện diễn ra hôm nay, tuần này hoặc tháng này bằng cách sử dụng các từ khóa đơn giản.",
+          },
+          quickAdd: {
+            title: "Thêm sự kiện nhanh chóng",
+            description:
+              'Tạo một sự kiện từ ngôn ngữ tự nhiên (ví dụ: "Cuộc họp vào ngày mai lúc 3 giờ chiều")',
+          },
+          createEvent: {
+            title: "Tạo sự kiện",
+            description:
+              "Tạo một sự kiện mới với quyền kiểm soát hoàn toàn đối với tất cả các thuộc tính.",
+          },
+          updateEvent: {
+            title: "Cập nhật sự kiện",
+            description: "Cập nhật một sự kiện đã có trong lịch",
+          },
+          setMyStatus: {
+            title: "Đặt trạng thái xác nhận tham dự",
+            description:
+              "Chấp nhận, từ chối hoặc chấp nhận một sự kiện một cách tạm thời.",
+          },
+        },
+      },
+    },
+    mcp: {
+      title: "Máy chủ MCP",
+      "loading-from-config": "Tải các máy chủ MCP từ tệp cấu hình",
+      "learn-more": "Tìm hiểu thêm về máy chủ MCP.",
+      "no-servers-found": "Không tìm thấy máy chủ MCP.",
+      "tool-warning":
+        "Để đạt hiệu suất tốt nhất, hãy cân nhắc việc tắt các công cụ không cần thiết để tiết kiệm tài nguyên.",
+      "stop-server": "Tắt máy chủ MCP",
+      "start-server": "Khởi động máy chủ MCP",
+      "delete-server": "Xóa máy chủ MCP",
+      "tool-count-warning":
+        "Máy chủ MCP này có các công cụ <b> được kích hoạt, {{count}} và chúng sẽ tiêu thụ ngữ cảnh trong mọi cuộc trò chuyện.</b> Hãy cân nhắc việc tắt các công cụ không cần thiết để tiết kiệm ngữ cảnh.",
+      "startup-command": "Lệnh khởi động",
+      command: "Lệnh",
+      arguments: "Luận điểm",
+      "not-running-warning":
+        "Máy chủ MCP này không hoạt động – có thể nó đã bị tắt hoặc đang gặp lỗi khi khởi động.",
+      "tool-call-arguments": "Tham số khi gọi hàm/thao tác",
+      "tools-enabled": "các công cụ đã được kích hoạt",
+    },
+    settings: {
+      title: "Cài đặt kỹ năng của đại lý",
+      "max-tool-calls": {
+        title: "Số lượng lệnh gọi công cụ tối đa cho mỗi phản hồi",
+        description:
+          "Số lượng công cụ tối đa mà một người dùng có thể liên kết để tạo ra một phản hồi duy nhất. Điều này ngăn chặn việc gọi công cụ quá mức và tạo ra các vòng lặp vô hạn.",
+      },
+      "intelligent-skill-selection": {
+        title: "Lựa chọn kỹ năng thông minh",
+        "beta-badge": "Phiên bản thử nghiệm",
+        description:
+          "Cho phép sử dụng không giới hạn các công cụ và giảm mức sử dụng token lên đến 80% cho mỗi truy vấn – AnythingLLM tự động chọn các kỹ năng phù hợp nhất cho mỗi yêu cầu.",
+        "max-tools": {
+          title: "Công cụ Max",
+          description:
+            "Số lượng công cụ tối đa có thể chọn cho mỗi truy vấn. Chúng tôi khuyến nghị đặt giá trị này thành các giá trị lớn hơn đối với các mô hình có ngữ cảnh lớn hơn.",
+        },
       },
     },
   },
@@ -345,7 +773,34 @@ const TRANSLATIONS = {
       "Khóa API cho phép người sở hữu truy cập và quản lý phiên bản AnythingLLM này theo chương trình.",
     link: "Đọc tài liệu API",
     generate: "Tạo Khóa API Mới",
+    empty: "Không tìm thấy khóa API nào",
+    actions: "Thao tác",
+    messages: {
+      error: "Lỗi: {{error}}",
+    },
+    modal: {
+      title: "Tạo khóa API mới",
+      cancel: "Hủy",
+      close: "Đóng",
+      create: "Tạo khóa API",
+      helper:
+        "Sau khi được tạo, khóa API có thể được dùng để truy cập và cấu hình phiên bản AnythingLLM này theo chương trình.",
+      name: {
+        label: "Tên",
+        placeholder: "Tích hợp production",
+        helper:
+          "Tùy chọn. Hãy dùng tên dễ nhận biết để bạn có thể xác định khóa này sau này.",
+      },
+    },
+    row: {
+      copy: "Sao chép khóa API",
+      copied: "Đã sao chép",
+      unnamed: "--",
+      deleteConfirm:
+        "Bạn có chắc muốn vô hiệu hóa khóa API này không?\nSau đó khóa sẽ không thể sử dụng được nữa.\n\nHành động này không thể hoàn tác.",
+    },
     table: {
+      name: "Tên",
       key: "Khóa API",
       by: "Tạo bởi",
       created: "Ngày tạo",
@@ -458,9 +913,6 @@ const TRANSLATIONS = {
     title: "Quyền riêng tư & Xử lý Dữ liệu",
     description:
       "Đây là cấu hình của bạn về cách các nhà cung cấp bên thứ ba được kết nối và AnythingLLM xử lý dữ liệu của bạn.",
-    llm: "Lựa chọn LLM",
-    embedding: "Tùy chọn nhúng",
-    vector: "Cơ sở dữ liệu Vector",
     anonymous: "Đã Bật Telemetry Ẩn danh",
   },
   connectors: {
@@ -502,7 +954,6 @@ const TRANSLATIONS = {
       URL_explained: "URL của kho GitLab bạn muốn thu thập.",
       token: "Token Truy cập GitLab",
       optional: "tùy chọn",
-      token_explained: "Token truy cập để ngăn giới hạn tốc độ.",
       token_description: "Chọn các thực thể bổ sung để lấy từ API GitLab.",
       token_explained_start: "Nếu không có ",
       token_explained_link1: "Token Truy cập Cá nhân",
@@ -534,9 +985,6 @@ const TRANSLATIONS = {
       URL_explained_end: " có sẵn.",
       task_explained:
         "Khi hoàn tất, bản ghi sẽ có sẵn để nhúng vào không gian làm việc trong bộ chọn tài liệu.",
-      language: "Ngôn ngữ Bản ghi",
-      language_explained: "Chọn ngôn ngữ của bản ghi bạn muốn thu thập.",
-      loading_languages: "-- đang tải các ngôn ngữ có sẵn --",
     },
     "website-depth": {
       name: "Trình thu thập Liên kết Hàng loạt",
@@ -597,20 +1045,18 @@ const TRANSLATIONS = {
       "search-document": "Tìm kiếm tài liệu",
       "no-documents": "Không có Tài liệu",
       "move-workspace": "Di chuyển đến Không gian làm việc",
-      name: "Tên",
       "delete-confirmation":
         "Bạn có chắc chắn muốn xóa các tệp và thư mục này?\nĐiều này sẽ xóa các tệp khỏi hệ thống và tự động xóa chúng khỏi bất kỳ không gian làm việc hiện có nào.\nHành động này không thể hoàn tác.",
       "removing-message":
         "Đang xóa {{count}} tài liệu và {{folderCount}} thư mục. Vui lòng chờ.",
       "move-success": "Đã di chuyển thành công {{count}} tài liệu.",
-      date: "Ngày",
-      type: "Loại",
       no_docs: "Không có Tài liệu",
       select_all: "Chọn Tất cả",
       deselect_all: "Bỏ chọn Tất cả",
       remove_selected: "Xóa Đã chọn",
-      costs: "*Chi phí một lần cho việc nhúng",
       save_embed: "Lưu và Nhúng",
+      "total-documents_one": "{{count}}",
+      "total-documents_other": "{{count}}",
     },
     upload: {
       "processor-offline": "Trình xử lý Tài liệu Không khả dụng",
@@ -649,8 +1095,6 @@ const TRANSLATIONS = {
       accept: "Ok, tôi hiểu rồi",
     },
     obsidian: {
-      name: "Obsidian",
-      description: "Nhập kho Obsidian chỉ với một cú nhấp chuột.",
       vault_location: "Vị trí Kho",
       vault_description:
         "Chọn thư mục kho Obsidian của bạn để nhập tất cả ghi chú và kết nối của chúng.",
@@ -664,16 +1108,8 @@ const TRANSLATIONS = {
     },
   },
   chat_window: {
-    welcome: "Chào mừng đến với không gian làm việc mới của bạn.",
-    get_started: "Để bắt đầu, hãy",
-    get_started_default: "Để bắt đầu",
-    upload: "tải lên một tài liệu",
-    or: "hoặc",
-    send_chat: "gửi một tin nhắn trò chuyện.",
     send_message: "Gửi tin nhắn",
     attach_file: "Đính kèm tệp vào cuộc trò chuyện này",
-    slash: "Xem tất cả các lệnh gạch chéo có sẵn để trò chuyện.",
-    agents: "Xem tất cả các agent có sẵn bạn có thể sử dụng để trò chuyện.",
     text_size: "Thay đổi kích thước văn bản.",
     microphone: "Nói prompt của bạn.",
     send: "Gửi tin nhắn prompt đến không gian làm việc",
@@ -684,19 +1120,11 @@ const TRANSLATIONS = {
     regenerate_response: "Tạo lại phản hồi",
     good_response: "Phản hồi tốt",
     more_actions: "Thêm hành động",
-    hide_citations: "Ẩn trích dẫn",
-    show_citations: "Hiện trích dẫn",
-    pause_tts_speech_message: "Tạm dừng đọc TTS của tin nhắn",
     fork: "Rẽ nhánh",
     delete: "Xóa",
-    save_submit: "Lưu & Gửi",
     cancel: "Hủy",
     edit_prompt: "Chỉnh sửa prompt",
     edit_response: "Chỉnh sửa phản hồi",
-    at_agent: "@agent",
-    default_agent_description: " - agent mặc định cho không gian làm việc này.",
-    custom_agents_coming_soon: "agent tùy chỉnh sắp ra mắt!",
-    slash_reset: "/reset",
     preset_reset_description:
       "Xóa lịch sử trò chuyện và bắt đầu cuộc trò chuyện mới",
     add_new_preset: " Thêm Cài đặt sẵn Mới",
@@ -720,6 +1148,48 @@ const TRANSLATIONS = {
       missing_credentials: "Nhà cung cấp này thiếu thông tin đăng nhập!",
       missing_credentials_description: "Nhấp để thiết lập thông tin đăng nhập",
     },
+    submit: "Gửi",
+    edit_info_user:
+      '"Gửi" sẽ tạo lại phản hồi của AI. "Lưu" chỉ cập nhật tin nhắn của bạn.',
+    edit_info_assistant:
+      "Các thay đổi của bạn sẽ được lưu trực tiếp vào phản hồi này.",
+    see_less: "Xem ít hơn",
+    see_more: "Xem thêm",
+    tools: "Dụng cụ",
+    text_size_label: "Kích thước văn bản",
+    select_model: "Chọn mẫu",
+    sources: "Nguồn",
+    document: "Tài liệu",
+    similarity_match: "trận đấu",
+    source_count_one: "{{count}} tham khảo",
+    source_count_other: "{{count}} – Tham khảo",
+    preset_exit_description: "Dừng lại phiên làm việc hiện tại",
+    add_new: "Thêm mới",
+    edit: "Chỉnh sửa",
+    publish: "Đăng tải",
+    stop_generating: "Dừng tạo ra phản hồi",
+    slash_commands: "Lệnh tắt/bật",
+    agent_skills: "Kỹ năng của đại lý",
+    manage_agent_skills: "Quản lý kỹ năng của đại lý",
+    agent_skills_disabled_in_session:
+      "Không thể thay đổi kỹ năng trong khi đang tham gia phiên làm việc. Trước tiên, hãy sử dụng lệnh /exit để kết thúc phiên làm việc.",
+    start_agent_session: "Bắt đầu phiên làm việc với đại lý",
+    use_agent_session_to_use_tools:
+      "Bạn có thể sử dụng các công cụ trong cuộc trò chuyện bằng cách bắt đầu một phiên với trợ lý bằng cách sử dụng '@agent' ở đầu yêu cầu của bạn.",
+    agent_invocation: {
+      model_wants_to_call: "Người mẫu muốn gọi",
+      approve: "Chấp thuận",
+      reject: "Từ chối",
+      always_allow: "Luôn luôn đảm bảo {{skillName}}",
+      tool_call_was_approved: "Đã được phê duyệt yêu cầu dụng cụ.",
+      tool_call_was_rejected: "Yêu cầu gọi công cụ đã bị từ chối.",
+    },
+    custom_skills: "Kỹ năng tùy chỉnh",
+    agent_flows: "Dòng chảy của đại lý",
+    no_tools_found: "Không tìm thấy công cụ tương ứng.",
+    loading_mcp_servers: "Đang tải các máy chủ MCP...",
+    app_integrations: "Tích hợp ứng dụng",
+    sub_skills: "Kỹ năng chuyên môn",
   },
   profile_settings: {
     edit_account: "Chỉnh sửa Tài khoản",
@@ -788,11 +1258,6 @@ const TRANSLATIONS = {
         description:
           "Đặt tên được hiển thị trên trang đăng nhập cho tất cả người dùng.",
       },
-      "chat-message-alignment": {
-        title: "Căn chỉnh Tin nhắn Trò chuyện",
-        description:
-          "Chọn chế độ căn chỉnh tin nhắn khi sử dụng giao diện trò chuyện.",
-      },
       "display-language": {
         title: "Ngôn ngữ Hiển thị",
         description:
@@ -806,18 +1271,6 @@ const TRANSLATIONS = {
         recommended: "Kích thước khuyến nghị: 800 x 200",
         remove: "Xóa",
         replace: "Thay thế",
-      },
-      "welcome-messages": {
-        title: "Tin nhắn Chào mừng",
-        description:
-          "Tùy chỉnh các tin nhắn chào mừng hiển thị cho người dùng của bạn. Chỉ người dùng không phải quản trị viên mới thấy các tin nhắn này.",
-        new: "Mới",
-        system: "hệ thống",
-        user: "người dùng",
-        message: "tin nhắn",
-        assistant: "Trợ lý Trò chuyện AnythingLLM",
-        "double-click": "Nhấp đúp để chỉnh sửa...",
-        save: "Lưu Tin nhắn",
       },
       "browser-appearance": {
         title: "Giao diện Trình duyệt",
@@ -847,89 +1300,6 @@ const TRANSLATIONS = {
     },
   },
   "main-page": {
-    noWorkspaceError:
-      "Vui lòng tạo một không gian làm việc trước khi bắt đầu trò chuyện.",
-    checklist: {
-      title: "Bắt đầu",
-      tasksLeft: "nhiệm vụ còn lại",
-      completed: "Bạn đang trên đường trở thành chuyên gia AnythingLLM!",
-      dismiss: "đóng",
-      tasks: {
-        create_workspace: {
-          title: "Tạo một không gian làm việc",
-          description: "Tạo không gian làm việc đầu tiên của bạn để bắt đầu",
-          action: "Tạo",
-        },
-        send_chat: {
-          title: "Gửi một tin nhắn trò chuyện",
-          description: "Bắt đầu cuộc trò chuyện với trợ lý AI của bạn",
-          action: "Trò chuyện",
-        },
-        embed_document: {
-          title: "Nhúng một tài liệu",
-          description: "Thêm tài liệu đầu tiên của bạn vào không gian làm việc",
-          action: "Nhúng",
-        },
-        setup_system_prompt: {
-          title: "Thiết lập system prompt",
-          description: "Cấu hình hành vi của trợ lý AI của bạn",
-          action: "Thiết lập",
-        },
-        define_slash_command: {
-          title: "Định nghĩa một lệnh gạch chéo",
-          description: "Tạo các lệnh tùy chỉnh cho trợ lý của bạn",
-          action: "Định nghĩa",
-        },
-        visit_community: {
-          title: "Truy cập Community Hub",
-          description: "Khám phá tài nguyên và mẫu cộng đồng",
-          action: "Duyệt",
-        },
-      },
-    },
-    quickLinks: {
-      title: "Liên kết Nhanh",
-      sendChat: "Gửi Trò chuyện",
-      embedDocument: "Nhúng Tài liệu",
-      createWorkspace: "Tạo Không gian làm việc",
-    },
-    exploreMore: {
-      title: "Khám phá thêm tính năng",
-      features: {
-        customAgents: {
-          title: "Agent AI Tùy chỉnh",
-          description:
-            "Xây dựng các Agent AI và tự động hóa mạnh mẽ mà không cần viết mã.",
-          primaryAction: "Trò chuyện bằng @agent",
-          secondaryAction: "Xây dựng một luồng agent",
-        },
-        slashCommands: {
-          title: "Lệnh Gạch chéo",
-          description:
-            "Tiết kiệm thời gian và đưa prompt bằng các lệnh gạch chéo tùy chỉnh.",
-          primaryAction: "Tạo một Lệnh Gạch chéo",
-          secondaryAction: "Khám phá trên Hub",
-        },
-        systemPrompts: {
-          title: "System Prompt",
-          description:
-            "Sửa đổi system prompt để tùy chỉnh các phản hồi AI của một không gian làm việc.",
-          primaryAction: "Sửa đổi System Prompt",
-          secondaryAction: "Quản lý biến prompt",
-        },
-      },
-    },
-    announcements: {
-      title: "Cập nhật & Thông báo",
-    },
-    resources: {
-      title: "Tài nguyên",
-      links: {
-        docs: "Tài liệu",
-        star: "Đánh dấu sao trên Github",
-      },
-      keyboardShortcuts: "Phím tắt",
-    },
     quickActions: {
       createAgent: "Tạo một đại lý",
       editWorkspace: "Chỉnh sửa không gian làm việc",
@@ -976,16 +1346,12 @@ const TRANSLATIONS = {
         private_description: "System prompt riêng tư chỉ hiển thị cho bạn.",
         publish_button: "Đăng lên Community Hub",
         submitting: "Đang đăng...",
-        submit: "Đăng lên Community Hub",
         prompt_label: "Prompt",
         prompt_description:
           "Đây là system prompt thực tế sẽ được sử dụng để hướng dẫn LLM.",
         prompt_placeholder: "Nhập system prompt của bạn ở đây...",
       },
       agent_flow: {
-        public_description:
-          "Luồng agent công khai hiển thị cho tất cả mọi người.",
-        private_description: "Luồng agent riêng tư chỉ hiển thị cho bạn.",
         success_title: "Thành công!",
         success_description:
           "Luồng Agent của bạn đã được đăng lên Community Hub!",
@@ -1003,7 +1369,6 @@ const TRANSLATIONS = {
           "Thẻ được sử dụng để gắn nhãn luồng agent của bạn để dễ tìm kiếm hơn. Bạn có thể thêm nhiều thẻ. Tối đa 5 thẻ. Tối đa 20 ký tự mỗi thẻ.",
         tags_placeholder: "Nhập và nhấn Enter để thêm thẻ",
         visibility_label: "Hiển thị",
-        publish_button: "Đăng lên Community Hub",
         submitting: "Đang đăng...",
         submit: "Đăng lên Community Hub",
         privacy_note:
@@ -1022,10 +1387,6 @@ const TRANSLATIONS = {
         description_label: "Mô tả",
         description_description:
           "Đây là mô tả của lệnh gạch chéo của bạn. Sử dụng điều này để mô tả mục đích của lệnh gạch chéo của bạn.",
-        command_label: "Lệnh",
-        command_description:
-          "Đây là lệnh gạch chéo mà người dùng sẽ nhập để kích hoạt cài đặt sẵn này.",
-        command_placeholder: "lệnh-của-tôi",
         tags_label: "Thẻ",
         tags_description:
           "Thẻ được sử dụng để gắn nhãn lệnh gạch chéo của bạn để dễ tìm kiếm hơn. Bạn có thể thêm nhiều thẻ. Tối đa 5 thẻ. Tối đa 20 ký tự mỗi thẻ.",
@@ -1079,6 +1440,71 @@ const TRANSLATIONS = {
     notAssigned:
       "Bạn hiện không được giao việc nào.\nLiên hệ với quản trị viên của bạn để yêu cầu truy cập vào khu vực làm việc.",
     goToWorkspace: 'Chuyển đến khu vực làm việc "{{workspace}}"',
+  },
+  telegram: {
+    title: "Bot Telegram",
+    description:
+      "Kết nối phiên bản AnythingLLM của bạn với Telegram để bạn có thể trò chuyện với các không gian làm việc của mình từ bất kỳ thiết bị nào.",
+    setup: {
+      step1: {
+        title: "Bước 1: Tạo bot Telegram của bạn",
+        description:
+          "Mở ứng dụng @BotFather trên Telegram, gửi lệnh <code>/newbot</code> đến tài khoản <code>@BotFather</code>, làm theo hướng dẫn và sao chép mã API.",
+        "open-botfather": "Mở BotFather",
+        "instruction-1": "1. Mở liên kết hoặc quét mã QR",
+        "instruction-2":
+          "2. Gửi <code>/newbot</code> đến <code>@BotFather</code>",
+        "instruction-3": "3. Chọn tên và tên người dùng cho bot của bạn",
+        "instruction-4": "4. Sao chép mã API mà bạn nhận được",
+      },
+      step2: {
+        title: "Bước 2: Kết nối bot của bạn",
+        description:
+          "Dán mã API mà bạn nhận được từ @BotFather và chọn không gian làm việc mặc định để bot của bạn có thể trò chuyện.",
+        "bot-token": "Token Bot",
+        connecting: "Kết nối...",
+        "connect-bot": "Bot kết nối",
+      },
+      security: {
+        title: "Các cài đặt bảo mật được khuyến nghị",
+        description:
+          "Để tăng cường bảo mật, hãy cấu hình các cài đặt này trên tài khoản @BotFather.",
+        "disable-groups": "— Ngăn chặn việc thêm bot vào các nhóm",
+        "disable-inline":
+          "— Ngăn chặn việc sử dụng bot trong tìm kiếm trực tiếp.",
+        "obscure-username":
+          "Sử dụng tên người dùng bot không phổ biến để giảm khả năng được tìm thấy.",
+      },
+      "toast-enter-token": "Vui lòng nhập mã token cho bot.",
+      "toast-connect-failed": "Không thể kết nối với trợ lý.",
+    },
+    connected: {
+      status: "Kết nối",
+      "status-disconnected":
+        "Không kết nối — mã token có thể đã hết hạn hoặc không hợp lệ",
+      "placeholder-token": "Dán mã token mới cho bot...",
+      reconnect: "Khôi phục kết nối",
+      workspace: "Không gian làm việc",
+      "bot-link": "Liên kết Bot",
+      "voice-response": "Phản hồi bằng giọng nói",
+      disconnecting: "Ngắt kết nối...",
+      disconnect: "Ngắt kết nối",
+      "voice-text-only": "Chỉ nội dung",
+      "voice-mirror": "Trả lời bằng giọng nói (khi người dùng gửi giọng nói)",
+      "voice-always":
+        "Luôn luôn có thể gửi phản hồi bằng giọng nói (gửi kèm âm thanh trong mỗi phản hồi).",
+      "toast-disconnect-failed": "Không thể ngắt kết nối bot.",
+      "toast-reconnect-failed": "Không thể kết nối lại với trình bot.",
+      "toast-voice-failed": "Không thể cập nhật chế độ giọng nói.",
+      "toast-approve-failed": "Không thể xác nhận tài khoản người dùng.",
+      "toast-deny-failed": "Không thể từ chối yêu cầu của người dùng.",
+      "toast-revoke-failed": "Không thể thu hồi quyền truy cập cho người dùng.",
+    },
+    users: {
+      "pending-description":
+        "Người dùng đang chờ xác nhận. So sánh mã ghép đôi được hiển thị ở đây với mã hiển thị trong cuộc trò chuyện Telegram của họ.",
+      unknown: "Không xác định",
+    },
   },
 };
 
