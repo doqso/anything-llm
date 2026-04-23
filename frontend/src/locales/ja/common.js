@@ -2,8 +2,8 @@
 const TRANSLATIONS = {
   onboarding: {
     home: {
-      title: "ようこそ",
       getStarted: "はじめる",
+      welcome: "ようこそ",
     },
     llm: {
       title: "LLMの設定",
@@ -48,17 +48,9 @@ const TRANSLATIONS = {
       skip: "アンケートをスキップ",
       thankYou: "フィードバックありがとうございます！",
     },
-    workspace: {
-      title: "最初のワークスペースを作成する",
-      description:
-        "最初のワークスペースを作成して、AnythingLLMを始めましょう。",
-    },
   },
   common: {
     "workspaces-name": "ワークスペース名",
-    error: "エラー",
-    success: "成功",
-    user: "ユーザー",
     selection: "モデル選択",
     saving: "保存中...",
     save: "変更を保存",
@@ -70,10 +62,14 @@ const TRANSLATIONS = {
     search: "検索",
     username_requirements:
       "ユーザー名は2〜32文字で、小文字で始まり、小文字、数字、アンダースコア、ハイフン、ピリオドのみを含む必要があります。",
+    on: "～について",
+    none: "なし",
+    stopped: "停止",
+    loading: "読み込み中",
+    refresh: "リフレッシュ",
   },
   settings: {
     title: "インスタンス設定",
-    system: "一般設定",
     invites: "招待",
     users: "ユーザー",
     workspaces: "ワークスペース",
@@ -87,7 +83,6 @@ const TRANSLATIONS = {
     "voice-speech": "音声とスピーチ",
     "vector-database": "ベクターデータベース",
     embeds: "チャット埋め込み",
-    "embed-chats": "チャット埋め込み履歴",
     security: "セキュリティ",
     "event-logs": "イベントログ",
     privacy: "プライバシーとデータ",
@@ -103,6 +98,16 @@ const TRANSLATIONS = {
     branding: "ブランディングとホワイトレーベル化",
     chat: "チャット",
     "mobile-app": "AnythingLLM モバイル版",
+    "community-hub": {
+      title: "地域交流拠点",
+      trending: "人気のあるものを探す",
+      "your-account": "あなたのアカウント",
+      "import-item": "輸入品",
+    },
+    channels: "チャンネル",
+    "available-channels": {
+      telegram: "テレグラム",
+    },
   },
   login: {
     "multi-user": {
@@ -120,7 +125,6 @@ const TRANSLATIONS = {
       description:
         "以下に必要な情報を入力してパスワードをリセットしてください。",
       "recovery-codes": "回復コード",
-      "recovery-code": "回復コード {{index}}",
       "back-to-login": "ログイン画面に戻る",
     },
   },
@@ -152,13 +156,6 @@ const TRANSLATIONS = {
       heading: "説明してください",
       body: "AnythingLLMの利点",
     },
-    pfp: {
-      title: "アシスタントのプロフィール画像",
-      description:
-        "このワークスペースのアシスタントのプロフィール画像をカスタマイズします。",
-      image: "ワークスペース画像",
-      remove: "ワークスペース画像を削除",
-    },
     delete: {
       title: "ワークスペースを削除",
       description:
@@ -181,21 +178,23 @@ const TRANSLATIONS = {
       title: "ワークスペースチャットモデル",
       description:
         "このワークスペースで使用するチャットモデルを指定します。空の場合はシステムのLLM設定が使用されます。",
-      wait: "-- waiting for models --",
     },
     mode: {
       title: "チャットモード",
       chat: {
         title: "チャット",
-        "desc-start": "LLMの一般知識で回答します",
-        and: "および",
-        "desc-end": "見つかったドキュメントコンテキストを使用します。",
+        description:
+          "LLMの一般的な知識と、関連するドキュメントの文脈に基づいて、回答を提供します。ツールを使用するには、`@agent`コマンドを使用する必要があります。",
       },
       query: {
         title: "クエリ",
-        "desc-start": "回答を提供します",
-        only: "のみ",
-        "desc-end": "ドキュメントコンテキストが見つかった場合のみ。",
+        description:
+          "必要な情報が見つかった場合にのみ、回答を提供します。ツールを使用するには、`@agent`コマンドを使用する必要があります。",
+      },
+      automatic: {
+        title: "自動車",
+        description:
+          "ネイティブなツール呼び出しをサポートしている場合、モデルとプロバイダーが自動的にツールを使用します。ネイティブなツール呼び出しがサポートされていない場合は、@agentコマンドを使用してツールを使用する必要があります。",
       },
     },
     history: {
@@ -286,9 +285,6 @@ const TRANSLATIONS = {
       wait: "-- モデルを読み込み中 --",
     },
     skill: {
-      title: "デフォルトエージェントのスキル",
-      description:
-        "これらのスキルでデフォルトエージェントの能力を強化できます。設定はすべてのワークスペースに適用されます。",
       rag: {
         title: "RAGと長期記憶",
         description:
@@ -309,17 +305,437 @@ const TRANSLATIONS = {
         description:
           "デフォルトエージェントがチャットやデータからさまざまなチャートを作成できるようにします。",
       },
-      save: {
-        title: "ファイルの生成と保存",
-        description:
-          "デフォルトエージェントがファイルを生成し、ブラウザからダウンロードできるようにします。",
-      },
       web: {
         title: "ウェブ検索と閲覧",
-        "desc-start":
-          "エージェントがウェブ検索プロバイダーに接続し、質問に答えるためにウェブ検索できるようにします。",
-        "desc-end":
-          "この設定を行うまで、エージェントセッション中のウェブ検索は利用できません。",
+        description:
+          "エージェントがウェブ検索（SERP）プロバイダーに接続することで、あなたの質問に答えるためにウェブを検索できるようにする。",
+      },
+      sql: {
+        title: "SQLコネクタ",
+        description:
+          "エージェントが、さまざまなSQLデータベースプロバイダーに接続することで、SQLを活用してお客様からの質問に回答できるようにする。",
+      },
+      default_skill:
+        "デフォルトでは、この機能は有効になっていますが、エージェントに利用させたくない場合は、無効にすることができます。",
+      filesystem: {
+        title: "ファイルシステムのアクセス",
+        description:
+          "エージェントが、指定されたディレクトリ内のファイルを読む、書き、検索、および管理できるようにします。ファイル編集、ディレクトリのナビゲーション、およびコンテンツ検索をサポートします。",
+        learnMore: "このスキルの使い方について、さらに詳しく知る",
+        configuration: "設定",
+        readActions: "行動",
+        writeActions: "行動",
+        warning:
+          "ファイルシステムへのアクセスは危険であり、ファイルの内容を変更または削除する可能性があります。設定する前に、必ず<link>のドキュメント</link>を参照してください。",
+        skills: {
+          "read-text-file": {
+            title: "ファイルを開く",
+            description:
+              "ファイル（テキスト、コード、PDF、画像など）の内容を読み込む。",
+          },
+          "read-multiple-files": {
+            title: "複数のファイルを読み込む",
+            description: "複数のファイルを同時に読み込む",
+          },
+          "list-directory": {
+            title: "ディレクトリ一覧",
+            description: "フォルダ内のファイルとディレクトリの一覧を表示する",
+          },
+          "search-files": {
+            title: "ファイル検索",
+            description: "ファイル名または内容で検索する",
+          },
+          "get-file-info": {
+            title: "ファイルの情報を取得する",
+            description: "ファイルに関する詳細なメタデータを取得する",
+          },
+          "edit-file": {
+            title: "ファイル編集",
+            description: "テキストファイルの行単位での編集を行う",
+          },
+          "create-directory": {
+            title: "ディレクトリを作成する",
+            description: "新しいディレクトリを作成する",
+          },
+          "move-file": {
+            title: "ファイル/ファイル名の変更",
+            description: "ファイルやディレクトリを移動または名前を変更する",
+          },
+          "copy-file": {
+            title: "ファイルのコピー",
+            description: "ファイルとディレクトリをコピーする",
+          },
+          "write-text-file": {
+            title: "テキストファイルを作成する",
+            description:
+              "新しいテキストファイルを作成するか、既存のテキストファイルを上書きする。",
+          },
+        },
+      },
+      createFiles: {
+        title: "ドキュメント作成",
+        description:
+          "エージェントが、パワーポイント、Excel、Word、PDFなどのバイナリ形式のドキュメントを作成できるようにします。ファイルはチャットウィンドウから直接ダウンロードできます。",
+        configuration: "利用可能なドキュメントの種類",
+        skills: {
+          "create-text-file": {
+            title: "テキストファイル",
+            description:
+              ".txt、.md、.json、.csvなどの拡張子を持つ、任意のコンテンツのテキストファイルを作成する。",
+          },
+          "create-pptx": {
+            title: "パワーポイント形式のプレゼンテーション",
+            description:
+              "スライド、タイトル、箇条書きを含む、新しいPowerPointプレゼンテーションを作成する。",
+          },
+          "create-pdf": {
+            title: "PDFドキュメント",
+            description:
+              "マークダウンまたはプレーンテキストから、基本的な書式設定を使用してPDFドキュメントを作成する。",
+          },
+          "create-xlsx": {
+            title: "エクセル スプレッドシート",
+            description:
+              "表形式のデータをスプレッドシート形式で作成し、シートとスタイルを設定する。",
+          },
+          "create-docx": {
+            title: "Wordドキュメント",
+            description: "基本的なスタイルと書式でWordドキュメントを作成する",
+          },
+        },
+      },
+      gmail: {
+        title: "Gmail 接続",
+        description:
+          "エージェントがGmailと連携できるようにする：メールの検索、スレッドの閲覧、ドラフトの作成、メールの送信、およびインボックスの管理を可能にします。詳細については、<a>ドキュメントを参照</a>。",
+        multiUserWarning:
+          "セキュリティ上の理由から、Gmailとの連携はマルチユーザーモードでは利用できません。この機能を使用するには、まずマルチユーザーモードを無効にしてください。",
+        configuration: "Gmail の設定",
+        deploymentId: "デプロイメントID",
+        deploymentIdHelp:
+          "あなたのGoogle Apps ScriptウェブアプリケーションのデプロイメントID",
+        apiKey: "APIキー",
+        apiKeyHelp: "Google Apps Script のデプロイ時に設定した API キー",
+        configurationRequired:
+          "Gmail の機能を有効にするには、デプロイメント ID と API キーを設定してください。",
+        configured: "設定済み",
+        searchSkills: "検索スキル...",
+        noSkillsFound: "検索条件に合致するスキルは見つかりませんでした。",
+        categories: {
+          search: {
+            title: "メールの検索と閲覧",
+            description: "Gmail の受信トレイから、メールを検索および閲覧する",
+          },
+          drafts: {
+            title: "サンプルメール",
+            description: "メールの作成、編集、および管理",
+          },
+          send: {
+            title: "メールの送信と返信",
+            description: "メールを送信し、スレッドへの返信をすぐに行う。",
+          },
+          threads: {
+            title: "メールのトピックを管理する",
+            description:
+              "メールのトピックを管理する - 既読/未読のマーク、アーカイブ、削除",
+          },
+          account: {
+            title: "統合に関する統計",
+            description: "メールボックスの統計情報とアカウント情報を表示する",
+          },
+        },
+        skills: {
+          search: {
+            title: "メールを検索する",
+            description: "Gmail のクエリ構文を使用して、メールを検索する",
+          },
+          readThread: {
+            title: "スレッドを読む",
+            description: "IDでメールの全文を閲覧する",
+          },
+          createDraft: {
+            title: "ドラフト作成",
+            description: "新しいメールの草案を作成する",
+          },
+          createDraftReply: {
+            title: "草案の返信を作成する",
+            description: "既存のスレッドに対する返信の草案を作成する",
+          },
+          updateDraft: {
+            title: "ドラフトの更新",
+            description: "既存のメールドラフトを更新する",
+          },
+          getDraft: {
+            title: "草案を入手",
+            description: "IDで特定のドラフトを取得する",
+          },
+          listDrafts: {
+            title: "ドラフト案リスト",
+            description: "すべての草案メールの一覧を表示する",
+          },
+          deleteDraft: {
+            title: "草案を削除",
+            description: "草案のメールを削除する",
+          },
+          sendDraft: {
+            title: "草案を送信",
+            description: "既存のメールドラフトを送信する",
+          },
+          sendEmail: {
+            title: "メールを送信する",
+            description: "すぐにメールを送信してください",
+          },
+          replyToThread: {
+            title: "スレッドへの返信",
+            description: "メールのやり取りにすぐに返信する",
+          },
+          markRead: {
+            title: "マーク・リード",
+            description: "スレッドを「読了」としてマークする",
+          },
+          markUnread: {
+            title: "未読としてマーク",
+            description: "スレッドを「未読」としてマークする",
+          },
+          moveToTrash: {
+            title: "ゴミ箱へ移動",
+            description: "スレッドをゴミ箱に移動する",
+          },
+          moveToArchive: {
+            title: "アーカイブ",
+            description: "スレッドをアーカイブする",
+          },
+          moveToInbox: {
+            title: "受信トレイへ移動",
+            description: "スレッドをインボックスに移動する",
+          },
+          getMailboxStats: {
+            title: "メールボックスの統計情報",
+            description: "未読件数とメールボックスの統計情報を取得する",
+          },
+          getInbox: {
+            title: "インボックスを開く",
+            description: "Gmail から受信したメールを効率的に取得する方法",
+          },
+        },
+      },
+      outlook: {
+        title: "Outlook 連携機能",
+        description:
+          "エージェントがMicrosoft Outlookと連携できるようにする - Microsoft Graph APIを使用して、メールの検索、スレッドの閲覧、ドラフトの作成、メールの送信、およびインボックスの管理を行う。詳細については、ドキュメントを参照してください。",
+        multiUserWarning:
+          "Outlookとの連携は、セキュリティ上の理由から、複数ユーザーモードでは利用できません。この機能を使い始めるには、複数ユーザーモードを無効にする必要があります。",
+        configuration: "Outlook の設定",
+        authType: "アカウントの種類",
+        authTypeHelp:
+          "認証に使用できるMicrosoftアカウントの種類を選択します。「すべて」は、個人用アカウントと職場/学校用アカウントの両方をサポートします。「個人用のみ」は、個人用Microsoftアカウントに限定されます。「職場/学校用のみ」は、特定のAzure ADテナントからの職場/学校用アカウントに限定されます。",
+        authTypeCommon: "すべての口座（個人用および仕事/学校用）",
+        authTypeConsumers: "個人のMicrosoftアカウントのみ",
+        authTypeOrganization: "組織アカウントのみ（テナントIDが必要です）",
+        clientId: "アプリケーション（クライアント）ID",
+        clientIdHelp:
+          "あなたのAzure ADアプリケーションの「アプリケーション（クライアント）ID」",
+        tenantId: "テナントID",
+        tenantIdHelp:
+          "あなたの Azure AD アプリの登録から取得した「ディレクトリ（テナント）ID」。組織での認証のみに必要です。",
+        clientSecret: "クライアントの秘密",
+        clientSecretHelp:
+          "Azure AD アプリの登録から取得したクライアントのシークレット値",
+        configurationRequired:
+          "Outlook の機能を有効にするには、クライアント ID とクライアントシークレットを設定してください。",
+        authRequired:
+          "まず、認証情報を保存し、その後、Microsoftとの認証を行い、設定を完了してください。",
+        authenticateWithMicrosoft: "マイクロソフトとの認証",
+        authenticated: "Microsoft Outlookとの認証に成功しました。",
+        revokeAccess: "アクセス権を停止する",
+        configured: "設定済み",
+        searchSkills: "検索スキル...",
+        noSkillsFound: "検索条件に一致するスキルは見つかりませんでした。",
+        categories: {
+          search: {
+            title: "メールの検索と閲覧",
+            description: "Outlook の受信トレイから、メールを検索して読み取る。",
+          },
+          drafts: {
+            title: "サンプルメール",
+            description: "メールの作成、編集、および管理",
+          },
+          send: {
+            title: "メールの送信",
+            description:
+              "新しいメールを送信するか、すぐにメッセージに返信してください。",
+          },
+          account: {
+            title: "統合に関する統計",
+            description: "メールボックスの統計情報とアカウント情報を確認する",
+          },
+        },
+        skills: {
+          getInbox: {
+            title: "受信トレイを開く",
+            description: "Outlook の受信トレイから、最近のメールを取得する",
+          },
+          search: {
+            title: "メールを検索する",
+            description: "Microsoft の検索構文を使用してメールを検索する",
+          },
+          readThread: {
+            title: "会話の内容を読み取る",
+            description: "メールのやり取り全体を読み込む",
+          },
+          createDraft: {
+            title: "ドラフト作成",
+            description:
+              "新しいメールの草案を作成するか、既存のメッセージへの返信の草案を作成する。",
+          },
+          updateDraft: {
+            title: "ドラフトの更新",
+            description: "既存のメールドラフトを更新する",
+          },
+          listDrafts: {
+            title: "ドラフト案リスト",
+            description: "すべての草案メールの一覧",
+          },
+          deleteDraft: {
+            title: "草案を削除",
+            description: "草案のメールを削除する",
+          },
+          sendDraft: {
+            title: "草案を送信",
+            description: "既存のメールの草稿を送信する",
+          },
+          sendEmail: {
+            title: "メールを送信する",
+            description:
+              "新しいメールを作成するか、既存のメッセージにすぐに返信してください。",
+          },
+          getMailboxStats: {
+            title: "メールボックスの統計",
+            description: "フォルダの数とメールボックスの統計情報を取得する",
+          },
+        },
+      },
+      googleCalendar: {
+        title: "Google カレンダー 連携機能",
+        description:
+          "エージェントがGoogleカレンダーと連携できるようにする - カレンダーの表示、イベントの取得、イベントの作成と更新、およびRSVPの管理を可能にする。詳細については、ドキュメントを参照してください。",
+        multiUserWarning:
+          "Google カレンダーとの連携は、セキュリティ上の理由から、複数ユーザーモードでは利用できません。この機能をご利用いただくには、複数ユーザーモードを無効にする必要があります。",
+        configuration: "Google カレンダーの設定",
+        deploymentId: "デプロイメントID",
+        deploymentIdHelp:
+          "あなたのGoogle Apps ScriptのウェブアプリケーションのデプロイID",
+        apiKey: "APIキー",
+        apiKeyHelp: "Google Apps Script のデプロイ時に設定した API キー",
+        configurationRequired:
+          "Google カレンダーの機能を使用するために、デプロイメントIDとAPIキーを設定してください。",
+        configured: "設定済み",
+        searchSkills: "検索スキル...",
+        noSkillsFound:
+          "あなたの検索条件に合致するスキルは見つかりませんでした。",
+        categories: {
+          calendars: {
+            title: "カレンダー",
+            description: "Googleカレンダーの表示と管理",
+          },
+          readEvents: {
+            title: "イベント情報",
+            description: "カレンダー上のイベントの表示と検索",
+          },
+          writeEvents: {
+            title: "イベントの作成と更新",
+            description: "新しいイベントを作成し、既存のイベントを修正する",
+          },
+          rsvp: {
+            title: "RSVP（出欠確認）管理",
+            description: "イベントへの参加状況を管理する",
+          },
+        },
+        skills: {
+          listCalendars: {
+            title: "カレンダーリスト",
+            description:
+              "所有している、または購読しているすべてのカレンダーの一覧",
+          },
+          getCalendar: {
+            title: "カレンダーの詳細を確認する",
+            description: "特定のカレンダーに関する詳細な情報த்தைப்入手する",
+          },
+          getEvent: {
+            title: "イベント情報を入手",
+            description: "特定のイベントに関する詳細な情報த்தைப்入手する",
+          },
+          getEventsForDay: {
+            title: "その日のイベントを検索する",
+            description: "特定の日に予定されているすべてのイベントを取得する",
+          },
+          getEvents: {
+            title: "イベント（期間指定）",
+            description: "指定した期間内のイベントを取得する",
+          },
+          getUpcomingEvents: {
+            title: "今後のイベントをチェックする",
+            description:
+              "今日、今週、または今月のイベントを、簡単なキーワードを使って検索する",
+          },
+          quickAdd: {
+            title: "イベントをすぐに登録",
+            description:
+              "自然言語（例：「明日午後3時に会議」）からイベントを作成する",
+          },
+          createEvent: {
+            title: "イベントを作成する",
+            description:
+              "すべてのプロパティを完全に制御できる、新しいイベントを作成する。",
+          },
+          updateEvent: {
+            title: "イベント情報更新",
+            description: "既存の予定を更新する",
+          },
+          setMyStatus: {
+            title: "返信状況を設定する",
+            description: "イベントへの参加、拒否、または仮の参加",
+          },
+        },
+      },
+    },
+    mcp: {
+      title: "MCP サーバー",
+      "loading-from-config": "構成ファイルからMCPサーバーを読み込む",
+      "learn-more": "MCP サーバーに関する詳細情報を入手してください。",
+      "no-servers-found": "MCP サーバーは見つかりませんでした",
+      "tool-warning":
+        "最高のパフォーマンスを得るためには、不要なツールを無効にして、コンテキストを維持することを検討してください。",
+      "stop-server": "MCP サーバーの停止",
+      "start-server": "MCP サーバーを開始する",
+      "delete-server": "MCP サーバーを削除",
+      "tool-count-warning":
+        "このMCPサーバーには、<b>のツールが有効になっており、これらはチャットのコンテキストを消費します</b>。コンテキストを節約するために、不要なツールを無効にすることを検討してください。",
+      "startup-command": "起動コマンド",
+      command: "指示",
+      arguments: "議論",
+      "not-running-warning":
+        "このMCPサーバーは稼働していません。停止しているか、起動時にエラーが発生している可能性があります。",
+      "tool-call-arguments": "ツール呼び出しの引数",
+      "tools-enabled": "ツールが有効化されました",
+    },
+    settings: {
+      title: "エージェントのスキル設定",
+      "max-tool-calls": {
+        title: "1回の応答で実行できる最大ツール数",
+        description:
+          "エージェントが単一の応答を生成するために使用できるツールの一意な最大数。これにより、ツール呼び出しの過剰や無限ループを防ぐことができます。",
+      },
+      "intelligent-skill-selection": {
+        title: "知的なスキル選択",
+        "beta-badge": "ベータ版",
+        description:
+          "クエリごとに、無制限のツールを使用し、トークン使用量を最大80%削減できます。AnythingLLMは、各プロンプトに対して最適なスキルを自動的に選択します。",
+        "max-tools": {
+          title: "マックスツールズ",
+          description:
+            "各クエリで選択できるツール数の上限。大規模なコンテキストモデルを使用する場合は、この値をより高い値に設定することをお勧めします。",
+        },
       },
     },
   },
@@ -343,7 +759,33 @@ const TRANSLATIONS = {
       "APIキーにより、プログラム経由でこのAnythingLLMインスタンスにアクセスおよび管理できます。",
     link: "APIドキュメントを読む",
     generate: "新しいAPIキーを生成",
+    empty: "APIキーが見つかりません",
+    actions: "操作",
+    messages: {
+      error: "エラー: {{error}}",
+    },
+    modal: {
+      title: "新しいAPIキーを作成",
+      cancel: "キャンセル",
+      close: "閉じる",
+      create: "APIキーを作成",
+      helper:
+        "作成したAPIキーは、このAnythingLLMインスタンスにプログラムからアクセスして設定するために使用できます。",
+      name: {
+        label: "名前",
+        placeholder: "本番環境の統合",
+        helper: "任意です。後でこのキーを識別しやすい名前を付けてください。",
+      },
+    },
+    row: {
+      copy: "APIキーをコピー",
+      copied: "コピー済み",
+      unnamed: "--",
+      deleteConfirm:
+        "このAPIキーを無効化してもよろしいですか？\n無効化すると、以後このキーは使用できなくなります。\n\nこの操作は元に戻せません。",
+    },
     table: {
+      name: "名前",
       key: "APIキー",
       by: "作成者",
       created: "作成日",
@@ -455,9 +897,6 @@ const TRANSLATIONS = {
     title: "プライバシーとデータ処理",
     description:
       "これは、接続されているサードパーティプロバイダーとAnythingLLMがデータをどのように処理するかの設定です。",
-    llm: "LLM選択",
-    embedding: "埋め込み設定",
-    vector: "ベクターデータベース",
     anonymous: "匿名テレメトリが有効",
   },
   connectors: {
@@ -499,7 +938,6 @@ const TRANSLATIONS = {
       URL_explained: "収集したいGitLabリポジトリのURLです。",
       token: "GitLabアクセストークン",
       optional: "任意",
-      token_explained: "レート制限を回避するためのアクセストークンです。",
       token_description: "GitLab APIから取得する追加エンティティを選択します。",
       token_explained_start: "アクセストークンがない場合、",
       token_explained_link1: "パーソナルアクセストークン",
@@ -531,9 +969,6 @@ const TRANSLATIONS = {
       URL_explained_end: "が必要です。",
       task_explained:
         "完了後、文字起こしがドキュメントピッカーからワークスペースに埋め込めるようになります。",
-      language: "文字起こしの言語",
-      language_explained: "取得したい文字起こしの言語を選択してください。",
-      loading_languages: "-- 利用可能な言語を読み込み中 --",
     },
     "website-depth": {
       name: "ウェブサイト一括スクレイパー",
@@ -592,20 +1027,18 @@ const TRANSLATIONS = {
       "search-document": "ドキュメントを検索",
       "no-documents": "ドキュメントがありません",
       "move-workspace": "ワークスペースへ移動",
-      name: "名前",
       "delete-confirmation":
         "これらのファイルやフォルダーを削除してもよろしいですか？\nシステムから削除され、既存のワークスペースからも自動的に削除されます。\nこの操作は元に戻せません。",
       "removing-message":
         "{{count}}件のドキュメントと{{folderCount}}件のフォルダーを削除中です。しばらくお待ちください。",
       "move-success": "{{count}}件のドキュメントを移動しました。",
-      date: "日付",
-      type: "種類",
       no_docs: "ドキュメントがありません",
       select_all: "すべて選択",
       deselect_all: "すべて選択解除",
       remove_selected: "選択したものを削除",
-      costs: "※埋め込みには一度だけ費用がかかります",
       save_embed: "保存して埋め込む",
+      "total-documents_one": "{{count}} のドキュメント",
+      "total-documents_other": "{{count}} に関する書類",
     },
     upload: {
       "processor-offline": "ドキュメント処理機能が利用できません",
@@ -644,8 +1077,6 @@ const TRANSLATIONS = {
       accept: "わかりました",
     },
     obsidian: {
-      name: "オキシジン",
-      description: "ワンクリックでObsidianの vault をインポートする。",
       vault_location: "保管場所",
       vault_description:
         "Obsidianの vault フォルダを選択して、すべてのメモとそれらの関連をインポートします。",
@@ -659,16 +1090,8 @@ const TRANSLATIONS = {
     },
   },
   chat_window: {
-    welcome: "新しいワークスペースへようこそ。",
-    get_started: "まずはじめに、",
-    get_started_default: "はじめに",
-    upload: "ドキュメントをアップロード",
-    or: "または",
-    send_chat: "チャットを送信",
     send_message: "メッセージを送信",
     attach_file: "このチャットにファイルを添付",
-    slash: "チャットで使えるスラッシュコマンドをすべて表示",
-    agents: "利用可能なエージェントをすべて表示",
     text_size: "テキストサイズを変更",
     microphone: "プロンプトを音声入力",
     send: "ワークスペースにプロンプトメッセージを送信",
@@ -681,19 +1104,11 @@ const TRANSLATIONS = {
     good_response: "良い反応",
     more_actions:
       "さらに詳細な情報が必要な場合は、お気軽にお問い合わせください。",
-    hide_citations: "参考文献を隠す",
-    show_citations: "引用元を表示する",
-    pause_tts_speech_message: "メッセージのテキスト読み上げを一時停止する。",
     fork: "フォーク",
     delete: "削除",
-    save_submit: "保存して送信",
     cancel: "キャンセル",
     edit_prompt: "編集のヒント",
     edit_response: "編集内容を保存します。",
-    at_agent: "@agent",
-    default_agent_description: "- このワークスペースのデフォルトエージェント。",
-    custom_agents_coming_soon: "カスタムエージェントは近日公開予定です。",
-    slash_reset: "/reset",
     preset_reset_description:
       "チャット履歴をクリアし、新しいチャットを開始してください。",
     add_new_preset: "新しいプリセットを追加する",
@@ -718,6 +1133,47 @@ const TRANSLATIONS = {
       missing_credentials_description:
         "認証情報を設定するには、ここをクリックしてください。",
     },
+    submit: "送信",
+    edit_info_user:
+      "「送信」はAIの応答を再生成します。「保存」は、あなたのメッセージのみを更新します。",
+    edit_info_assistant: "あなたの変更は、この回答に直接保存されます。",
+    see_less: "詳細を見る",
+    see_more: "詳細を見る",
+    tools: "道具",
+    text_size_label: "文字サイズ",
+    select_model: "モデルを選択",
+    sources: "出典",
+    document: "文書",
+    similarity_match: "試合",
+    source_count_one: "{{count}} 参照",
+    source_count_other: "{{count}} への参照",
+    preset_exit_description: "現在のエージェントセッションを停止する",
+    add_new: "新しいものを追加する",
+    edit: "編集",
+    publish: "出版",
+    stop_generating: "応答の生成を停止する",
+    slash_commands: "スラッシュコマンド",
+    agent_skills: "エージェントのスキル",
+    manage_agent_skills: "エージェントのスキル管理",
+    agent_skills_disabled_in_session:
+      "アクティブなセッション中にスキルを変更することはできません。まず、`/exit`コマンドを使用してセッションを終了してください。",
+    start_agent_session: "エージェントセッションを開始",
+    use_agent_session_to_use_tools:
+      "チャットでツールを使用するには、プロンプトの冒頭に'@agent'を使用してエージェントセッションを開始してください。",
+    agent_invocation: {
+      model_wants_to_call: "モデルは電話をかけたい。",
+      approve: "承認",
+      reject: "拒否",
+      always_allow: "常に、{{skillName}}を確保してください。",
+      tool_call_was_approved: "ツールの使用許可が承認されました",
+      tool_call_was_rejected: "ツール呼び出しは拒否されました",
+    },
+    custom_skills: "カスタマイズ可能なスキル",
+    agent_flows: "エージェント間の流れ",
+    no_tools_found: "一致するツールは見つかりませんでした",
+    loading_mcp_servers: "MCP サーバーの読み込み中...",
+    app_integrations: "アプリケーション連携",
+    sub_skills: "専門スキル",
   },
   profile_settings: {
     edit_account: "アカウントを編集",
@@ -786,11 +1242,6 @@ const TRANSLATIONS = {
         description:
           "ログインページに表示される名前を、すべてのユーザーに設定する。",
       },
-      "chat-message-alignment": {
-        title: "チャットメッセージの整合性を確認する",
-        description:
-          "チャットインターフェースを使用する場合、メッセージの配置モードを選択してください。",
-      },
       "display-language": {
         title: "表示言語",
         description:
@@ -804,18 +1255,6 @@ const TRANSLATIONS = {
         recommended: "推奨サイズ：800 x 200",
         remove: "削除",
         replace: "置き換える",
-      },
-      "welcome-messages": {
-        title: "ようこそ",
-        description:
-          "ユーザーに表示されるウェルカムメッセージをカスタマイズできます。これらのメッセージは、管理者以外のユーザーのみが表示します。",
-        new: "新しい",
-        system: "システム",
-        user: "私は、このプロジェクトの成功に貢献できることを願っています。",
-        message: "メッセージ",
-        assistant: "何か質問はありますか？",
-        "double-click": "編集するにはダブルクリック...",
-        save: "メッセージを保存する",
       },
       "browser-appearance": {
         title: "ブラウザの見た目",
@@ -846,88 +1285,6 @@ const TRANSLATIONS = {
     },
   },
   "main-page": {
-    noWorkspaceError:
-      "チャットを開始する前にワークスペースを作成してください。",
-    checklist: {
-      title: "はじめに",
-      tasksLeft: "残りのタスク",
-      completed: "AnythingLLMの達人への道を進んでいます！",
-      dismiss: "閉じる",
-      tasks: {
-        create_workspace: {
-          title: "ワークスペースを作成する",
-          description: "始めるには最初のワークスペースを作成してください",
-          action: "作成",
-        },
-        send_chat: {
-          title: "チャットを送信する",
-          description: "AIアシスタントとの会話を開始する",
-          action: "チャット",
-        },
-        embed_document: {
-          title: "ドキュメントを埋め込む",
-          description: "ワークスペースに最初のドキュメントを追加する",
-          action: "埋め込む",
-        },
-        setup_system_prompt: {
-          title: "システムプロンプトを設定する",
-          description: "AIアシスタントの動作を設定する",
-          action: "設定",
-        },
-        define_slash_command: {
-          title: "スラッシュコマンドを定義する",
-          description: "アシスタント用のカスタムコマンドを作成する",
-          action: "定義",
-        },
-        visit_community: {
-          title: "コミュニティハブを訪問する",
-          description: "コミュニティリソースとテンプレートを探索する",
-          action: "閲覧",
-        },
-      },
-    },
-    quickLinks: {
-      title: "クイックリンク",
-      sendChat: "チャットを送信",
-      embedDocument: "ドキュメントを埋め込む",
-      createWorkspace: "ワークスペースを作成",
-    },
-    exploreMore: {
-      title: "その他の機能を探索",
-      features: {
-        customAgents: {
-          title: "カスタムAIエージェント",
-          description: "コードなしで強力なAIエージェントと自動化を構築。",
-          primaryAction: "@agentを使用してチャット",
-          secondaryAction: "エージェントフローを構築",
-        },
-        slashCommands: {
-          title: "スラッシュコマンド",
-          description:
-            "カスタムスラッシュコマンドで時間を節約しプロンプトを挿入。",
-          primaryAction: "スラッシュコマンドを作成",
-          secondaryAction: "ハブで探索",
-        },
-        systemPrompts: {
-          title: "システムプロンプト",
-          description:
-            "システムプロンプトを変更してワークスペースのAI返答をカスタマイズ。",
-          primaryAction: "システムプロンプトを変更",
-          secondaryAction: "プロンプト変数を管理",
-        },
-      },
-    },
-    announcements: {
-      title: "更新とお知らせ",
-    },
-    resources: {
-      title: "リソース",
-      links: {
-        docs: "ドキュメント",
-        star: "Githubでスター",
-      },
-      keyboardShortcuts: "キーボードショートカット",
-    },
     quickActions: {
       createAgent: "エージェントを作成する",
       editWorkspace: "ワークスペースの編集",
@@ -976,17 +1333,12 @@ const TRANSLATIONS = {
           "プライベートなシステムからのメッセージは、あなただけが見ることができます。",
         publish_button: "コミュニティハブに公開する",
         submitting: "出版...",
-        submit: "コミュニティハブに公開する",
         prompt_label: "プロンプト",
         prompt_description:
           "これは、大規模言語モデル（LLM）を誘導するために使用される実際のシステムプロンプトです。",
         prompt_placeholder: "ここにシステムプロンプトを入力してください...",
       },
       agent_flow: {
-        public_description:
-          "一般の利用者は、これらの流れをすべて把握することができます。",
-        private_description:
-          "あなただけが確認できるプライベートな取引フローのみが表示されます。",
         success_title: "成功！",
         success_description:
           "あなたのエージェントフローがコミュニティハブに公開されました。",
@@ -1006,7 +1358,6 @@ const TRANSLATIONS = {
         tags_placeholder:
           "タグを追加するには、タイプしてEnterキーを押してください。",
         visibility_label: "視界",
-        publish_button: "コミュニティハブに公開する",
         submitting: "出版...",
         submit: "コミュニティハブに公開する",
         privacy_note:
@@ -1033,10 +1384,6 @@ const TRANSLATIONS = {
         description_label: "説明",
         description_description:
           "これは、スラッシュコマンドの説明です。スラッシュコマンドの目的を記述するために使用してください。",
-        command_label: "命令",
-        command_description:
-          "これは、ユーザーがこのプリセットを起動するために入力するスラッシュコマンドです。",
-        command_placeholder: "my-command",
         tags_label: "タグ",
         tags_description:
           "スラッシュコマンドをより簡単に検索できるように、タグを使用してコマンドを分類します。複数のタグを追加できます。最大5つのタグ。各タグは最大20文字です。",
@@ -1085,6 +1432,69 @@ const TRANSLATIONS = {
     notAssigned:
       "現在、あなたはどのワークスペースにも割り当てられていません。\nワークスペースへのアクセスを要求するには、管理者にお問い合わせください。",
     goToWorkspace: 'ワークスペースに移動 "{{workspace}}"',
+  },
+  telegram: {
+    title: "テレグラムボット",
+    description:
+      "AnyLLM のインスタンスを Telegram に接続することで、あらゆるデバイスからワークスペースとのチャットが可能になります。",
+    setup: {
+      step1: {
+        title: "ステップ1：Telegramボットを作成する",
+        description:
+          "Telegramの@BotFatherを開き、「/newbot」と入力して<code>@BotFather</code>に送信します。指示に従い、APIトークンをコピーしてください。",
+        "open-botfather": "BotFather を起動する",
+        "instruction-1": "1. リンクを開くか、QRコードをスキャンする",
+        "instruction-2":
+          "2. 「<code>」/「newbot」を「</code>」で、「<code>」@「BotFather」に送信してください。",
+        "instruction-3": "3. 独自の名前とユーザー名をボットに設定してください",
+        "instruction-4": "4. 受け取ったAPIトークンをコピーしてください",
+      },
+      step2: {
+        title: "ステップ2：ボットとの接続",
+        description:
+          "@BotFatherから受け取ったAPIトークンを貼り付け、ボットとのチャットに使用するデフォルトのワークスペースを選択してください。",
+        "bot-token": "ボット トークン",
+        connecting: "接続中...",
+        "connect-bot": "コネクトボット",
+      },
+      security: {
+        title: "推奨されるセキュリティ設定",
+        description:
+          "追加のセキュリティのため、@BotFatherでこれらの設定を設定してください。",
+        "disable-groups": "— グループへのボットの追加を防止",
+        "disable-inline": "— インライン検索でのボットの使用を防止",
+        "obscure-username":
+          "目立たないユーザー名をbotに使用することで、発見されにくくする。",
+      },
+      "toast-enter-token": "ボットのトークンを入力してください。",
+      "toast-connect-failed": "ボットとの接続に失敗しました。",
+    },
+    connected: {
+      status: "接続されている",
+      "status-disconnected":
+        "通信エラー - トークンが無効または期限切れになっている可能性があります",
+      "placeholder-token": "新しいボットのトークンを貼り付け...",
+      reconnect: "再接続",
+      workspace: "作業スペース",
+      "bot-link": "ボットへのリンク",
+      "voice-response": "音声応答",
+      disconnecting: "接続を解除...",
+      disconnect: "接続を解除する",
+      "voice-text-only": "テキストのみ",
+      "voice-mirror": "（ユーザーが音声で送信した場合、音声で返信）",
+      "voice-always": "常に音声メッセージ（返信ごとに音声データを送信）",
+      "toast-disconnect-failed": "ボットとの接続を解除できませんでした。",
+      "toast-reconnect-failed": "ボットとの再接続に失敗しました。",
+      "toast-voice-failed": "音声モードの更新に失敗しました。",
+      "toast-approve-failed": "ユーザーの承認に失敗しました。",
+      "toast-deny-failed": "ユーザーからの拒否を拒否できませんでした。",
+      "toast-revoke-failed": "ユーザーの権限停止に失敗。",
+    },
+    users: {
+      "pending-description":
+        "本人情報の確認待ちのユーザー。ここに表示されているペアリングコードを、彼らがTelegramで表示しているコードと照合してください。",
+      unknown: "不明",
+    },
   },
 };
 

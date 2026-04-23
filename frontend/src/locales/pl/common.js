@@ -2,8 +2,8 @@
 const TRANSLATIONS = {
   onboarding: {
     home: {
-      title: "Witamy w",
       getStarted: "Rozpocznij",
+      welcome: "Witaj",
     },
     llm: {
       title: "Preferencje modeli językowych",
@@ -49,17 +49,9 @@ const TRANSLATIONS = {
       skip: "Pomiń ankietę",
       thankYou: "Dziękujemy za opinię!",
     },
-    workspace: {
-      title: "Utwórz swój pierwszy obszar roboczy",
-      description:
-        "Stwórz swój pierwszy obszar roboczy i zacznij korzystać z AnythingLLM.",
-    },
   },
   common: {
     "workspaces-name": "Nazwa obszaru roboczego",
-    error: "błąd",
-    success: "sukces",
-    user: "Użytkownik",
     selection: "Wybór modelu",
     saving: "Zapisywanie...",
     save: "Zapisz zmiany",
@@ -71,10 +63,14 @@ const TRANSLATIONS = {
     search: "Wyszukaj",
     username_requirements:
       "Nazwa użytkownika musi mieć od 2 do 32 znaków, zaczynać się małą literą i zawierać tylko małe litery, cyfry, podkreślenia, myślniki i kropki.",
+    on: "Na",
+    none: "Brak",
+    stopped: "Zatrzymano",
+    loading: "Ładowanie",
+    refresh: "Odświeżyć",
   },
   settings: {
     title: "Ustawienia instancji",
-    system: "Ustawienia ogólne",
     invites: "Zaproszenia",
     users: "Użytkownicy",
     workspaces: "Obszary robocze",
@@ -91,7 +87,6 @@ const TRANSLATIONS = {
     "voice-speech": "Głos i mowa",
     "vector-database": "Wektorowa baza danych",
     embeds: "Osadzone czaty",
-    "embed-chats": "Historia osadzonych czatów",
     security: "Bezpieczeństwo",
     "event-logs": "Dzienniki zdarzeń",
     privacy: "Prywatność i dane",
@@ -104,6 +99,16 @@ const TRANSLATIONS = {
     contact: "Kontakt z pomocą techniczną",
     "browser-extension": "Rozszerzenie przeglądarki",
     "mobile-app": "AnythingLLM Mobile",
+    "community-hub": {
+      title: "Centrum Społeczności",
+      trending: "Odkryj popularne",
+      "your-account": "Twój profil",
+      "import-item": "Importuj element",
+    },
+    channels: "Kanały",
+    "available-channels": {
+      telegram: "Telegram",
+    },
   },
   login: {
     "multi-user": {
@@ -120,95 +125,10 @@ const TRANSLATIONS = {
       title: "Resetowanie hasła",
       description: "Podaj poniżej niezbędne informacje, aby zresetować hasło.",
       "recovery-codes": "Kody odzyskiwania",
-      "recovery-code": "Kod odzyskiwania {{index}}",
       "back-to-login": "Powrót do logowania",
     },
   },
   "main-page": {
-    noWorkspaceError:
-      "Przed rozpoczęciem czatu należy utworzyć obszar roboczy.",
-    checklist: {
-      title: "Pierwsze kroki",
-      tasksLeft: "- zadania do wykonania",
-      completed:
-        "Jesteś na najlepszej drodze do zostania ekspertem AnythingLLM!",
-      dismiss: "zamknij",
-      tasks: {
-        create_workspace: {
-          title: "Utwórz obszar roboczy",
-          description: "Utwórz swój pierwszy obszar roboczy, aby rozpocząć",
-          action: "Utwórz",
-        },
-        send_chat: {
-          title: "Wyślij wiadomość",
-          description: "Rozpocznij rozmowę z asystentem AI",
-          action: "Czat",
-        },
-        embed_document: {
-          title: "Dodaj źródło danych",
-          description: "Dodaj swoje pierwsze dane",
-          action: "Dodaj",
-        },
-        setup_system_prompt: {
-          title: "Konfiguracja instrukcji systemowej",
-          description: "Konfiguracja zachowania asystenta AI",
-          action: "Konfiguruj",
-        },
-        define_slash_command: {
-          title: "Stwórz polecenie slash",
-          description: "Tworzenie niestandardowych poleceń dla asystenta",
-          action: "Stwórz",
-        },
-        visit_community: {
-          title: "Odwiedź Community Hub",
-          description: "Przeglądaj zasoby i szablony społeczności",
-          action: "Przeglądaj",
-        },
-      },
-    },
-    quickLinks: {
-      title: "Szybkie akcje",
-      sendChat: "Wyślij wiadomość",
-      embedDocument: "Dodaj swoje dane",
-      createWorkspace: "Utwórz obszar roboczy",
-    },
-    exploreMore: {
-      title: "Poznaj więcej funkcji",
-      features: {
-        customAgents: {
-          title: "Niestandardowi agenci AI",
-          description:
-            "Twórz potężnych agentów AI i automatyzacje bez użycia kodu.",
-          primaryAction: "Czat przy użyciu @agent",
-          secondaryAction: "Zbuduj Agents Flow",
-        },
-        slashCommands: {
-          title: "Polecenia slash",
-          description:
-            "Oszczędzaj czas i dodawaj prompty dzięki niestandardowym poleceniom slash.",
-          primaryAction: "Utwórz polecenie slash",
-          secondaryAction: "Przeglądaj Community Hub",
-        },
-        systemPrompts: {
-          title: "Instrukcje systemowe",
-          description:
-            "Zmodyfikuj instrukcję systemową, aby dostosować odpowiedzi AI.",
-          primaryAction: "Modyfikuj instrukcję systemową",
-          secondaryAction: "Zarządzaj zmiennymi",
-        },
-      },
-    },
-    announcements: {
-      title: "Aktualizacje i ogłoszenia",
-    },
-    resources: {
-      title: "Zasoby",
-      links: {
-        docs: "Dokumenty",
-        star: "Star on GitHub",
-      },
-      keyboardShortcuts: "Skróty klawiaturowe",
-    },
     quickActions: {
       createAgent: "Utwórz agenta",
       editWorkspace: "Edytuj przestrzeń roboczą",
@@ -244,12 +164,6 @@ const TRANSLATIONS = {
       heading: "Wyjaśnij mi",
       body: "Korzyści z AnythingLLM",
     },
-    pfp: {
-      title: "Logo obszaru roboczego",
-      description: "Dostosuj logo asystenta dla tego obszaru roboczego.",
-      image: "Logo obszaru roboczego",
-      remove: "Usuń logo obszaru roboczego",
-    },
     delete: {
       title: "Usuń obszar roboczy",
       description:
@@ -272,22 +186,23 @@ const TRANSLATIONS = {
       title: "Model językowy dla obszaru roboczego",
       description:
         "Określony model, który będzie używany w tym obszarze roboczym. Jeśli pole jest puste, użyty zostanie model z preferencji systemowych.",
-      wait: "-- oczekiwanie na modele",
     },
     mode: {
       title: "Tryb czatu",
       chat: {
         title: "Czat",
-        "desc-start": "dostarczy odpowiedzi na podstawie wiedzy ogólnej LLM",
-        and: "oraz",
-        "desc-end": " znalezionym kontekście (dokumenty, źródła danych)",
+        description:
+          "zapewni odpowiedzi oparte na ogólnym zasobie wiedzy LLM i kontekście dokumentu, który zostanie znaleziony. <br />Będziesz musiał użyć polecenia `@agent`, aby korzystać z narzędzi.",
       },
       query: {
         title: "Zapytanie (wyszukiwanie)",
-        "desc-start": "dostarczy odpowiedzi",
-        only: "tylko",
-        "desc-end":
-          "na podstawie znalezionego kontekstu (dokumenty, źródła danych) - w przeciwnym razie odmówi odpowiedzi.",
+        description:
+          "będzie dostarczać odpowiedzi <b>tylko</b>, jeśli zostanie zidentyfikowany kontekst dokumentu.<br />Będziesz musiał użyć komendy @agent, aby korzystać z narzędzi.",
+      },
+      automatic: {
+        title: "Samochód",
+        description:
+          "automatycznie będzie korzystać z narzędzi, jeśli model i dostawca obsługują natywne wywoływanie narzędzi. <br />Jeśli natywne wywoływanie narzędzi nie jest obsługiwane, konieczne będzie użycie komendy `@agent` w celu korzystania z narzędzi.",
       },
     },
     history: {
@@ -380,9 +295,6 @@ const TRANSLATIONS = {
       wait: "-- oczekiwanie na modele",
     },
     skill: {
-      title: "Domyślne umiejętności agenta",
-      description:
-        "Ulepsz naturalne zdolności domyślnego agenta za pomocą tych gotowych umiejętności. Ta konfiguracja dotyczy wszystkich obszarów roboczych.",
       rag: {
         title: "RAG i pamięć długotrwała",
         description:
@@ -403,17 +315,463 @@ const TRANSLATIONS = {
         description:
           "Pozwól domyślnemu agentowi generować różne typy wykresów na podstawie danych dostarczonych lub podanych na czacie.",
       },
-      save: {
-        title: "Generowanie i zapisywanie plików w przeglądarce",
-        description:
-          "Pozwól domyślnemu agentowi generować i zapisywać pliki, które można zapisać i pobrać w przeglądarce.",
-      },
       web: {
         title: "Wyszukiwanie i przeglądanie stron internetowych na żywo",
-        "desc-start":
-          "Pozwól swojemu agentowi przeszukiwać Internet w celu uzyskania odpowiedzi na pytania, łącząc się z dostawcą wyszukiwania internetowego (SERP).",
-        "desc-end":
-          "Wyszukiwanie w sieci podczas sesji agenta nie będzie działać, dopóki nie zostanie to skonfigurowane.",
+        description:
+          "Pozwól swojemu agentowi na wyszukiwanie informacji w Internecie, aby odpowiadał na Twoje pytania, poprzez połączenie z dostawcą usług wyszukiwania (SERP).",
+      },
+      sql: {
+        title: "Połączenie z bazą danych SQL",
+        description:
+          "Umożliw agentowi korzystanie z języka SQL, aby odpowiadał na Twoje pytania, poprzez połączenie z różnymi dostawcami baz danych SQL.",
+      },
+      default_skill:
+        "Domyślnie, ta umiejętność jest włączona, ale można ją wyłączyć, jeśli nie chcemy, aby była dostępna dla agenta.",
+      filesystem: {
+        title: "Dostęp do systemu plików",
+        description:
+          "Pozwól swoim agentom na odczytywanie, zapisywanie, wyszukiwanie i zarządzanie plikami w określonym katalogu. Obsługuje edycję plików, nawigację po katalogach oraz wyszukiwanie zawartości.",
+        learnMore:
+          "Dowiedz się więcej na temat tego, jak wykorzystać tę umiejętność.",
+        configuration: "Konfiguracja",
+        readActions: "Czytać akcje",
+        writeActions: "Działania",
+        warning:
+          "Dostęp do systemu plików może być niebezpieczny, ponieważ może modyfikować lub usuwać pliki. Prosimy o zapoznanie się z dokumentacją <link> przed włączeniem tej funkcji.",
+        skills: {
+          "read-text-file": {
+            title: "Otwórz plik",
+            description:
+              "Otwórz i przeczytaj zawartość plików (tekst, kod, pliki PDF, obrazy itp.)",
+          },
+          "read-multiple-files": {
+            title: "Odczytaj wiele plików",
+            description: "Otwórz i przetwórz wiele plików jednocześnie.",
+          },
+          "list-directory": {
+            title: "Lista kontaktów",
+            description: "Wyświetl pliki i katalogi w określonym folderze.",
+          },
+          "search-files": {
+            title: "Wyszukaj pliki",
+            description: "Wyszukaj pliki według nazwy lub zawartości",
+          },
+          "get-file-info": {
+            title: "Pobierz informacje o pliku",
+            description: "Uzyskaj szczegółowe metadane dotyczące plików.",
+          },
+          "edit-file": {
+            title: "Edytuj plik",
+            description:
+              "Wprowadzaj zmiany w plikach tekstowych, działając w oparciu o linie.",
+          },
+          "create-directory": {
+            title: "Utwórz katalog",
+            description: "Utwórz nowe katalogi",
+          },
+          "move-file": {
+            title: "Przenieś/Przekształć nazwę pliku",
+            description: "Przenieś lub zmień nazwę plików i katalogów",
+          },
+          "copy-file": {
+            title: "Skopiuj plik",
+            description: "Kopiuj pliki i katalogi",
+          },
+          "write-text-file": {
+            title: "Utwórz plik tekstowy",
+            description:
+              "Utwórz nowe pliki tekstowe lub nadpisz istniejące pliki tekstowe.",
+          },
+        },
+      },
+      createFiles: {
+        title: "Tworzenie dokumentów",
+        description:
+          "Pozwól swojemu agentowi tworzyć pliki w formatach binarnych, takich jak prezentacje PowerPoint, arkusze kalkulacyjne Excel, dokumenty Word i pliki PDF. Pliki można pobrać bezpośrednio z okna czatu.",
+        configuration: "Dostępne typy dokumentów",
+        skills: {
+          "create-text-file": {
+            title: "Pliki tekstowe",
+            description:
+              "Utwórz pliki tekstowe z dowolnym zawartością i rozszerzeniem (np. .txt, .md, .json, .csv).",
+          },
+          "create-pptx": {
+            title: "Prezentacje w formacie PowerPoint",
+            description:
+              "Stwórz nowe prezentacje w formacie PowerPoint, zawierające slajdy, nagłówki i punkty.",
+          },
+          "create-pdf": {
+            title: "Dokumenty w formacie PDF",
+            description:
+              "Tworzenie dokumentów PDF z plików w formacie Markdown lub zwykłego tekstu, z podstawowymi możliwościami stylizacji.",
+          },
+          "create-xlsx": {
+            title: "Arkusze kalkulacyjne w programie Excel",
+            description:
+              "Stwórz arkusze kalkulacyjne w programie Excel, zawierające dane w formie tabel, z różnymi arkuszami i stylami.",
+          },
+          "create-docx": {
+            title: "Dokumenty w formacie Word",
+            description:
+              "Stwórz dokumenty Word z podstawowymi stylami i formatowaniem.",
+          },
+        },
+      },
+      gmail: {
+        title: "Połączenie z GMail",
+        description:
+          "Pozwól swojemu agentowi na interakcję z Gmail – wyszukiwanie wiadomości e-mail, czytanie wątków, tworzenie projektów, wysyłanie wiadomości e-mail oraz zarządzanie skrzynką odbiorczą. <a>Przeczytaj dokumentację</a>.",
+        multiUserWarning:
+          "Integracja z Gmailem nie jest dostępna w trybie wieloosobowym z powodów bezpieczeństwa. Aby korzystać z tej funkcji, należy wyłączyć tryb wieloosobowy.",
+        configuration: "Konfiguracja Gmaila",
+        deploymentId: "Identyfikator wdrażania",
+        deploymentIdHelp:
+          "ID aplikacji webowej z Google Apps Script, której używasz",
+        apiKey: "Klucz API",
+        apiKeyHelp:
+          "Klucz API, który skonfigurowałeś w swoim projekcie Google Apps Script",
+        configurationRequired:
+          "Prosimy o skonfigurowanie identyfikatora wdrażania i klucza API, aby włączyć funkcje związane z Gmail.",
+        configured: "Skonfigurowany",
+        searchSkills: "Umiejętności wyszukiwania...",
+        noSkillsFound:
+          "Nie znaleziono żadnych kandydatów, którzy spełniałyby Twoje kryteria.",
+        categories: {
+          search: {
+            title: "Wyszukaj i przeczytaj wiadomości e-mail",
+            description:
+              "Wyszukaj i przeczytaj e-maile z swojej skrzynki odbiorczej Gmail.",
+          },
+          drafts: {
+            title: "Proponowane wiadomości e-mail",
+            description: "Twórz, edytuj i zarządzaj wersjami e-maili.",
+          },
+          send: {
+            title: "Wysyłanie i odpowiadanie na e-maile",
+            description:
+              "Wysyłaj e-maile i odpowiadaj na dyskusje natychmiast.",
+          },
+          threads: {
+            title: "Zarządzaj wątkami wiadomości e-mail",
+            description:
+              "Zarządzaj wątkami e-maili – oznaczaj jako przeczytane/nieprzeczytane, archiwizuj, usuwaj",
+          },
+          account: {
+            title: "Statystyki dotyczące integracji",
+            description:
+              "Przejrzyj statystyki skrzynki pocztowej oraz informacje dotyczące konta.",
+          },
+        },
+        skills: {
+          search: {
+            title: "Wyszukaj wiadomości",
+            description:
+              "Wyszukaj wiadomości e-mail, używając składni zapytań w Gmail.",
+          },
+          readThread: {
+            title: "Przeczytaj wątek",
+            description:
+              "Przeczytaj pełną sekcję korespondencji e-mail według identyfikatora.",
+          },
+          createDraft: {
+            title: "Utwórz wersję roboczą",
+            description: "Utwórz nowy projekt wiadomości e-mail",
+          },
+          createDraftReply: {
+            title: "Stwórz wersję odpowiedzi",
+            description: "Stwórz wstępną odpowiedź do istniejącego wątku.",
+          },
+          updateDraft: {
+            title: "Aktualizacja wersji roboczej",
+            description: "Zaktualizuj istniejący projekt e-maila",
+          },
+          getDraft: {
+            title: "Otrzymaj wersję roboczą",
+            description:
+              "Pobierz konkretny wers dokumentu po jego identyfikatorze.",
+          },
+          listDrafts: {
+            title: "Proponowane wersje",
+            description: "Wyświetl wszystkie wersje e-maili.",
+          },
+          deleteDraft: {
+            title: "Usuń wersję roboczą",
+            description: "Usuń wersję roboczą wiadomości e-mail",
+          },
+          sendDraft: {
+            title: "Wyślij wersję roboczą",
+            description: "Wyślij istniejący projekt wiadomości e-mail",
+          },
+          sendEmail: {
+            title: "Wyślij e-mail",
+            description: "Wyślij e-mail natychmiast",
+          },
+          replyToThread: {
+            title: "Odpowiedź na wątek",
+            description: "Odpowiedz na wątek wiadomości e-mail natychmiast",
+          },
+          markRead: {
+            title: "Mark Read",
+            description: "Oznacz wątek jako przeczytany",
+          },
+          markUnread: {
+            title: "Oznacz jako nieprzeczytane",
+            description: "Oznacz wątek jako nieprzeczytany",
+          },
+          moveToTrash: {
+            title: "Przenieś do kosza",
+            description: "Przenieś wątek do kosza",
+          },
+          moveToArchive: {
+            title: "Archiwum",
+            description: "Zarchiwizuj wątek",
+          },
+          moveToInbox: {
+            title: 'Przenieś do folderu "Otrzymane"',
+            description: "Przenieś wątek do folderu „Ostatnie wiadomości”",
+          },
+          getMailboxStats: {
+            title: "Statystyki skrzynki pocztowej",
+            description:
+              "Uzyskaj informacje o liczbie nieprzeczytanych wiadomości oraz statystyki dotyczące skrzynki pocztowej.",
+          },
+          getInbox: {
+            title: "Otwórz skrzynkę odbiorczą",
+            description:
+              "Sprawne rozwiązanie, dzięki któremu można łatwo pobierać wiadomości z skrzynki odbiorczej z Gmaila.",
+          },
+        },
+      },
+      outlook: {
+        title: "Łącznik Outlook",
+        description:
+          "Pozwól swojemu agentowi na interakcję z Microsoft Outlook – wyszukiwanie wiadomości e-mail, czytanie wątków, tworzenie projektów, wysyłanie wiadomości e-mail oraz zarządzanie skrzynką odbiorczą za pomocą Microsoft Graph API. <a>Przeczytaj dokumentację</a>.",
+        multiUserWarning:
+          "Integracja z Outlookiem nie jest dostępna w trybie wieloosobowym z powodów bezpieczeństwa. Aby skorzystać z tej funkcji, należy wyłączyć tryb wieloosobowy.",
+        configuration: "Konfiguracja Outlooka",
+        authType: "Typ konta",
+        authTypeHelp:
+          "Wybierz, które typy kont Microsoft mogą być używane do logowania. Opcja „Wszystkie konta” obsługuje zarówno konta osobiste, jak i konta związane z pracą/szkołą. Opcja „Tylko konta osobiste” ogranicza się do kont Microsoft stworzonych przez użytkowników. Opcja „Tylko konta organizacji” ogranicza się do kont z określonego tenanta Azure AD.",
+        authTypeCommon: "Wszystkie konta (osobiste i związane z pracą/szkołą)",
+        authTypeConsumers:
+          "Tylko konta Microsoft dla pojedynczych użytkowników.",
+        authTypeOrganization:
+          "Konta tylko dla organizacji (wymaga identyfikatora najemcy)",
+        clientId: "Identyfikator klienta (zwrócony przez aplikację)",
+        clientIdHelp:
+          "Identyfikator aplikacji (klienta) z rejestracji w Azure AD",
+        tenantId: "Identyfikator (osoby wynajmującej)",
+        tenantIdHelp:
+          "Identyfikator (dla najemcy) z rejestracji aplikacji w Azure AD. Wymagany tylko w przypadku uwierzytelniania tylko dla danej organizacji.",
+        clientSecret: "Klucz API",
+        clientSecretHelp:
+          "Wartość klienta, którą podali podczas rejestracji aplikacji w Azure AD",
+        configurationRequired:
+          "Prosimy o skonfigurowanie identyfikatora klienta i sekretu klienta, aby włączyć funkcje Outlook.",
+        authRequired:
+          "Najpierw zapisz swoje dane, a następnie zaloguj się przez Microsoft, aby dokończyć konfigurację.",
+        authenticateWithMicrosoft: "Zaloguj się przy użyciu konta Microsoft",
+        authenticated: "Pomyślnie uwierzytelniono w Microsoft Outlook.",
+        revokeAccess: "Wydać uprawnienia",
+        configured: "Skonfigurowany",
+        searchSkills: "Umiejętności wyszukiwania...",
+        noSkillsFound:
+          "Nie znaleziono żadnych kandydatów, którzy spełniałyby Twoje kryteria.",
+        categories: {
+          search: {
+            title: "Wyszukaj i przeczytaj wiadomości e-mail",
+            description: "Wyszukuj i czytaj e-maile z swojej poczty Outlook.",
+          },
+          drafts: {
+            title: "Proponowane wiadomości e-mail",
+            description: "Twórz, edytuj i zarządzaj wersjami e-maili.",
+          },
+          send: {
+            title: "Wysyłaj e-maile",
+            description:
+              "Wysyłaj nowe wiadomości e-mail lub odpowiadaj na wiadomości natychmiast.",
+          },
+          account: {
+            title: "Statystyki dotyczące integracji",
+            description:
+              "Przejrzyj statystyki skrzynki pocztowej oraz informacje dotyczące konta.",
+          },
+        },
+        skills: {
+          getInbox: {
+            title: "Otwórz skrzynkę odbiorczą",
+            description:
+              "Otrzymuj najnowsze wiadomości e-mail ze swojej poczty Outlook.",
+          },
+          search: {
+            title: "Wyszukaj wiadomości",
+            description:
+              "Wyszukuj wiadomości e-mail, używając składni wyszukiwania Microsoft",
+          },
+          readThread: {
+            title: "Przeczytaj rozmowę",
+            description: "Przeczytaj pełną korespondencję mailową.",
+          },
+          createDraft: {
+            title: "Stwórz wersję roboczą",
+            description:
+              "Utwórz nowy projekt wiadomości e-mail lub zaproponowany odpowiedź na istniejącą wiadomość.",
+          },
+          updateDraft: {
+            title: "Aktualizacja wersji roboczej",
+            description: "Zaktualizuj istniejący projekt wiadomości e-mail",
+          },
+          listDrafts: {
+            title: "Proponowane wersje",
+            description:
+              "Wyświetl wszystkie wersje e-maili w trakcie tworzenia.",
+          },
+          deleteDraft: {
+            title: "Usuń wersję roboczą",
+            description: "Usuń wersję roboczą wiadomości e-mail",
+          },
+          sendDraft: {
+            title: "Wyślij wersję roboczą",
+            description: "Wyślij istniejący projekt wiadomości e-mail",
+          },
+          sendEmail: {
+            title: "Wyślij e-mail",
+            description:
+              "Wyślij nową wiadomość e-mail lub odpowiedz na istniejącą wiadomość natychmiast.",
+          },
+          getMailboxStats: {
+            title: "Statystyki skrzynki pocztowej",
+            description:
+              "Uzyskaj liczbę folderów oraz statystyki dotyczące skrzynki pocztowej.",
+          },
+        },
+      },
+      googleCalendar: {
+        title: "Łącznik do Google Kalendarza",
+        description:
+          "Pozwól swojemu agentowi na interakcję z Google Calendar – przeglądaj kalendarze, sprawdzaj wydarzenia, twórz i aktualizuj wydarzenia oraz zarządzaj potwierdzeniami obecności. <a>Przeczytaj dokumentację</a>.",
+        multiUserWarning:
+          "Integracja z Google Calendar nie jest dostępna w trybie wieloosobowym z powodów bezpieczeństwa. Aby korzystać z tej funkcji, należy wyłączyć tryb wieloosobowy.",
+        configuration: "Konfiguracja kalendarza Google",
+        deploymentId: "Identyfikator wdrożenia",
+        deploymentIdHelp:
+          "ID aplikacji webowej z Google Apps Script, której używasz.",
+        apiKey: "Klucz API",
+        apiKeyHelp:
+          "Klucz API, który skonfigurowałeś w swoim projekcie Google Apps Script",
+        configurationRequired:
+          "Prosimy o skonfigurowanie ID wdrażania i klucza API, aby włączyć funkcje związane z Google Calendar.",
+        configured: "Skonfigurowane",
+        searchSkills: "Umiejętności wyszukiwania...",
+        noSkillsFound:
+          "Nie znaleziono żadnych kandydatów, którzy spełniałyby Twoje kryteria.",
+        categories: {
+          calendars: {
+            title: "Kalendarze",
+            description: "Przeglądaj i zarządzaj swoimi kalendarzami Google.",
+          },
+          readEvents: {
+            title: "Sprawdź wydarzenia",
+            description: "Przeglądaj i wyszukuj wydarzenia w kalendarzu",
+          },
+          writeEvents: {
+            title: "Tworzenie i aktualizacja wydarzeń",
+            description: "Twórz nowe wydarzenia i modyfikuj istniejące.",
+          },
+          rsvp: {
+            title: "Zarządzanie rezerwacjami",
+            description: "Zarządzaj statusem odpowiedzi dla wydarzeń",
+          },
+        },
+        skills: {
+          listCalendars: {
+            title: "Kalendarze",
+            description:
+              "Wypisz wszystkie kalendarze, które posiadasz lub do których subskrybujesz.",
+          },
+          getCalendar: {
+            title: "Uzyskaj szczegółowe informacje o kalendarzu",
+            description:
+              "Uzyskaj szczegółowe informacje na temat konkretnego kalendarza.",
+          },
+          getEvent: {
+            title: "Uzyskaj informacje o wydarzeniu",
+            description:
+              "Uzyskaj szczegółowe informacje na temat konkretnego wydarzenia",
+          },
+          getEventsForDay: {
+            title: "Sprawdź wydarzenia na dany dzień",
+            description:
+              "Pobierz wszystkie wydarzenia zaplanowane na konkretny dzień.",
+          },
+          getEvents: {
+            title: "Wyszukaj wydarzenia (zakres dat)",
+            description: "Pobierz wydarzenia w określonym przedziale dat.",
+          },
+          getUpcomingEvents: {
+            title: "Sprawdź nadchodzące wydarzenia",
+            description:
+              "Znajdź wydarzenia na dzisiaj, w tym tygodniu lub w tym miesiącu, używając prostych słów kluczowych.",
+          },
+          quickAdd: {
+            title: "Szybkie dodanie wydarzenia",
+            description:
+              "Utwórz wydarzenie na podstawie opisu w języku naturalnym (np. „Spotkanie jutro o 15:00”)",
+          },
+          createEvent: {
+            title: "Utwórz wydarzenie",
+            description:
+              "Utwórz nowe wydarzenie, mając pełną kontrolę nad wszystkimi jego właściwościami.",
+          },
+          updateEvent: {
+            title: "Aktualizacja wydarzenia",
+            description: "Zaktualizuj istniejącą wydarzenie w kalendarzu",
+          },
+          setMyStatus: {
+            title: "Ustaw status odpowiedzi",
+            description:
+              "Przyjęć, odrzucić lub wyrazić wstępne zainteresowanie udziałem w wydarzeniu",
+          },
+        },
+      },
+    },
+    mcp: {
+      title: "Serwery MCP",
+      "loading-from-config": "Ładowanie serwerów MCP z pliku konfiguracyjnego",
+      "learn-more": "Dowiedz się więcej o serwerach MCP.",
+      "no-servers-found": "Nie znaleziono serwerów MCP.",
+      "tool-warning":
+        "Aby uzyskać najlepsze wyniki, rozważ wyłączenie niepotrzebnych narzędzi, aby zminimalizować zakłócenia.",
+      "stop-server": "Zatrzymaj serwer MCP",
+      "start-server": "Uruchom serwer MCP",
+      "delete-server": "Usuń serwer MCP",
+      "tool-count-warning":
+        "Ten serwer MCP ma włączone <b> narzędzia, które będą zużywać kontekst w każdej rozmowie.</b> Rozważ wyłączenie niepotrzebnych narzędzi, aby oszczędzać kontekst.",
+      "startup-command": "Polecenie uruchamiające",
+      command: "Rozkaz",
+      arguments: "Argumenty",
+      "not-running-warning":
+        "Ten serwer MCP nie działa – może być zatrzymany lub może występować w nim błąd podczas uruchamiania.",
+      "tool-call-arguments": "Argumenty wywoływania funkcji",
+      "tools-enabled": "narzędzia są aktywne",
+    },
+    settings: {
+      title: "Ustawienia umiejętności agenta",
+      "max-tool-calls": {
+        title: "Maksymalna liczba żądań narzędzi na odpowiedź",
+        description:
+          "Maksymalna liczba narzędzi, które agent może łączyć, aby wygenerować pojedynczą odpowiedź. Zapobiega to niekontrolowanemu wywoływaniu narzędzi i tworzeniu nieskończonych pętli.",
+      },
+      "intelligent-skill-selection": {
+        title: "Inteligentny wybór umiejętności",
+        "beta-badge": "Wersja beta",
+        description:
+          "Umożliwia korzystanie z nieograniczonej liczby narzędzi oraz redukcję zużycia tokenów o do 80% na każde zapytanie – EverythingLLM automatycznie wybiera odpowiednie umiejętności dla każdego zapytania.",
+        "max-tools": {
+          title: "Narzędzia Max",
+          description:
+            "Maksymalna liczba narzędzi, które można wybrać dla każdego zapytania. Zalecamy ustawienie tej wartości na wyższe poziomy dla modeli o większym kontekście.",
+        },
       },
     },
   },
@@ -477,11 +835,6 @@ const TRANSLATIONS = {
         description:
           "Ustawienie nazwy wyświetlanej na stronie logowania dla wszystkich użytkowników.",
       },
-      "chat-message-alignment": {
-        title: "Wyrównanie wiadomości czatu",
-        description:
-          "Wybór trybu wyrównania wiadomości podczas korzystania z interfejsu czatu.",
-      },
       "display-language": {
         title: "Język",
         description:
@@ -495,18 +848,6 @@ const TRANSLATIONS = {
         recommended: "Zalecany rozmiar: 800 x 200",
         remove: "Usuń",
         replace: "Zmień",
-      },
-      "welcome-messages": {
-        title: "Ekran powitalny",
-        description:
-          "Dostosuj komunikaty wyświetlane użytkownikom na ekranie powitalnym. Będą widoczne tylko dla użytkowników, którzy nie są administratorami.",
-        new: "Nowa wiadomość",
-        system: "systemu",
-        user: "użytkownika",
-        message: "wiadomość",
-        assistant: "Asystent czatu AnythingLLM",
-        "double-click": "Kliknij dwukrotnie, aby edytować...",
-        save: "Zapisz wiadomości",
       },
       "browser-appearance": {
         title: "Wygląd przeglądarki",
@@ -542,7 +883,34 @@ const TRANSLATIONS = {
       "Klucze API umożliwiają dostęp do instancji AnythingLLM i zarządzanie nią.",
     link: "Przeczytaj dokumentację API",
     generate: "Generuj nowy klucz API",
+    empty: "Nie znaleziono kluczy API",
+    actions: "Akcje",
+    messages: {
+      error: "Błąd: {{error}}",
+    },
+    modal: {
+      title: "Utwórz nowy klucz API",
+      cancel: "Anuluj",
+      close: "Zamknij",
+      create: "Utwórz klucz API",
+      helper:
+        "Po utworzeniu klucz API może być używany do programowego dostępu do tej instancji AnythingLLM i jej konfiguracji.",
+      name: {
+        label: "Nazwa",
+        placeholder: "Integracja produkcyjna",
+        helper:
+          "Opcjonalne. Użyj przyjaznej nazwy, aby później łatwo rozpoznać ten klucz.",
+      },
+    },
+    row: {
+      copy: "Kopiuj klucz API",
+      copied: "Skopiowano",
+      unnamed: "--",
+      deleteConfirm:
+        "Czy na pewno chcesz dezaktywować ten klucz API?\nPo tej operacji nie będzie już można go używać.\n\nTej akcji nie można cofnąć.",
+    },
     table: {
+      name: "Nazwa",
       key: "Klucz API",
       by: "Utworzony przez",
       created: "Utworzony o",
@@ -655,17 +1023,12 @@ const TRANSLATIONS = {
     title: "Prywatność i obsługa danych",
     description:
       "Jest to konfiguracja sposobu, w jaki połączeni dostawcy zewnętrzni i AnythingLLM przetwarzają dane użytkownika.",
-    llm: "Wybór LLM",
-    embedding: "Preferencje dotyczące osadzania",
-    vector: "Wektorowa baza danych",
     anonymous: "Włączona anonimowa telemetria",
   },
   connectors: {
     "search-placeholder": "Wyszukaj źródła danych",
     "no-connectors": "Nie znaleziono źródeł danych.",
     obsidian: {
-      name: "Obsidian",
-      description: "Zaimportuj folder Obsidian jednym kliknięciem.",
       vault_location: "Lokalizacja folderu Obsidian",
       vault_description:
         "Wybierz folder Obsidian, aby zaimportować wszystkie notatki i ich połączenia.",
@@ -713,7 +1076,6 @@ const TRANSLATIONS = {
       URL_explained: "Adres URL repozytorium GitLab, które chcesz pobrać.",
       token: "Token dostępu GitLab",
       optional: "opcjonalny",
-      token_explained: "Token dostępu, zapobiegający ograniczeniu szybkości.",
       token_description:
         "Wybierz dodatkowe elementy do pobrania z interfejsu API GitLab.",
       token_explained_start: "Bez ",
@@ -746,9 +1108,6 @@ const TRANSLATIONS = {
       URL_explained_end: ".",
       task_explained:
         "Po zakończeniu transkrypcja będzie dostępna do osadzenia w obszarach roboczych w selektorze dokumentów.",
-      language: "Język transkrypcji",
-      language_explained: "Wybierz język transkrypcji, którą chcesz pobrać.",
-      loading_languages: "-- wczytywanie dostępnych języków",
     },
     "website-depth": {
       name: "Masowe pobieranie zawartości web",
@@ -810,20 +1169,18 @@ const TRANSLATIONS = {
       "search-document": "Wyszukiwanie dokumentu",
       "no-documents": "Brak dokumentów",
       "move-workspace": "Przenieś do obszaru roboczego",
-      name: "Nazwa",
       "delete-confirmation":
         "Czy na pewno chcesz usunąć te pliki i foldery? Spowoduje to usunięcie plików z systemu i automatyczne usunięcie ich z istniejących obszarów roboczych. Działanie to nie jest odwracalne.",
       "removing-message":
         "Usuwanie dokumentów {{count}} i folderów {{folderCount}}. Proszę czekać.",
       "move-success": "Pomyślnie przeniesiono {{count}} dokumentów.",
-      date: "Data",
-      type: "Typ",
       no_docs: "Brak dokumentów",
       select_all: "Wybierz wszystko",
       deselect_all: "Odznacz wszystko",
       remove_selected: "Usuń wybrane",
-      costs: "*Jednorazowy koszt dodania danych",
       save_embed: "Zapisz",
+      "total-documents_one": "{{count}} dokument",
+      "total-documents_other": "{{count}} dokumenty",
     },
     upload: {
       "processor-offline": "Procesor dokumentów niedostępny",
@@ -863,17 +1220,9 @@ const TRANSLATIONS = {
     },
   },
   chat_window: {
-    welcome: "Witamy w nowym obszarze roboczym.",
-    get_started: "Aby rozpocząć",
-    get_started_default: "Aby rozpocząć",
-    upload: "Prześlij dokument",
-    or: "lub",
     attachments_processing: "Załączniki są przetwarzane. Proszę czekać...",
-    send_chat: "wyślij wiadomość.",
     send_message: "Wyślij wiadomość",
     attach_file: "Dołącz plik do tego czatu",
-    slash: "Wyświetl wszystkie dostępne polecenia slash do czatowania.",
-    agents: "Wyświetl wszystkich dostępnych agentów.",
     text_size: "Zmiana rozmiaru tekstu.",
     microphone: "Wypowiedz swoją prośbę.",
     send: "Wyślij wiadomość do obszaru roboczego",
@@ -883,19 +1232,11 @@ const TRANSLATIONS = {
     regenerate_response: "Wygeneruj ponownie odpowiedź",
     good_response: "Dobra odpowiedź",
     more_actions: "Więcej działań",
-    hide_citations: "Ukryj cytaty",
-    show_citations: "Pokaż cytaty",
-    pause_tts_speech_message: "Wstrzymaj głosowe wypowiadanie komunikatu",
     fork: "Utwórz rozgałęzienie",
     delete: "Usuń",
-    save_submit: "Zapisz i prześlij",
     cancel: "Anuluj",
     edit_prompt: "Edytuj prompt",
     edit_response: "Edytuj odpowiedź",
-    at_agent: "@agent",
-    default_agent_description: " - domyślny agent dla tego obszaru roboczego.",
-    custom_agents_coming_soon: "niestandardowi agenci już wkrótce!",
-    slash_reset: "/reset",
     preset_reset_description: "Wyczyść historię czatu i rozpocznij nowy czat",
     add_new_preset: " Dodaj nowe polecenie slash",
     command: "Polecenie",
@@ -919,6 +1260,49 @@ const TRANSLATIONS = {
       missing_credentials_description:
         "Kliknij, aby skonfigurować poświadczenia",
     },
+    submit: "Prześlij",
+    edit_info_user:
+      '"Wyślij" powoduje ponowne wygenerowanie odpowiedzi przez sztuczną inteligencję. "Zapisz" aktualizuje tylko Twoje wiadomości.',
+    edit_info_assistant:
+      "Twoje zmiany zostaną zapisane bezpośrednio w tej odpowiedzi.",
+    see_less: "Zobacz mniej",
+    see_more: "Zobacz więcej",
+    tools: "Narzędzia",
+    text_size_label: "Rozmiar czcionki",
+    select_model: "Wybierz model",
+    sources: "Źródła",
+    document: "Dokument",
+    similarity_match: "mecz",
+    source_count_one: "{{count}} – odniesienie",
+    source_count_other: "{{count}} – odnośniki",
+    preset_exit_description: "Zakończ bieżącą sesję z przedstawicielem",
+    add_new: "Dodaj nowe",
+    edit: "Edytuj",
+    publish: "Opublikować",
+    stop_generating: "Przestań generować odpowiedź",
+    slash_commands: "Polecenia skrótowe",
+    agent_skills: "Umiejętności agenta",
+    manage_agent_skills: "Zarządzanie umiejętnościami agentów",
+    agent_skills_disabled_in_session:
+      "Nie można modyfikować umiejętności podczas trwającej sesji. Aby zakończyć sesję, należy najpierw użyć komendy /exit.",
+    start_agent_session: "Rozpocznij sesję dla agenta",
+    use_agent_session_to_use_tools:
+      "Możesz korzystać z narzędzi w czacie, inicjując sesję z agentem, wpisując '@agent' na początku swojego zapytania.",
+    agent_invocation: {
+      model_wants_to_call: "Model chce zadzwonić",
+      approve: "Zaakceptować",
+      reject: "Odrzucić",
+      always_allow: "Zawsze należy uwzględnić {{skillName}}",
+      tool_call_was_approved:
+        "Zgłoszenie dotyczące narzędzia zostało zatwierdzone.",
+      tool_call_was_rejected: "Żądanie użycia narzędzia zostało odrzucone.",
+    },
+    custom_skills: "Dostosowane umiejętności",
+    agent_flows: "Przepływy agencji",
+    no_tools_found: "Nie znaleziono odpowiadających narzędzi.",
+    loading_mcp_servers: "Ładowanie serwerów MCP...",
+    app_integrations: "Integracje z aplikacjami",
+    sub_skills: "Specyficzne umiejętności",
   },
   profile_settings: {
     edit_account: "Edytuj konto",
@@ -980,17 +1364,12 @@ const TRANSLATIONS = {
           "Prywatne instrukcje systemowe są widoczne tylko dla użytkownika.",
         publish_button: "Opublikuj w Community Hub",
         submitting: "Publikacja...",
-        submit: "Opublikuj w Community Hub",
         prompt_label: "Prompt",
         prompt_description:
           "Jest to rzeczywista instrukcja systemowa, która będzie używana do kierowania LLM.",
         prompt_placeholder: "Wprowadź tutaj instrukcję systemową...",
       },
       agent_flow: {
-        public_description:
-          "Przepływy agentów publicznych są widoczne dla wszystkich.",
-        private_description:
-          "Przepływy prywatnych agentów są widoczne tylko dla użytkownika.",
         success_title: "Sukces!",
         success_description:
           "Twój Agent Flow został opublikowany w Community Hub!",
@@ -1008,7 +1387,6 @@ const TRANSLATIONS = {
           "Tagi służą do oznaczania przepływów agentów w celu łatwiejszego wyszukiwania. Można dodać wiele tagów. Maksymalnie 5 tagów. Maksymalnie 20 znaków na tag.",
         tags_placeholder: "Wpisz i naciśnij Enter, aby dodać tagi",
         visibility_label: "Widoczność",
-        publish_button: "Opublikuj w Community Hub",
         submitting: "Publikacja...",
         submit: "Opublikuj w Community Hub",
         privacy_note:
@@ -1027,10 +1405,6 @@ const TRANSLATIONS = {
         description_label: "Opis",
         description_description:
           "To jest opis polecenia slash. Użyj tego, aby opisać cel polecenia slash.",
-        command_label: "Polecenie",
-        command_description:
-          "Jest to polecenie slash, które użytkownicy będą wpisywać, aby uruchomić to ustawienie wstępne.",
-        command_placeholder: "moje-polecenie",
         tags_label: "Tagi",
         tags_description:
           "Tagi są używane do oznaczania poleceń slash w celu łatwiejszego wyszukiwania. Można dodać wiele tagów. Maksymalnie 5 tagów. Maksymalnie 20 znaków na tag.",
@@ -1085,6 +1459,73 @@ const TRANSLATIONS = {
     notAssigned:
       "Nie jesteś przypisany do żadnego obszaru roboczego.\nSkontaktuj się z administratorem, aby poprosić o dostęp do obszaru roboczego.",
     goToWorkspace: 'Przejdź do obszaru roboczego "{{workspace}}"',
+  },
+  telegram: {
+    title: "Bot na Telegramie",
+    description:
+      "Połącz swoją instancję AnythingLLM z Telegramem, aby móc rozmawiać z przestrzeniami roboczymi z dowolnego urządzenia.",
+    setup: {
+      step1: {
+        title: "Krok 1: Utwórz swojego bota w Telegramie",
+        description:
+          "Otwórz aplikację @BotFather w Telegramie, wyślij wiadomość <code>/newbot</code> do <code>@BotFather</code>, postępuj zgodnie z instrukcjami i skopiuj token API.",
+        "open-botfather": "Otwórz BotFather",
+        "instruction-1": "1. Otwórz link lub zeskanuj kod QR",
+        "instruction-2":
+          "2. Wyślij <code>/newbot</code> na adres <code>@BotFather</code>",
+        "instruction-3":
+          "3. Wybierz nazwę i nazwę użytkownika dla swojego robota.",
+        "instruction-4": "4. Skopiuj token API, który otrzymasz.",
+      },
+      step2: {
+        title: "Krok 2: Połącz swojego robota",
+        description:
+          "Wklej token API, który otrzymałeś od @BotFather, i wybierz domyślny przestrzeń roboczą, z której Twój bot będzie mógł komunikować się.",
+        "bot-token": "Token Bot",
+        connecting: "Połączenie...",
+        "connect-bot": "Bot łączący",
+      },
+      security: {
+        title: "Zalecane ustawienia bezpieczeństwa",
+        description:
+          "W celu zwiększenia bezpieczeństwa, skonfiguruj te ustawienia w kanale @BotFather.",
+        "disable-groups": "— Zapobiegaj dodawaniu botów do grup",
+        "disable-inline":
+          "— Zapobieg użyciu robota w wyszukiwaniach w czasie rzeczywistym.",
+        "obscure-username":
+          "Użyj nietypowej nazwy użytkownika dla bota, aby zmniejszyć jego widoczność.",
+      },
+      "toast-enter-token": "Prosimy o wprowadzenie tokena dla bota.",
+      "toast-connect-failed": "Nie udało się nawiązać połączenia z botem.",
+    },
+    connected: {
+      status: "Połączony",
+      "status-disconnected":
+        "Brak połączenia – token może być nieprawidłowy lub wygasł",
+      "placeholder-token": "Wklej nowy token dla bota...",
+      reconnect: "Ponowne połączenie",
+      workspace: "Przestrzeń robocza",
+      "bot-link": "Link do bota",
+      "voice-response": "Reakcja na głos",
+      disconnecting: "Odłączanie...",
+      disconnect: "Odłączyć",
+      "voice-text-only": "Tylko tekst",
+      "voice-mirror":
+        "Odbiór (odpowiedź za pomocą głosu, gdy użytkownik wysyła głos)",
+      "voice-always":
+        "Zawsze dołączaj nagranie (wysyłaj dźwięk wraz z każdą odpowiedzią)",
+      "toast-disconnect-failed": "Nie udało się odłączyć bota.",
+      "toast-reconnect-failed": "Nie udało się nawiązać połączenia z botem.",
+      "toast-voice-failed": "Nie udało się zaktualizować trybu głosu.",
+      "toast-approve-failed": "Nie udało się zatwierdzić użytkownika.",
+      "toast-deny-failed": "Nie udało się odrzucić żądania użytkownika.",
+      "toast-revoke-failed": "Nie udało się odwołać konta użytkownika.",
+    },
+    users: {
+      "pending-description":
+        "Użytkownicy, którzy czekają na weryfikację. Dopasuj kod parowania, który znajduje się tutaj, z tym, który widnieje w ich rozmowie na Telegramie.",
+      unknown: "Nieznany",
+    },
   },
 };
 
