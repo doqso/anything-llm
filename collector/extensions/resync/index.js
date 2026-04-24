@@ -173,7 +173,8 @@ async function resyncPaperlessNgx({ chunkSource }, response) {
       baseUrl: source.searchParams.get("baseUrl"),
       apiToken: source.searchParams.get("token"),
     });
-    const documentId = source.pathname.split("//")[1];
+    // chunkSource is `paperless-ngx://<id>?payload=...`; URL parser puts <id> in hostname.
+    const documentId = source.hostname;
     const content = await loader.fetchDocumentContent(documentId);
 
     if (!content) throw new Error("Failed to fetch document content");
@@ -198,8 +199,9 @@ async function resyncBookStack({ chunkSource }, response) {
   try {
     const source = response.locals.encryptionWorker.expandPayload(chunkSource);
     const { fetchBookStackPage } = require("../../utils/extensions/BookStack");
+    // chunkSource is `bookstack://<pageId>?payload=...`; URL parser puts <pageId> in hostname.
     const { success, reason, content } = await fetchBookStackPage({
-      pageId: source.pathname.split('//')[1],
+      pageId: source.hostname,
       baseUrl: source.searchParams.get('baseUrl'),
       tokenId: source.searchParams.get('tokenId'),
       tokenSecret: source.searchParams.get('tokenSecret'),
