@@ -91,6 +91,7 @@ const SystemSettings = {
 
     // beta feature flags
     "experimental_live_file_sync",
+    "experimental_source_sync",
 
     // Hub settings
     "hub_api_key",
@@ -351,6 +352,12 @@ const SystemSettings = {
       }
     },
     experimental_live_file_sync: (update) => {
+      if (typeof update === "boolean")
+        return update === true ? "enabled" : "disabled";
+      if (!["enabled", "disabled"].includes(update)) return "disabled";
+      return String(update);
+    },
+    experimental_source_sync: (update) => {
       if (typeof update === "boolean")
         return update === true ? "enabled" : "disabled";
       if (!["enabled", "disabled"].includes(update)) return "disabled";
@@ -937,6 +944,9 @@ const SystemSettings = {
     return {
       experimental_live_file_sync:
         (await SystemSettings.get({ label: "experimental_live_file_sync" }))
+          ?.value === "enabled",
+      experimental_source_sync:
+        (await SystemSettings.get({ label: "experimental_source_sync" }))
           ?.value === "enabled",
     };
   },

@@ -7,6 +7,7 @@ class BackgroundService {
   name = "BackgroundWorkerService";
   static _instance = null;
   documentSyncEnabled = false;
+  sourceSyncEnabled = false;
   #root = path.resolve(__dirname, "../../jobs");
 
   #alwaysRunJobs = [
@@ -28,6 +29,14 @@ class BackgroundService {
     {
       name: "sync-watched-documents",
       interval: "1hr",
+    },
+  ];
+
+  #sourceSyncJobs = [
+    // Reconcile whole external sources (adds new pages, removes deleted ones)
+    {
+      name: "sync-watched-sources",
+      interval: "5m",
     },
   ];
 
@@ -76,7 +85,9 @@ class BackgroundService {
 
   async boot() {
     const { DocumentSyncQueue } = require("../../models/documentSyncQueue");
+    const { SourceSyncConfig } = require("../../models/sourceSyncConfig");
     this.documentSyncEnabled = await DocumentSyncQueue.enabled();
+    this.sourceSyncEnabled = await SourceSyncConfig.enabled();
     const jobsToRun = this.jobs();
 
     this.#log("Starting...");
@@ -109,6 +120,7 @@ class BackgroundService {
   jobs() {
     const activeJobs = [...this.#alwaysRunJobs];
     if (this.documentSyncEnabled) activeJobs.push(...this.#documentSyncJobs);
+    if (this.sourceSyncEnabled) activeJobs.push(...this.#sourceSyncJobs);
     return activeJobs;
   }
 

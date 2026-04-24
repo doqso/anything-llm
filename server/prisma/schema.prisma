@@ -146,6 +146,7 @@ model workspaces {
   workspace_agent_invocations  workspace_agent_invocations[]
   prompt_history               prompt_history[]
   workspace_parsed_files       workspace_parsed_files[]
+  source_sync_configs          source_sync_configs[]
 }
 
 model workspace_threads {
@@ -305,6 +306,30 @@ model document_sync_executions {
   result    String?
   createdAt DateTime             @default(now())
   queue     document_sync_queues @relation(fields: [queueId], references: [id], onDelete: Cascade)
+}
+
+model source_sync_configs {
+  id              Int                      @id @default(autoincrement())
+  workspaceId     Int
+  type            String
+  encryptedConfig String
+  intervalMs      Int                      @default(3600000)
+  nextSyncAt      DateTime
+  lastSyncedAt    DateTime?
+  failureCount    Int                      @default(0)
+  createdAt       DateTime                 @default(now())
+  lastUpdatedAt   DateTime                 @default(now())
+  workspace       workspaces               @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  runs            source_sync_executions[]
+}
+
+model source_sync_executions {
+  id        Int                 @id @default(autoincrement())
+  configId  Int
+  status    String              @default("unknown")
+  result    String?
+  createdAt DateTime            @default(now())
+  config    source_sync_configs @relation(fields: [configId], references: [id], onDelete: Cascade)
 }
 
 model browser_extension_api_keys {

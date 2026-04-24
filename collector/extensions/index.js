@@ -224,6 +224,49 @@ function extensions(app) {
   );
 
   app.post(
+    "/ext/bookstack-enumerate",
+    [verifyPayloadIntegrity, setDataSigner],
+    async function (request, response) {
+      try {
+        const {
+          enumerateBookStackPages,
+        } = require("../utils/extensions/BookStack");
+        const result = await enumerateBookStackPages(reqBody(request));
+        response.status(200).json(result);
+      } catch (e) {
+        console.error(e);
+        response
+          .status(400)
+          .json({ success: false, reason: e.message, pages: [] });
+      }
+      return;
+    }
+  );
+
+  app.post(
+    "/ext/bookstack-fetch-page",
+    [verifyPayloadIntegrity, setDataSigner],
+    async function (request, response) {
+      try {
+        const {
+          fetchAndSaveBookStackPage,
+        } = require("../utils/extensions/BookStack");
+        const result = await fetchAndSaveBookStackPage(
+          reqBody(request),
+          response
+        );
+        response.status(200).json(result);
+      } catch (e) {
+        console.error(e);
+        response
+          .status(400)
+          .json({ success: false, reason: e.message, docpath: null });
+      }
+      return;
+    }
+  );
+
+  app.post(
     "/ext/obsidian/vault",
     [verifyPayloadIntegrity, setDataSigner],
     async function (request, response) {
