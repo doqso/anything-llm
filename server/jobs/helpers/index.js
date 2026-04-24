@@ -27,8 +27,25 @@ function updateSourceDocument(docPath = null, jsonContent = {}) {
   });
 }
 
+// Strips inlined OCR-from-image text added by image-OCR-capable loaders
+// (e.g. BookStack's `(Contenido detectado: ...)` appended just before
+// the `(Enlace: ...)` URL marker). OCR engines like Tesseract are not
+// deterministic — running them twice on the same image can yield
+// slightly different text, which would otherwise trigger spurious
+// "page changed" updates on every sync. Image insertions/removals
+// still get detected because the `[Imagen: ...] (Enlace: ...)`
+// scaffolding around the OCR is left intact.
+const OCR_DETECTION_PATTERN =
+  /\s*\(Contenido detectado:[\s\S]*?\)\s*(?=\(Enlace:)/g;
+
+function contentForDiff(text = "") {
+  if (typeof text !== "string") return text;
+  return text.replace(OCR_DETECTION_PATTERN, " ");
+}
+
 module.exports = {
   log,
   conclude,
   updateSourceDocument,
+  contentForDiff,
 };

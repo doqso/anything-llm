@@ -2,7 +2,12 @@ const { Document } = require("../models/documents.js");
 const { DocumentSyncQueue } = require("../models/documentSyncQueue.js");
 const { CollectorApi } = require("../utils/collectorApi");
 const { fileData } = require("../utils/files");
-const { log, conclude, updateSourceDocument } = require("./helpers/index.js");
+const {
+  log,
+  conclude,
+  updateSourceDocument,
+  contentForDiff,
+} = require("./helpers/index.js");
 const { getVectorDbClass } = require("../utils/helpers/index.js");
 const { DocumentSyncRun } = require("../models/documentSyncRun.js");
 
@@ -98,7 +103,10 @@ const { DocumentSyncRun } = require("../models/documentSyncRun.js");
       }
 
       const currentDocumentData = await fileData(document.docpath);
-      if (currentDocumentData.pageContent === newContent) {
+      if (
+        contentForDiff(currentDocumentData.pageContent) ===
+        contentForDiff(newContent)
+      ) {
         const nextSync = DocumentSyncQueue.calcNextSync(queue);
         log(
           `Source ${source} is unchanged and will be skipped. Next sync will be ${nextSync.toLocaleString()}.`
