@@ -92,6 +92,12 @@ const SystemSettings = {
     // beta feature flags
     "experimental_live_file_sync",
     "experimental_source_sync",
+    "live_file_sync_interval_ms",
+    "live_file_sync_start_minute_of_day",
+    "live_file_sync_start_timezone",
+
+    // background job coordination
+    "background_job_lock",
 
     // Hub settings
     "hub_api_key",
@@ -362,6 +368,24 @@ const SystemSettings = {
         return update === true ? "enabled" : "disabled";
       if (!["enabled", "disabled"].includes(update)) return "disabled";
       return String(update);
+    },
+    live_file_sync_interval_ms: (update) => {
+      const val = Number(update);
+      if (isNullOrNaN(val) || val < 60000) return 3600000;
+      return val;
+    },
+    live_file_sync_start_minute_of_day: (update) => {
+      if (update === null || update === "" || update === undefined) return "";
+      const val = Number(update);
+      if (!Number.isInteger(val) || val < 0 || val > 1439) return "";
+      return String(val);
+    },
+    live_file_sync_start_timezone: (update) => {
+      if (typeof update !== "string" || !update) return "";
+      const {
+        isValidTimezone,
+      } = require("../utils/scheduling/anchor");
+      return isValidTimezone(update) ? update : "";
     },
     meta_page_title: (newTitle) => {
       try {

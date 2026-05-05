@@ -240,5 +240,8 @@ export default {
     liveDocumentSync: {
       manage: () => `/settings/beta-features/live-document-sync/manage`,
     },
+    sourceSync: {
+      manage: () => `/settings/beta-features/source-sync/manage`,
+    },
   },
 };

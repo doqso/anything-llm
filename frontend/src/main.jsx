@@ -326,6 +326,17 @@ const router = createBrowserRouter([
         },
       },
       {
+        path: "/settings/beta-features/source-sync/manage",
+        lazy: async () => {
+          const { default: SourceSyncManage } = await import(
+            "@/pages/Admin/ExperimentalFeatures/Features/SourceSync/manage"
+          );
+          return {
+            element: <AdminRoute Component={SourceSyncManage} />,
+          };
+        },
+      },
+      {
         path: "/settings/community-hub/trending",
         lazy: async () => {
           const { default: CommunityHubTrending } = await import(

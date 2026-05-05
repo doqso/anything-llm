@@ -9,7 +9,12 @@ const SourceSyncConfig = {
   minIntervalMs: 60000, // 1 minute lower bound
   maxRepeatFailures: 5, // after N straight failures, back off to failureBackoffMs
   failureBackoffMs: 86400000, // 24 hours
-  writable: ["intervalMs", "encryptedConfig"],
+  writable: [
+    "intervalMs",
+    "encryptedConfig",
+    "startMinuteOfDay",
+    "startTimezone",
+  ],
 
   bootWorkers: function () {
     const {
@@ -56,11 +61,16 @@ const SourceSyncConfig = {
   },
 
   calcNextSync: function (record) {
+    const { calcAnchoredNextSync } = require("../utils/scheduling/anchor");
     const interval = Math.max(
       this.minIntervalMs,
       Number(record?.intervalMs) || this.defaultIntervalMs
     );
-    return new Date(Date.now() + interval);
+    return calcAnchoredNextSync(
+      interval,
+      record?.startMinuteOfDay ?? null,
+      record?.startTimezone ?? null
+    );
   },
 
   create: async function ({
@@ -68,6 +78,8 @@ const SourceSyncConfig = {
     type = null,
     config = null,
     intervalMs = null,
+    startMinuteOfDay = null,
+    startTimezone = null,
   } = {}) {
     if (!workspaceId) throw new Error("workspaceId is required");
     if (!this.validTypes.includes(type))
@@ -90,7 +102,13 @@ const SourceSyncConfig = {
           type: String(type),
           encryptedConfig,
           intervalMs: effectiveInterval,
-          nextSyncAt: new Date(Date.now() + effectiveInterval),
+          startMinuteOfDay,
+          startTimezone,
+          nextSyncAt: this.calcNextSync({
+            intervalMs: effectiveInterval,
+            startMinuteOfDay,
+            startTimezone,
+          }),
         },
       });
       await Telemetry.sendTelemetry("source_sync_config_created", { type });
@@ -120,6 +138,29 @@ const SourceSyncConfig = {
     }
     if (Object.keys(validData).length === 0) return null;
     validData.lastUpdatedAt = new Date();
+
+    // If schedule-affecting fields changed, recompute nextSyncAt to align with the new schedule
+    const scheduleChanged =
+      validData.intervalMs !== undefined ||
+      validData.startMinuteOfDay !== undefined ||
+      validData.startTimezone !== undefined;
+    if (scheduleChanged) {
+      const existing = await this.get({ id: Number(id) });
+      if (existing) {
+        validData.nextSyncAt = this.calcNextSync({
+          intervalMs: validData.intervalMs ?? existing.intervalMs,
+          startMinuteOfDay:
+            validData.startMinuteOfDay !== undefined
+              ? validData.startMinuteOfDay
+              : existing.startMinuteOfDay,
+          startTimezone:
+            validData.startTimezone !== undefined
+              ? validData.startTimezone
+              : existing.startTimezone,
+        });
+      }
+    }
+
     try {
       return await prisma.source_sync_configs.update({
         where: { id: Number(id) },

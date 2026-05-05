@@ -3,8 +3,17 @@ const { SourceSyncRun } = require("../models/sourceSyncRun");
 const { CollectorApi } = require("../utils/collectorApi");
 const { reconcileSource } = require("../utils/sourceSync");
 const { log, conclude } = require("./helpers/index.js");
+const { acquireLock, releaseLock } = require("./helpers/jobLock.js");
+
+const JOB_NAME = "sync-watched-sources";
 
 (async () => {
+  const { acquired, holder } = await acquireLock(JOB_NAME);
+  if (!acquired) {
+    log(`Skipping run — ${holder} is currently running.`);
+    return conclude();
+  }
+
   try {
     const sources = await SourceSyncConfig.staleSources();
     if (sources.length === 0) {
@@ -55,6 +64,7 @@ const { log, conclude } = require("./helpers/index.js");
     console.error(e);
     log(`errored with ${e.message}`);
   } finally {
+    await releaseLock(JOB_NAME);
     conclude();
   }
 })();

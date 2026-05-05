@@ -8,10 +8,19 @@ const {
   updateSourceDocument,
   contentForDiff,
 } = require("./helpers/index.js");
+const { acquireLock, releaseLock } = require("./helpers/jobLock.js");
 const { getVectorDbClass } = require("../utils/helpers/index.js");
 const { DocumentSyncRun } = require("../models/documentSyncRun.js");
 
+const JOB_NAME = "sync-watched-documents";
+
 (async () => {
+  const { acquired, holder } = await acquireLock(JOB_NAME);
+  if (!acquired) {
+    log(`Skipping run — ${holder} is currently running.`);
+    return conclude();
+  }
+
   try {
     const queuesToProcess = await DocumentSyncQueue.staleDocumentQueues();
     if (queuesToProcess.length === 0) {
@@ -30,6 +39,7 @@ const { DocumentSyncRun } = require("../models/documentSyncRun.js");
     );
     for (const queue of queuesToProcess) {
       let newContent = null;
+      let contentToEmbed = null;
       const document = queue.workspaceDoc;
       const workspace = document.workspace;
       const { metadata, type, source } =
@@ -56,13 +66,25 @@ const { DocumentSyncRun } = require("../models/documentSyncRun.js");
         newContent = response?.content;
       }
 
-      if (['confluence', 'github', 'gitlab', 'drupalwiki', 'bookstack'].includes(type)) {
+      if (["confluence", "github", "gitlab", "drupalwiki"].includes(type)) {
         const response = await collector.forwardExtensionRequest({
           endpoint: "/ext/resync-source-document",
           method: "POST",
           body: JSON.stringify({
             type,
             options: { chunkSource: metadata.chunkSource },
+          }),
+        });
+        newContent = response?.content;
+      }
+
+      if (type === "bookstack") {
+        const response = await collector.forwardExtensionRequest({
+          endpoint: "/ext/resync-source-document",
+          method: "POST",
+          body: JSON.stringify({
+            type,
+            options: { chunkSource: metadata.chunkSource, includeOcr: false },
           }),
         });
         newContent = response?.content;
@@ -107,7 +129,7 @@ const { DocumentSyncRun } = require("../models/documentSyncRun.js");
         contentForDiff(currentDocumentData.pageContent) ===
         contentForDiff(newContent)
       ) {
-        const nextSync = DocumentSyncQueue.calcNextSync(queue);
+        const nextSync = await DocumentSyncQueue.calcNextSync(queue);
         log(
           `Source ${source} is unchanged and will be skipped. Next sync will be ${nextSync.toLocaleString()}.`
         );
@@ -129,6 +151,23 @@ const { DocumentSyncRun } = require("../models/documentSyncRun.js");
 
       // update the defined document and workspace vectorDB with the latest information
       // it will skip cache and create a new vectorCache file.
+      if (type === "bookstack") {
+        const response = await collector.forwardExtensionRequest({
+          endpoint: "/ext/resync-source-document",
+          method: "POST",
+          body: JSON.stringify({
+            type,
+            options: { chunkSource: metadata.chunkSource, includeOcr: true },
+          }),
+        });
+        contentToEmbed = response?.content;
+        if (!contentToEmbed)
+          log(
+            `Failed to get OCR-enriched BookStack content for ${source}. Updating with non-OCR content.`
+          );
+      }
+      contentToEmbed = contentToEmbed || newContent;
+
       const vectorDatabase = getVectorDbClass();
       await vectorDatabase.deleteDocumentFromNamespace(
         workspace.slug,
@@ -138,7 +177,7 @@ const { DocumentSyncRun } = require("../models/documentSyncRun.js");
         workspace.slug,
         {
           ...currentDocumentData,
-          pageContent: newContent,
+          pageContent: contentToEmbed,
           docId: document.docId,
         },
         document.docpath,
@@ -146,7 +185,7 @@ const { DocumentSyncRun } = require("../models/documentSyncRun.js");
       );
       updateSourceDocument(document.docpath, {
         ...currentDocumentData,
-        pageContent: newContent,
+        pageContent: contentToEmbed,
         docId: document.docId,
         published: new Date().toLocaleString(),
         // Todo: Update word count and token_estimate?
@@ -183,7 +222,7 @@ const { DocumentSyncRun } = require("../models/documentSyncRun.js");
             additionalWorkspace.slug,
             {
               ...currentDocumentData,
-              pageContent: newContent,
+              pageContent: contentToEmbed,
               docId: additionalDocumentRef.docId,
             },
             additionalDocumentRef.docpath
@@ -194,7 +233,7 @@ const { DocumentSyncRun } = require("../models/documentSyncRun.js");
         }
       }
 
-      const nextRefresh = DocumentSyncQueue.calcNextSync(queue);
+      const nextRefresh = await DocumentSyncQueue.calcNextSync(queue);
       log(
         `${source} has been refreshed in all workspaces it is currently referenced in. Next refresh will be ${nextRefresh.toLocaleString()}.`
       );
@@ -212,6 +251,7 @@ const { DocumentSyncRun } = require("../models/documentSyncRun.js");
     console.error(e);
     log(`errored with ${e.message}`);
   } finally {
+    await releaseLock(JOB_NAME);
     conclude();
   }
 })();

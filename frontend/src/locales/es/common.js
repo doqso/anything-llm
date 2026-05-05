@@ -1217,6 +1217,15 @@ const TRANSLATIONS = {
       no_docs: "Sin documentos",
       select_all: "Seleccionar todo",
       deselect_all: "Deseleccionar todo",
+      watch_selected: "Vigilar",
+      unwatch_selected: "No vigilar",
+      watching_selected: "Vigilando documentos seleccionados",
+      unwatching_selected: "Dejando de vigilar documentos seleccionados",
+      watch_selected_success: "Vigilando {{count}} documento(s) seleccionado(s).",
+      unwatch_selected_success:
+        "Se dejaron de vigilar {{count}} documento(s) seleccionado(s).",
+      watch_selected_failed:
+        "No se pudo actualizar la vigilancia de los documentos seleccionados.",
       remove_selected: "Eliminar seleccionados",
       save_embed: "Guardar e incrustar",
       "total-documents_one": "{{count}} documento",

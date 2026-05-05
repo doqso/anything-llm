@@ -5,6 +5,33 @@ const { SystemSettings } = require("../../models/systemSettings");
 const { Telemetry } = require("../../models/telemetry");
 const { Workspace } = require("../../models/workspace");
 const { reqBody } = require("../../utils/http");
+const { isValidTimezone } = require("../../utils/scheduling/anchor");
+
+function sanitizeAnchor({ startMinuteOfDay, startTimezone }) {
+  const hasMin =
+    startMinuteOfDay !== undefined &&
+    startMinuteOfDay !== null &&
+    startMinuteOfDay !== "";
+  const hasTz =
+    startTimezone !== undefined &&
+    startTimezone !== null &&
+    startTimezone !== "";
+  if (!hasMin && !hasTz) return { ok: true, value: { sm: null, tz: null } };
+  if (!hasMin || !hasTz)
+    return {
+      ok: false,
+      reason: "startMinuteOfDay and startTimezone must be both set or both empty.",
+    };
+  const sm = Number(startMinuteOfDay);
+  if (!Number.isInteger(sm) || sm < 0 || sm > 1439)
+    return {
+      ok: false,
+      reason: "startMinuteOfDay must be an integer in [0, 1439].",
+    };
+  if (!isValidTimezone(startTimezone))
+    return { ok: false, reason: "Invalid IANA timezone." };
+  return { ok: true, value: { sm, tz: String(startTimezone) } };
+}
 const {
   featureFlagEnabled,
 } = require("../../utils/middleware/featureFlagEnabled");
@@ -17,7 +44,13 @@ const { validatedRequest } = require("../../utils/middleware/validatedRequest");
 function redact(record) {
   if (!record) return null;
   const { encryptedConfig, ...rest } = record;
-  return rest;
+  const cfg = SourceSyncConfig.decryptConfig(record);
+  return {
+    ...rest,
+    baseUrl: cfg?.baseUrl ?? null,
+    startMinuteOfDay: record.startMinuteOfDay ?? null,
+    startTimezone: record.startTimezone ?? null,
+  };
 }
 
 function sourceSyncEndpoints(app) {
@@ -98,7 +131,14 @@ function sourceSyncEndpoints(app) {
     ],
     async (request, response) => {
       try {
-        const { workspaceId, type, config, intervalMs } = reqBody(request);
+        const {
+          workspaceId,
+          type,
+          config,
+          intervalMs,
+          startMinuteOfDay,
+          startTimezone,
+        } = reqBody(request);
         if (!workspaceId || !type || !config)
           return response
             .status(400)
@@ -115,11 +155,17 @@ function sourceSyncEndpoints(app) {
             .status(400)
             .json({ error: `Unsupported source type: ${type}.` });
 
+        const anchor = sanitizeAnchor({ startMinuteOfDay, startTimezone });
+        if (!anchor.ok)
+          return response.status(400).json({ error: anchor.reason });
+
         const record = await SourceSyncConfig.create({
           workspaceId: workspace.id,
           type,
           config,
           intervalMs,
+          startMinuteOfDay: anchor.value.sm,
+          startTimezone: anchor.value.tz,
         });
         if (!record)
           return response
@@ -145,6 +191,19 @@ function sourceSyncEndpoints(app) {
       try {
         const id = Number(request.params.id);
         const body = reqBody(request);
+        if (
+          body.startMinuteOfDay !== undefined ||
+          body.startTimezone !== undefined
+        ) {
+          const anchor = sanitizeAnchor({
+            startMinuteOfDay: body.startMinuteOfDay,
+            startTimezone: body.startTimezone,
+          });
+          if (!anchor.ok)
+            return response.status(400).json({ error: anchor.reason });
+          body.startMinuteOfDay = anchor.value.sm;
+          body.startTimezone = anchor.value.tz;
+        }
         const record = await SourceSyncConfig.update(id, body);
         if (!record) return response.sendStatus(404);
         response.status(200).json({ source: redact(record) });

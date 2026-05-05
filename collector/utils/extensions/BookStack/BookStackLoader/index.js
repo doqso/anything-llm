@@ -79,10 +79,9 @@ class BookStackLoader {
         return pageData;
     }
 
-    async createDocumentFromPage(pageData) {
+    async createDocumentFromPage(pageData, { includeOcr = true } = {}) {
         const root = parse(pageData.html);
         const images = root.querySelectorAll("img");
-        const imageDescriptions = [];
 
         for (const img of images) {
             const src = img.getAttribute("src");
@@ -96,16 +95,18 @@ class BookStackLoader {
 
             let description = alt ? `[Imagen: ${alt}]` : "[Imagen sin descripción]";
 
-            // Try OCR if the image is from BookStack and we have tokens
-            try {
-                this.log(`Attempting OCR on image: ${absoluteSrc}`);
-                const imageBuffer = await this.fetchBookStackData(absoluteSrc, true);
-                const { data: { text } } = await Tesseract.recognize(Buffer.from(imageBuffer), 'eng+spa');
-                if (text?.trim()) {
-                    description += ` (Contenido detectado: ${text.trim().replace(/\n/g, " ")})`;
+            if (includeOcr) {
+                // Try OCR if the image is from BookStack and we have tokens.
+                try {
+                    this.log(`Attempting OCR on image: ${absoluteSrc}`);
+                    const imageBuffer = await this.fetchBookStackData(absoluteSrc, true);
+                    const { data: { text } } = await Tesseract.recognize(Buffer.from(imageBuffer), 'eng+spa');
+                    if (text?.trim()) {
+                        description += ` (Contenido detectado: ${text.trim().replace(/\n/g, " ")})`;
+                    }
+                } catch (ocrError) {
+                    this.log(`OCR failed for ${absoluteSrc}:`, ocrError.message);
                 }
-            } catch (ocrError) {
-                this.log(`OCR failed for ${absoluteSrc}:`, ocrError.message);
             }
 
             // Replace image tag with a placeholder in the HTML so html-to-text preserves it

@@ -3,6 +3,7 @@ import { baseHeaders, safeJsonParse } from "@/utils/request";
 import DataConnector from "./dataConnector";
 import LiveDocumentSync from "./experimental/liveSync";
 import AgentPlugins from "./experimental/agentPlugins";
+import SourceSync from "./experimental/sourceSync";
 import SystemPromptVariable from "./systemPromptVariable";
 
 const System = {
@@ -867,6 +868,7 @@ const System = {
   experimentalFeatures: {
     liveSync: LiveDocumentSync,
     agentPlugins: AgentPlugins,
+    sourceSync: SourceSync,
   },
   promptVariables: SystemPromptVariable,
 };

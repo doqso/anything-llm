@@ -26,8 +26,19 @@ export default function DocumentSyncQueueRow({ queue }) {
         </td>
         <td className="px-6 py-4">{moment(queue.lastSyncedAt).fromNow()}</td>
         <td className="px-6 py-4">
-          {moment(queue.nextSyncAt).format("lll")}
-          <i className="text-xs px-2">({moment(queue.nextSyncAt).fromNow()})</i>
+          {moment(queue.nextSyncAt).isBefore(moment()) ? (
+            <span className="text-yellow-400 font-semibold">
+              Overdue
+              <i className="text-xs px-2 font-normal text-white/50">
+                ({moment(queue.nextSyncAt).fromNow()})
+              </i>
+            </span>
+          ) : (
+            <>
+              {moment(queue.nextSyncAt).format("lll")}
+              <i className="text-xs px-2">({moment(queue.nextSyncAt).fromNow()})</i>
+            </>
+          )}
         </td>
         <td className="px-6 py-4">{moment(queue.createdAt).format("lll")}</td>
         <td className="px-6 py-4 flex items-center gap-x-6">

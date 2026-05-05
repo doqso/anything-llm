@@ -40,10 +40,41 @@ const DocumentSyncQueue = {
   },
 
   /**
+   * Reads the global LiveSync schedule (interval + optional anchor) from SystemSettings.
+   */
+  getAnchorSettings: async function () {
+    const intervalRaw = (
+      await SystemSettings.get({ label: "live_file_sync_interval_ms" })
+    )?.value;
+    const intervalMs = Number(intervalRaw) || this.defaultStaleAfter;
+    const startMinRaw = (
+      await SystemSettings.get({ label: "live_file_sync_start_minute_of_day" })
+    )?.value;
+    const startMinuteOfDay =
+      startMinRaw === "" || startMinRaw == null ? null : Number(startMinRaw);
+    const startTimezone =
+      (await SystemSettings.get({ label: "live_file_sync_start_timezone" }))
+        ?.value || null;
+    return {
+      intervalMs: intervalMs >= 60000 ? intervalMs : this.defaultStaleAfter,
+      startMinuteOfDay: Number.isInteger(startMinuteOfDay)
+        ? startMinuteOfDay
+        : null,
+      startTimezone: startTimezone || null,
+    };
+  },
+
+  /**
    * @param {import("@prisma/client").document_sync_queues} queueRecord - queue record to calculate for
    */
-  calcNextSync: function (queueRecord) {
-    return new Date(Number(new Date()) + queueRecord.staleAfterMs);
+  calcNextSync: async function (queueRecord) {
+    const { calcAnchoredNextSync } = require("../utils/scheduling/anchor");
+    const { startMinuteOfDay, startTimezone } = await this.getAnchorSettings();
+    return calcAnchoredNextSync(
+      queueRecord.staleAfterMs,
+      startMinuteOfDay,
+      startTimezone
+    );
   },
 
   /**
@@ -89,10 +120,19 @@ const DocumentSyncQueue = {
           `Cannot watch this document again - it already has a queue set.`
         );
 
+      const { calcAnchoredNextSync } = require("../utils/scheduling/anchor");
+      const { intervalMs, startMinuteOfDay, startTimezone } =
+        await this.getAnchorSettings();
+      const staleAfterMs = intervalMs;
       const queue = await prisma.document_sync_queues.create({
         data: {
           workspaceDocId: document.id,
-          nextSyncAt: new Date(Number(new Date()) + this.defaultStaleAfter),
+          staleAfterMs,
+          nextSyncAt: calcAnchoredNextSync(
+            staleAfterMs,
+            startMinuteOfDay,
+            startTimezone
+          ),
         },
       });
       await Document._updateAll(
@@ -228,6 +268,38 @@ const DocumentSyncQueue = {
       }
     );
     return queues;
+  },
+
+  /**
+   * Realigns staleAfterMs and nextSyncAt for all watched documents.
+   * Called when the global LiveSync schedule (interval and/or anchor) changes.
+   */
+  realignAllSchedules: async function ({
+    intervalMs,
+    startMinuteOfDay = null,
+    startTimezone = null,
+  } = {}) {
+    const { calcAnchoredNextSync } = require("../utils/scheduling/anchor");
+    const staleAfterMs = Math.max(
+      60000,
+      Number(intervalMs) || this.defaultStaleAfter
+    );
+    try {
+      await prisma.document_sync_queues.updateMany({
+        data: {
+          staleAfterMs,
+          nextSyncAt: calcAnchoredNextSync(
+            staleAfterMs,
+            startMinuteOfDay,
+            startTimezone
+          ),
+        },
+      });
+      return true;
+    } catch (error) {
+      console.error(error.message);
+      return false;
+    }
   },
 
   saveRun: async function (queueId = null, status = null, result = {}) {

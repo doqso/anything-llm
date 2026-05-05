@@ -1,4 +1,4 @@
-import { memo, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import {
   formatDateTimeAsMoment,
   getFileExtension,
@@ -106,6 +106,7 @@ export default function WorkspaceFileRow({
               workspace={workspace}
               docPath={`${folderName}/${item.name}`}
               item={item}
+              fetchKeys={fetchKeys}
             />
             <PinItemToWorkspace
               workspace={workspace}
@@ -186,9 +187,13 @@ const PinItemToWorkspace = memo(({ workspace, docPath, item }) => {
   );
 });
 
-const WatchForChanges = memo(({ workspace, docPath, item }) => {
+const WatchForChanges = memo(({ workspace, docPath, item, fetchKeys }) => {
   const [watched, setWatched] = useState(item?.watched || false);
   const watchEvent = new CustomEvent("watch_document_for_changes");
+
+  useEffect(() => {
+    setWatched(item?.watched || false);
+  }, [item?.watched]);
 
   const updateWatchStatus = async (e) => {
     try {
@@ -222,6 +227,7 @@ const WatchForChanges = memo(({ workspace, docPath, item }) => {
         { clear: true }
       );
       setWatched(!watched);
+      await fetchKeys(true);
     } catch (error) {
       showToast(`Failed to watch document. ${error.message}`, "error", {
         clear: true,

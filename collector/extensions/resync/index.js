@@ -194,10 +194,11 @@ async function resyncPaperlessNgx({ chunkSource }, response) {
  * @param {object} data - metadata from document (eg: chunkSource)
  * @param {import("../../middleware/setDataSigner").ResponseWithSigner} response
  */
-async function resyncBookStack({ chunkSource }, response) {
+async function resyncBookStack({ chunkSource, includeOcr = true }, response) {
   if (!chunkSource) throw new Error('Invalid source property provided');
   try {
     const source = response.locals.encryptionWorker.expandPayload(chunkSource);
+    const shouldIncludeOcr = includeOcr !== false && includeOcr !== "false";
     const { fetchBookStackPage } = require("../../utils/extensions/BookStack");
     // chunkSource is `bookstack://<pageId>?payload=...`; URL parser puts <pageId> in hostname.
     const { success, reason, content } = await fetchBookStackPage({
@@ -206,6 +207,7 @@ async function resyncBookStack({ chunkSource }, response) {
       tokenId: source.searchParams.get('tokenId'),
       tokenSecret: source.searchParams.get('tokenSecret'),
       bypassSSL: source.searchParams.get('bypassSSL') === 'true',
+      includeOcr: shouldIncludeOcr,
     });
 
     if (!success) throw new Error(`Failed to sync BookStack page content. ${reason}`);

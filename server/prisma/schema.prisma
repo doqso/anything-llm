@@ -309,18 +309,20 @@ model document_sync_executions {
 }
 
 model source_sync_configs {
-  id              Int                      @id @default(autoincrement())
-  workspaceId     Int
-  type            String
-  encryptedConfig String
-  intervalMs      Int                      @default(3600000)
-  nextSyncAt      DateTime
-  lastSyncedAt    DateTime?
-  failureCount    Int                      @default(0)
-  createdAt       DateTime                 @default(now())
-  lastUpdatedAt   DateTime                 @default(now())
-  workspace       workspaces               @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  runs            source_sync_executions[]
+  id               Int                      @id @default(autoincrement())
+  workspaceId      Int
+  type             String
+  encryptedConfig  String
+  intervalMs       Int                      @default(3600000)
+  startMinuteOfDay Int?
+  startTimezone    String?
+  nextSyncAt       DateTime
+  lastSyncedAt     DateTime?
+  failureCount     Int                      @default(0)
+  createdAt        DateTime                 @default(now())
+  lastUpdatedAt    DateTime                 @default(now())
+  workspace        workspaces               @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  runs             source_sync_executions[]
 }
 
 model source_sync_executions {

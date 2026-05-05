@@ -186,6 +186,7 @@ async function loadBookStack(
 
 /**
  * Fetches the current content of a BookStack page without persisting. Used by resync.
+ * OCR can be disabled for cheap/stable diff checks and re-enabled when embedding.
  */
 async function fetchBookStackPage({
     pageId,
@@ -193,6 +194,7 @@ async function fetchBookStackPage({
     tokenId,
     tokenSecret,
     bypassSSL = false,
+    includeOcr = true,
 }) {
     if (!pageId || !baseUrl || !tokenId || !tokenSecret) {
         return {
@@ -220,7 +222,7 @@ async function fetchBookStackPage({
             };
         }
 
-        const doc = await loader.createDocumentFromPage(pageData);
+        const doc = await loader.createDocumentFromPage(pageData, { includeOcr });
         return {
             success: true,
             reason: null,

@@ -15,11 +15,13 @@ import { SEEN_DOC_PIN_ALERT, SEEN_WATCH_ALERT } from "@/utils/constants";
 import paths from "@/utils/paths";
 import { Link } from "react-router-dom";
 import Workspace from "@/models/workspace";
+import System from "@/models/system";
 import { Tooltip } from "react-tooltip";
 import { safeJsonParse } from "@/utils/request";
 import { useTranslation } from "react-i18next";
 import { middleTruncate } from "@/utils/directories";
 import { useEmbeddingProgress } from "@/EmbeddingProgressContext";
+import showToast from "@/utils/toast";
 
 function WorkspaceDirectory({
   workspace,
@@ -42,6 +44,25 @@ function WorkspaceDirectory({
     (sum, folder) => sum + (folder.items?.length ?? 0),
     0
   );
+  const workspaceItems = (files?.items ?? []).flatMap((folder) =>
+    (folder.items ?? []).map((item) => ({
+      item,
+      folderName: folder.name,
+      docPath: `${folder.name}/${item.name}`,
+    }))
+  );
+  const selectedWorkspaceItems = workspaceItems.filter(
+    ({ item }) => selectedItems[item.id]
+  );
+  const selectedWatchableItems = selectedWorkspaceItems.filter(
+    ({ item }) => item.canWatch
+  );
+  const selectedUnwatchedItems = selectedWatchableItems.filter(
+    ({ item }) => !item.watched
+  );
+  const selectedWatchedItems = selectedWatchableItems.filter(
+    ({ item }) => item.watched
+  );
 
   const toggleSelection = (item) => {
     setSelectedItems((prevSelectedItems) => {
@@ -56,13 +77,12 @@ function WorkspaceDirectory({
   };
 
   const toggleSelectAll = () => {
-    const allItems = files.items.flatMap((folder) => folder.items);
-    const allSelected = allItems.every((item) => selectedItems[item.id]);
+    const allSelected = workspaceItems.every(({ item }) => selectedItems[item.id]);
     if (allSelected) {
       setSelectedItems({});
     } else {
       const newSelectedItems = {};
-      allItems.forEach((item) => {
+      workspaceItems.forEach(({ item }) => {
         newSelectedItems[item.id] = true;
       });
       setSelectedItems(newSelectedItems);
@@ -94,6 +114,59 @@ function WorkspaceDirectory({
 
     setLoadingMessage("");
     setLoading(false);
+  };
+
+  const updateSelectedWatchStatus = async (watchStatus) => {
+    const itemsToUpdate = (
+      watchStatus ? selectedUnwatchedItems : selectedWatchedItems
+    ).map(({ docPath }) => docPath);
+    if (itemsToUpdate.length === 0) return;
+
+    try {
+      if (watchStatus) {
+        window.dispatchEvent(new CustomEvent("watch_document_for_changes"));
+      }
+      setLoading(true);
+      setLoadingMessage(
+        watchStatus
+          ? t("connectors.directory.watching_selected")
+          : t("connectors.directory.unwatching_selected")
+      );
+      const result =
+        await System.experimentalFeatures.liveSync.setWatchStatusForDocuments(
+          workspace.slug,
+          itemsToUpdate,
+          watchStatus
+        );
+
+      if (!result.success) {
+        showToast(
+          result.error ||
+            t("connectors.directory.watch_selected_failed"),
+          "error",
+          { clear: true }
+        );
+        return;
+      }
+
+      await fetchKeys(true);
+      setSelectedItems({});
+      showToast(
+        t(
+          watchStatus
+            ? "connectors.directory.watch_selected_success"
+            : "connectors.directory.unwatch_selected_success",
+          { count: result.updated ?? itemsToUpdate.length }
+        ),
+        "success",
+        { clear: true }
+      );
+    } catch (error) {
+      showToast(error.message, "error", { clear: true });
+    } finally {
+      setLoadingMessage("");
+      setLoading(false);
+    }
   };
 
   const handleSaveChanges = (e) => {
@@ -194,20 +267,15 @@ function WorkspaceDirectory({
                     className={`shrink-0 w-3 h-3 rounded border-[1px] border-solid border-white text-theme-text-primary light:invert flex justify-center items-center cursor-pointer`}
                     role="checkbox"
                     aria-checked={
-                      Object.keys(selectedItems).length ===
-                      files.items.reduce(
-                        (sum, folder) => sum + folder.items.length,
-                        0
-                      )
+                      Object.keys(selectedItems).length === workspaceItems.length
                     }
                     tabIndex={0}
                     onClick={toggleSelectAll}
                   >
                     {Object.keys(selectedItems).length ===
-                      files.items.reduce(
-                        (sum, folder) => sum + folder.items.length,
-                        0
-                      ) && <div className="w-2 h-2 bg-white rounded-[2px]" />}
+                      workspaceItems.length && (
+                      <div className="w-2 h-2 bg-white rounded-[2px]" />
+                    )}
                   </div>
                 ) : (
                   <div className="shrink-0 w-3 h-3" />
@@ -266,13 +334,26 @@ function WorkspaceDirectory({
                       className="border-none text-sm font-semibold bg-white light:bg-[#E0F2FE] h-[30px] px-2.5 rounded-lg hover:bg-neutral-800/80 hover:text-white light:text-[#026AA2] light:hover:bg-[#026AA2] light:hover:text-white"
                     >
                       {Object.keys(selectedItems).length ===
-                      files.items.reduce(
-                        (sum, folder) => sum + folder.items.length,
-                        0
-                      )
+                      workspaceItems.length
                         ? t("connectors.directory.deselect_all")
                         : t("connectors.directory.select_all")}
                     </button>
+                    {selectedUnwatchedItems.length > 0 && (
+                      <button
+                        onClick={() => updateSelectedWatchStatus(true)}
+                        className="border-none text-sm font-semibold bg-white light:bg-[#E0F2FE] h-[30px] px-2.5 rounded-lg hover:bg-neutral-800/80 hover:text-white light:text-[#026AA2] light:hover:bg-[#026AA2] light:hover:text-white"
+                      >
+                        {t("connectors.directory.watch_selected")}
+                      </button>
+                    )}
+                    {selectedWatchedItems.length > 0 && (
+                      <button
+                        onClick={() => updateSelectedWatchStatus(false)}
+                        className="border-none text-sm font-semibold bg-white light:bg-[#E0F2FE] h-[30px] px-2.5 rounded-lg hover:bg-neutral-800/80 hover:text-white light:text-[#026AA2] light:hover:bg-[#026AA2] light:hover:text-white"
+                      >
+                        {t("connectors.directory.unwatch_selected")}
+                      </button>
+                    )}
                     <button
                       onClick={removeSelectedItems}
                       className="border-none text-sm font-semibold bg-white light:bg-[#E0F2FE] h-[30px] px-2.5 rounded-lg hover:bg-neutral-800/80 hover:text-white light:text-[#026AA2] light:hover:bg-[#026AA2] light:hover:text-white"
