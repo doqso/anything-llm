@@ -56,6 +56,7 @@ const Workspace = {
     "agentModel",
     "queryRefusalResponse",
     "vectorSearchMode",
+    "ollamaThink",
   ],
 
   validations: {
@@ -130,6 +131,13 @@ const Workspace = {
       )
         return "default";
       return value;
+    },
+    ollamaThink: (value) => {
+      if (value === null || value === undefined || value === "null" || value === "")
+        return null;
+      if (value === true || value === "true") return true;
+      if (value === false || value === "false") return false;
+      return null;
     },
   },
 

@@ -267,7 +267,7 @@ class OllamaAILLM {
     ];
   }
 
-  async getChatCompletion(messages = null, { temperature = 0.7 }) {
+  async getChatCompletion(messages = null, { temperature = 0.7, think = null }) {
     const result = await LLMPerformanceMonitor.measureAsyncFunction(
       this.client
         .chat({
@@ -275,6 +275,7 @@ class OllamaAILLM {
           stream: false,
           messages,
           keep_alive: this.keepAlive,
+          ...(think !== null && { think }),
           options: {
             temperature,
             num_ctx: this.promptWindowLimit(),
@@ -320,13 +321,14 @@ class OllamaAILLM {
     };
   }
 
-  async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
+  async streamGetChatCompletion(messages = null, { temperature = 0.7, think = null }) {
     const measuredStreamRequest = await LLMPerformanceMonitor.measureStream({
       func: this.client.chat({
         model: this.model,
         stream: true,
         messages,
         keep_alive: this.keepAlive,
+        ...(think !== null && { think }),
         options: {
           temperature,
           num_ctx: this.promptWindowLimit(),

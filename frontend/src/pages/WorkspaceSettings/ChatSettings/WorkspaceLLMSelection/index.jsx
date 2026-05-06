@@ -194,11 +194,47 @@ function ModelSelector({ selectedLLM, workspace, setHasChanges }) {
   }
 
   return (
-    <ChatModelSelection
-      provider={selectedLLM}
-      workspace={workspace}
-      setHasChanges={setHasChanges}
-    />
+    <>
+      <ChatModelSelection
+        provider={selectedLLM}
+        workspace={workspace}
+        setHasChanges={setHasChanges}
+      />
+      {selectedLLM === "ollama" && (
+        <OllamaThinkSelector
+          workspace={workspace}
+          setHasChanges={setHasChanges}
+        />
+      )}
+    </>
+  );
+}
+
+function OllamaThinkSelector({ workspace, setHasChanges }) {
+  const currentValue =
+    workspace?.ollamaThink === true
+      ? "true"
+      : workspace?.ollamaThink === false
+        ? "false"
+        : "null";
+  return (
+    <div className="mt-4 flex flex-col gap-y-1">
+      <label className="block input-label">Thinking</label>
+      <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
+        Controla el modo de razonamiento extendido para modelos compatibles
+        (qwen3, deepseek-r1...).
+      </p>
+      <select
+        name="ollamaThink"
+        defaultValue={currentValue}
+        onChange={() => setHasChanges(true)}
+        className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full max-w-[640px] p-2.5"
+      >
+        <option value="null">Auto (predeterminado del modelo)</option>
+        <option value="true">Siempre activado</option>
+        <option value="false">Siempre desactivado</option>
+      </select>
+    </div>
   );
 }
 

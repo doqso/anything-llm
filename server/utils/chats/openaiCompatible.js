@@ -166,6 +166,7 @@ async function chatSync({
     {
       temperature:
         temperature ?? workspace?.openAiTemp ?? LLMConnector.defaultTemp,
+      think: workspace?.ollamaThink ?? null,
     }
   );
 

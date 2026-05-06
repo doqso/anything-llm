@@ -33,6 +33,7 @@ export default function LLMSelectorModal({
   const [hasChanges, setHasChanges] = useState(false);
   const [saving, setSaving] = useState(false);
   const [missingCredentials, setMissingCredentials] = useState(false);
+  const [ollamaThink, setOllamaThink] = useState(null);
 
   useEffect(() => {
     if (!slug) return;
@@ -48,6 +49,7 @@ export default function LLMSelectorModal({
         setSelectedLLMProvider(providerToSelect);
         autoScrollToSelectedLLMProvider(providerToSelect);
         setSelectedLLMModel(savedModel);
+        setOllamaThink(workspace.ollamaThink ?? null);
 
         if (initialProvider && initialProvider !== savedProvider) {
           setHasChanges(true);
@@ -86,6 +88,7 @@ export default function LLMSelectorModal({
       const { message } = await Workspace.update(slug, {
         chatProvider: selectedLLMProvider,
         chatModel: validatedModel,
+        ollamaThink,
       });
 
       if (!!message) throw new Error(message);
@@ -145,6 +148,35 @@ export default function LLMSelectorModal({
               selectedLLMModel={selectedLLMModel}
               setSelectedLLMModel={setSelectedLLMModel}
             />
+          )}
+          {!missingCredentials && selectedLLMProvider === "ollama" && (
+            <div className="flex flex-col gap-1">
+              <label className="text-white light:text-slate-800 text-xs font-medium">
+                Thinking
+              </label>
+              <select
+                value={
+                  ollamaThink === true
+                    ? "true"
+                    : ollamaThink === false
+                      ? "false"
+                      : "null"
+                }
+                onChange={(e) => {
+                  const val =
+                    e.target.value === "null"
+                      ? null
+                      : e.target.value === "true";
+                  setOllamaThink(val);
+                  setHasChanges(true);
+                }}
+                className="bg-theme-settings-input-bg text-white light:text-slate-800 text-xs rounded-lg px-2 py-1.5 border border-white/10 focus:outline-primary-button"
+              >
+                <option value="null">Auto (predeterminado del modelo)</option>
+                <option value="true">Siempre activado</option>
+                <option value="false">Siempre desactivado</option>
+              </select>
+            </div>
           )}
         </div>
         <NoSetupWarning
