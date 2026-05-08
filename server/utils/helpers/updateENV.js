@@ -137,6 +137,10 @@ const KEY_MAPPING = {
     envKey: "OLLAMA_AUTH_TOKEN",
     checks: [],
   },
+  OllamaLLMThink: {
+    envKey: "OLLAMA_THINK",
+    checks: [],
+  },
 
   // Mistral AI API Settings
   MistralApiKey: {

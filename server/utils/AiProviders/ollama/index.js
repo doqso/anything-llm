@@ -26,6 +26,13 @@ class OllamaAILLM {
     this.keepAlive = process.env.OLLAMA_KEEP_ALIVE_TIMEOUT
       ? Number(process.env.OLLAMA_KEEP_ALIVE_TIMEOUT)
       : 300; // Default 5-minute timeout for Ollama model loading.
+    const _globalThink = process.env.OLLAMA_THINK;
+    this.globalThink =
+      _globalThink === "true"
+        ? true
+        : _globalThink === "false"
+          ? false
+          : null;
 
     const headers = this.authToken
       ? { Authorization: `Bearer ${this.authToken}` }
@@ -268,6 +275,7 @@ class OllamaAILLM {
   }
 
   async getChatCompletion(messages = null, { temperature = 0.7, think = null }) {
+    const effectiveThink = think !== null ? think : this.globalThink;
     const result = await LLMPerformanceMonitor.measureAsyncFunction(
       this.client
         .chat({
@@ -275,7 +283,7 @@ class OllamaAILLM {
           stream: false,
           messages,
           keep_alive: this.keepAlive,
-          ...(think !== null && { think }),
+          ...(effectiveThink !== null && { think: effectiveThink }),
           options: {
             temperature,
             num_ctx: this.promptWindowLimit(),
@@ -322,13 +330,14 @@ class OllamaAILLM {
   }
 
   async streamGetChatCompletion(messages = null, { temperature = 0.7, think = null }) {
+    const effectiveThink = think !== null ? think : this.globalThink;
     const measuredStreamRequest = await LLMPerformanceMonitor.measureStream({
       func: this.client.chat({
         model: this.model,
         stream: true,
         messages,
         keep_alive: this.keepAlive,
-        ...(think !== null && { think }),
+        ...(effectiveThink !== null && { think: effectiveThink }),
         options: {
           temperature,
           num_ctx: this.promptWindowLimit(),

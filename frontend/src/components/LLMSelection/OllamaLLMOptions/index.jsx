@@ -33,6 +33,7 @@ export default function OllamaLLMOptions({ settings }) {
           basePath={basePath.value}
           authToken={authToken.value}
         />
+        <OllamaThinkSelector settings={settings} />
       </div>
       <div className="flex justify-start mt-4">
         <button
@@ -272,6 +273,36 @@ export default function OllamaLLMOptions({ settings }) {
           </div>
         </div>
       </div>
+    </div>
+  );
+}
+
+function OllamaThinkSelector({ settings }) {
+  const currentValue =
+    settings?.OllamaLLMThink === "true" || settings?.OllamaLLMThink === true
+      ? "true"
+      : settings?.OllamaLLMThink === "false" ||
+          settings?.OllamaLLMThink === false
+        ? "false"
+        : "null";
+  return (
+    <div className="flex flex-col w-60">
+      <label className="text-white text-sm font-semibold block mb-2">
+        Thinking
+      </label>
+      <select
+        name="OllamaLLMThink"
+        className="border-none bg-theme-settings-input-bg border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+        defaultValue={currentValue}
+      >
+        <option value="null">Auto (model default)</option>
+        <option value="true">Always on</option>
+        <option value="false">Always off</option>
+      </select>
+      <p className="text-xs leading-[18px] font-base text-white text-opacity-60 mt-2">
+        Controls extended reasoning for compatible models (qwen3,
+        deepseek-r1...). Workspaces can override this.
+      </p>
     </div>
   );
 }
