@@ -291,8 +291,13 @@ class OllamaAILLM {
         })
         .then((res) => {
           let content = res.message.content;
-          if (res.message.thinking)
+          if (res.message.thinking && effectiveThink !== false)
             content = `<think>${res.message.thinking}</think>${content}`;
+          if (effectiveThink === false) {
+            const closeIdx = content.indexOf("</think>");
+            if (closeIdx >= 0)
+              content = content.substring(closeIdx + "</think>".length).trimStart();
+          }
           return {
             content,
             usage: {
@@ -331,6 +336,7 @@ class OllamaAILLM {
 
   async streamGetChatCompletion(messages = null, { temperature = 0.7, think = null }) {
     const effectiveThink = think !== null ? think : this.globalThink;
+    this._effectiveThink = effectiveThink;
     const measuredStreamRequest = await LLMPerformanceMonitor.measureStream({
       func: this.client.chat({
         model: this.model,
@@ -366,6 +372,8 @@ class OllamaAILLM {
     return new Promise(async (resolve) => {
       let fullText = "";
       let reasoningText = "";
+      let stripThinkMode = this._effectiveThink === false;
+      let thinkBuffer = "";
       let usage = {
         prompt_tokens: 0,
         completion_tokens: 0,
@@ -389,6 +397,19 @@ class OllamaAILLM {
             );
 
           if (chunk.done) {
+            // Model respected think:false — buffer has real content, no </think> found
+            if (stripThinkMode && thinkBuffer.length > 0) {
+              fullText += thinkBuffer;
+              writeResponseChunk(response, {
+                uuid,
+                sources,
+                type: "textResponseChunk",
+                textResponse: thinkBuffer,
+                close: false,
+                error: false,
+              });
+              thinkBuffer = "";
+            }
             usage.prompt_tokens = chunk.prompt_eval_count;
             usage.completion_tokens = chunk.eval_count;
             usage.duration = chunk.eval_duration / 1e9;
@@ -413,7 +434,9 @@ class OllamaAILLM {
             const reasoningToken = chunk.message.thinking;
 
             if (reasoningToken) {
-              if (reasoningText.length === 0) {
+              if (this._effectiveThink === false) {
+                // Model ignored think:false — discard reasoning tokens
+              } else if (reasoningText.length === 0) {
                 const startTag = "<think>";
                 writeResponseChunk(response, {
                   uuid,
@@ -436,29 +459,53 @@ class OllamaAILLM {
                 reasoningText += reasoningToken;
               }
             } else if (content.length > 0) {
-              // If we have reasoning text, we need to close the reasoning tag and then append the content.
-              if (reasoningText.length > 0) {
-                const endTag = "</think>";
+              if (stripThinkMode) {
+                // Buffer content until we find </think> (model leaked thinking into content)
+                thinkBuffer += content;
+                const closeIdx = thinkBuffer.indexOf("</think>");
+                if (closeIdx >= 0) {
+                  stripThinkMode = false;
+                  const afterThink = thinkBuffer
+                    .substring(closeIdx + "</think>".length)
+                    .trimStart();
+                  thinkBuffer = "";
+                  if (afterThink.length > 0) {
+                    fullText += afterThink;
+                    writeResponseChunk(response, {
+                      uuid,
+                      sources,
+                      type: "textResponseChunk",
+                      textResponse: afterThink,
+                      close: false,
+                      error: false,
+                    });
+                  }
+                }
+              } else {
+                // If we have reasoning text, we need to close the reasoning tag and then append the content.
+                if (reasoningText.length > 0) {
+                  const endTag = "</think>";
+                  writeResponseChunk(response, {
+                    uuid,
+                    sources,
+                    type: "textResponseChunk",
+                    textResponse: endTag,
+                    close: false,
+                    error: false,
+                  });
+                  fullText += reasoningText + endTag;
+                  reasoningText = ""; // Reset reasoning buffer
+                }
+                fullText += content; // Append regular text
                 writeResponseChunk(response, {
                   uuid,
                   sources,
                   type: "textResponseChunk",
-                  textResponse: endTag,
+                  textResponse: content,
                   close: false,
                   error: false,
                 });
-                fullText += reasoningText + endTag;
-                reasoningText = ""; // Reset reasoning buffer
               }
-              fullText += content; // Append regular text
-              writeResponseChunk(response, {
-                uuid,
-                sources,
-                type: "textResponseChunk",
-                textResponse: content,
-                close: false,
-                error: false,
-              });
             }
           }
         }
