@@ -36,7 +36,6 @@ param(
     [string]$Tag            = "latest",
     [string]$PortainerUser  = "admin",
     [string]$PortainerPass  = "",
-    [string]$DeployPass     = ""   # si se pasa, hace push + redeploy del stack via deploy_anythingllm.ps1
 )
 
 $ErrorActionPreference = "Stop"
@@ -214,20 +213,7 @@ if ($Bootstrap) {
     Write-Host "`n✔  Bootstrap completado. Contenedor '$CONTAINER_NAME' corriendo con $FULL_IMAGE" -ForegroundColor Green
 }
 
-# ── 4. DEPLOY via deploy_anythingllm.ps1 (cuando se pasa -DeployPass) ─────────
-if ($DeployPass) {
-    if (-not ($Redeploy -or $Bootstrap)) {
-        Write-Step "Pushing $FULL_IMAGE al registry $REGISTRY (requerido para deploy)"
-        docker push $FULL_IMAGE
-        Assert-ExitCode "docker push"
-    }
-    $deployScript = Join-Path $PSScriptRoot "deploy_anythingllm.ps1"
-    Write-Step "Redespliegue del stack via deploy_anythingllm.ps1"
-    & $deployScript -Pass $DeployPass
-}
-
-if (-not $Redeploy -and -not $Bootstrap -and -not $DeployPass) {
+if (-not $Redeploy -and -not $Bootstrap) {
     Write-Host "`n✔  Build completado: $FULL_IMAGE" -ForegroundColor Green
     Write-Host "   Usa -Redeploy para subir al registry." -ForegroundColor DarkGray
-    Write-Host "   Usa -DeployPass 'pwd' para subir Y redesplegar en el servidor." -ForegroundColor DarkGray
 }
