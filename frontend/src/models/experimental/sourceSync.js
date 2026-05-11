@@ -34,6 +34,7 @@ const SourceSync = {
 
   createSource: async function ({
     workspaceId,
+    type,
     config,
     intervalMs,
     startMinuteOfDay = null,
@@ -44,7 +45,7 @@ const SourceSync = {
       headers: baseHeaders(),
       body: JSON.stringify({
         workspaceId,
-        type: "bookstack",
+        type,
         config,
         intervalMs,
         startMinuteOfDay,

@@ -1,9 +1,11 @@
 const fs = require("fs");
 const path = require("path");
 const { bookstackDriver } = require("./drivers/bookstack");
+const { zammadDriver } = require("./drivers/zammad");
 
 const DRIVERS = {
   bookstack: bookstackDriver,
+  zammad: zammadDriver,
 };
 
 function getDriver(type) {

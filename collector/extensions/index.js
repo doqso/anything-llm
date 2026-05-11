@@ -267,6 +267,72 @@ function extensions(app) {
   );
 
   app.post(
+    "/ext/zammad",
+    [verifyPayloadIntegrity, setDataSigner],
+    async function (request, response) {
+      try {
+        const { loadZammad } = require("../utils/extensions/Zammad");
+        const { success, reason, data } = await loadZammad(
+          reqBody(request),
+          response
+        );
+        response.status(200).json({ success, reason, data });
+      } catch (e) {
+        console.error(e);
+        response.status(400).json({
+          success: false,
+          reason: e.message,
+          data: { destination: null },
+        });
+      }
+      return;
+    }
+  );
+
+  app.post(
+    "/ext/zammad-enumerate",
+    [verifyPayloadIntegrity, setDataSigner],
+    async function (request, response) {
+      try {
+        const {
+          enumerateZammadTickets,
+        } = require("../utils/extensions/Zammad");
+        const result = await enumerateZammadTickets(reqBody(request));
+        response.status(200).json(result);
+      } catch (e) {
+        console.error(e);
+        response
+          .status(400)
+          .json({ success: false, reason: e.message, pages: [] });
+      }
+      return;
+    }
+  );
+
+  app.post(
+    "/ext/zammad-fetch-page",
+    [verifyPayloadIntegrity, setDataSigner],
+    async function (request, response) {
+      try {
+        const {
+          fetchAndSaveZammadTicket,
+        } = require("../utils/extensions/Zammad");
+        const result = await fetchAndSaveZammadTicket(
+          reqBody(request),
+          response
+        );
+        response.status(200).json(result);
+      } catch (e) {
+        console.error(e);
+        response
+          .status(400)
+          .json({ success: false, reason: e.message, docpath: null });
+      }
+      return;
+    }
+  );
+
+  app.post(
     "/ext/obsidian/vault",
     [verifyPayloadIntegrity, setDataSigner],
     async function (request, response) {

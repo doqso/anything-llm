@@ -4,7 +4,7 @@ const { Telemetry } = require("./telemetry");
 
 const SourceSyncConfig = {
   featureKey: "experimental_source_sync",
-  validTypes: ["bookstack"],
+  validTypes: ["bookstack", "zammad"],
   defaultIntervalMs: 3600000, // 1 hour
   minIntervalMs: 60000, // 1 minute lower bound
   maxRepeatFailures: 5, // after N straight failures, back off to failureBackoffMs
@@ -126,7 +126,24 @@ const SourceSyncConfig = {
       if (this.writable.includes(key)) validData[key] = data[key];
     }
     if (data.config && typeof data.config === "object") {
-      const encryptedConfig = this.encryptConfig(data.config);
+      // Merge incoming config with the currently-stored one so callers can send a
+      // partial config (e.g. the edit modal that omits secret fields like API tokens
+      // when the user leaves them blank to keep the existing values).
+      const existing = await this.get({ id: Number(id) });
+      const currentCfg = existing ? this.decryptConfig(existing) || {} : {};
+      const incoming = Object.fromEntries(
+        Object.entries(data.config).filter(
+          ([, v]) => v !== "" && v !== undefined && v !== null
+        )
+      );
+      // Booleans must pass through even when false (otherwise toggling
+      // bypassSSL or includeInternal off would silently revert).
+      for (const key of ["bypassSSL", "includeInternal"]) {
+        if (Object.prototype.hasOwnProperty.call(data.config, key))
+          incoming[key] = !!data.config[key];
+      }
+      const merged = { ...currentCfg, ...incoming };
+      const encryptedConfig = this.encryptConfig(merged);
       if (!encryptedConfig) throw new Error("Failed to encrypt config");
       validData.encryptedConfig = encryptedConfig;
     }

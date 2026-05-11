@@ -90,6 +90,18 @@ const JOB_NAME = "sync-watched-documents";
         newContent = response?.content;
       }
 
+      if (type === "zammad") {
+        const response = await collector.forwardExtensionRequest({
+          endpoint: "/ext/resync-source-document",
+          method: "POST",
+          body: JSON.stringify({
+            type,
+            options: { chunkSource: metadata.chunkSource },
+          }),
+        });
+        newContent = response?.content;
+      }
+
       if (!newContent) {
         // Check if the last "x" runs were all failures (not exits!). If so - remove the job entirely since it is broken.
         const failedRunCount = (

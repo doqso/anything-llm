@@ -44,10 +44,16 @@ const { validatedRequest } = require("../../utils/middleware/validatedRequest");
 function redact(record) {
   if (!record) return null;
   const { encryptedConfig, ...rest } = record;
-  const cfg = SourceSyncConfig.decryptConfig(record);
+  const cfg = SourceSyncConfig.decryptConfig(record) || {};
   return {
     ...rest,
-    baseUrl: cfg?.baseUrl ?? null,
+    baseUrl: cfg.baseUrl ?? null,
+    // Non-secret config fields exposed so the edit modal can pre-populate them.
+    // Tokens (apiToken, tokenId, tokenSecret) are NEVER returned to the frontend.
+    query: cfg.query ?? null,
+    includeInternal:
+      typeof cfg.includeInternal === "boolean" ? cfg.includeInternal : null,
+    bypassSSL: typeof cfg.bypassSSL === "boolean" ? cfg.bypassSSL : null,
     startMinuteOfDay: record.startMinuteOfDay ?? null,
     startTimezone: record.startTimezone ?? null,
   };

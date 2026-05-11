@@ -1240,6 +1240,24 @@ const TRANSLATIONS = {
       submit: "Submit",
       collecting: "Collecting pages...",
     },
+    zammad: {
+      name: "Zammad",
+      description: "Import tickets from your Zammad helpdesk filtered by a search query.",
+      base_url: "Zammad base URL",
+      base_url_explained: "Base URL of your Zammad instance WITHOUT /api/v1 (e.g., https://zammad.example.com).",
+      api_token: "API Token",
+      api_token_explained: "Personal API token from your Zammad user profile (Profile → Token Access).",
+      query: "Search query",
+      query_explained:
+        "Lucene-style query as used in Zammad's search bar. Example: state.name:\"open\" AND group.name:\"Soporte\" AND created_at:>now-90d.",
+      include_internal: "Include internal articles",
+      include_internal_explained:
+        "Include private notes between agents. Disable to keep only customer-visible content.",
+      bypass_ssl: "Bypass SSL Certificate Validation",
+      bypass_ssl_explained: "Enable this if your Zammad instance uses a self-signed certificate.",
+      submit: "Submit",
+      collecting: "Collecting tickets...",
+    },
     manage: {
       documents: "Documents",
       "data-connectors": "Data Connectors",

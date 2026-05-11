@@ -304,6 +304,9 @@ const Document = {
     // is a bare numeric id, so it is not a parseable URL — strip the query string manually.
     if (type === "bookstack") return sourceString.split("?")[0];
 
+    // Zammad chunkSource follows the same shape `zammad://<ticketId>?payload=...`.
+    if (type === "zammad") return sourceString.split("?")[0];
+
     if (["confluence", "github", "gitlab", "drupalwiki"].includes(type)) {
       const _src = new URL(sourceString);
       _src.search = ""; // remove all search params that are encoded for resync.

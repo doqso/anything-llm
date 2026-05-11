@@ -9,7 +9,6 @@ import showToast from "@/utils/toast";
 import {
   ArrowClockwise,
   ClockCounterClockwise,
-  PencilSimple,
   Plus,
   Trash,
   X,
@@ -70,7 +69,7 @@ function SourceSyncContainer() {
   const [sources, setSources] = useState([]);
   const [showNew, setShowNew] = useState(false);
   const [historySource, setHistorySource] = useState(null);
-  const [editScheduleSource, setEditScheduleSource] = useState(null);
+  const [editSource, setEditSource] = useState(null);
 
   async function refresh() {
     setLoading(true);
@@ -84,7 +83,11 @@ function SourceSyncContainer() {
   }, []);
 
   async function handleDelete(id) {
-    if (!window.confirm("Remove this BookStack source? This will not delete already-embedded documents."))
+    if (
+      !window.confirm(
+        "Remove this source? This will not delete already-embedded documents."
+      )
+    )
       return;
     const ok = await System.experimentalFeatures.sourceSync.deleteSource(id);
     if (!ok) {
@@ -111,11 +114,12 @@ function SourceSyncContainer() {
         <div className="items-center flex justify-between gap-x-4">
           <div>
             <p className="text-lg leading-6 font-bold text-theme-text-primary">
-              BookStack Sources
+              Source Sync
             </p>
             <p className="text-xs leading-[18px] font-base text-theme-text-secondary mt-1">
-              Each source monitors a BookStack instance and keeps the linked
-              workspace in sync — adding new pages and removing deleted ones.
+              Each source monitors an external system (BookStack, Zammad, …)
+              and keeps the linked workspace in sync — adding new content and
+              removing items that no longer exist remotely.
             </p>
           </div>
           <button
@@ -142,14 +146,15 @@ function SourceSyncContainer() {
         <div className="overflow-x-auto mt-6">
           {sources.length === 0 ? (
             <p className="text-theme-text-secondary text-sm text-center py-12">
-              No BookStack sources configured. Click "New source" to add one.
+              No sources configured. Click "New source" to add one.
             </p>
           ) : (
-            <table className="w-full text-sm text-left rounded-lg min-w-[700px]">
+            <table className="w-full text-sm text-left rounded-lg min-w-[800px]">
               <thead className="text-theme-text-secondary text-xs leading-[18px] font-bold uppercase border-white/10 border-b">
                 <tr>
                   <th className="px-4 py-3 rounded-tl-lg">Workspace</th>
-                  <th className="px-4 py-3">BookStack URL</th>
+                  <th className="px-4 py-3">Type</th>
+                  <th className="px-4 py-3">URL</th>
                   <th className="px-4 py-3">Schedule</th>
                   <th className="px-4 py-3">Last synced</th>
                   <th className="px-4 py-3">Next sync</th>
@@ -161,10 +166,10 @@ function SourceSyncContainer() {
                   <SourceRow
                     key={source.id}
                     source={source}
+                    onEdit={() => setEditSource(source)}
                     onDelete={() => handleDelete(source.id)}
                     onForceSync={() => handleForceSync(source.id)}
                     onHistory={() => setHistorySource(source)}
-                    onEditSchedule={() => setEditScheduleSource(source)}
                   />
                 ))}
               </tbody>
@@ -173,11 +178,16 @@ function SourceSyncContainer() {
         </div>
       )}
 
-      {showNew && (
-        <NewSourceModal
-          onClose={() => setShowNew(false)}
-          onCreated={() => {
+      {(showNew || editSource) && (
+        <SourceModal
+          source={editSource}
+          onClose={() => {
             setShowNew(false);
+            setEditSource(null);
+          }}
+          onSaved={() => {
+            setShowNew(false);
+            setEditSource(null);
             refresh();
           }}
         />
@@ -189,47 +199,48 @@ function SourceSyncContainer() {
           onClose={() => setHistorySource(null)}
         />
       )}
-
-      {editScheduleSource && (
-        <EditScheduleModal
-          source={editScheduleSource}
-          onClose={() => setEditScheduleSource(null)}
-          onSaved={() => {
-            setEditScheduleSource(null);
-            refresh();
-          }}
-        />
-      )}
     </>
   );
 }
 
-function SourceRow({ source, onDelete, onForceSync, onHistory, onEditSchedule }) {
+const TYPE_LABELS = {
+  bookstack: "BookStack",
+  zammad: "Zammad",
+};
+
+function SourceRow({ source, onEdit, onDelete, onForceSync, onHistory }) {
   const intervalLabel = msToLabel(source.intervalMs);
   const startLabel =
     source.startMinuteOfDay != null
       ? `at ${minuteOfDayToHHMM(source.startMinuteOfDay)}`
       : null;
+  const typeLabel = TYPE_LABELS[source.type] ?? source.type ?? "—";
+
+  // Buttons in the actions column must not bubble click into the row's onEdit.
+  const stop = (handler) => (e) => {
+    e.stopPropagation();
+    handler();
+  };
 
   return (
-    <tr className="border-b border-white/5 hover:bg-theme-file-picker-hover">
+    <tr
+      onClick={onEdit}
+      className="border-b border-white/5 hover:bg-theme-file-picker-hover cursor-pointer"
+    >
       <td className="px-4 py-3 text-theme-text-primary font-medium">
         {source.workspace?.name ?? `Workspace #${source.workspaceId}`}
+      </td>
+      <td className="px-4 py-3 text-theme-text-secondary text-xs">
+        <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-theme-bg-primary border border-white/10">
+          {typeLabel}
+        </span>
       </td>
       <td className="px-4 py-3 text-theme-text-secondary font-mono text-xs truncate max-w-[200px]">
         {source.baseUrl ?? "—"}
       </td>
-      <td className="px-4 py-3">
-        <button
-          onClick={onEditSchedule}
-          className="flex items-center gap-x-2 text-theme-text-primary hover:text-white transition-colors text-xs"
-        >
-          <span>
-            every {intervalLabel}
-            {startLabel ? ` ${startLabel}` : ""}
-          </span>
-          <PencilSimple size={12} className="opacity-60" />
-        </button>
+      <td className="px-4 py-3 text-theme-text-primary text-xs">
+        every {intervalLabel}
+        {startLabel ? ` ${startLabel}` : ""}
       </td>
       <td className="px-4 py-3 text-theme-text-secondary text-xs">
         {formatDate(source.lastSyncedAt)}
@@ -240,21 +251,21 @@ function SourceRow({ source, onDelete, onForceSync, onHistory, onEditSchedule })
       <td className="px-4 py-3">
         <div className="flex items-center gap-x-3 justify-end">
           <button
-            onClick={onForceSync}
+            onClick={stop(onForceSync)}
             title="Force sync now"
             className="text-theme-text-secondary hover:text-white transition-colors"
           >
             <ArrowClockwise size={16} />
           </button>
           <button
-            onClick={onHistory}
+            onClick={stop(onHistory)}
             title="View run history"
             className="text-theme-text-secondary hover:text-white transition-colors"
           >
             <ClockCounterClockwise size={16} />
           </button>
           <button
-            onClick={onDelete}
+            onClick={stop(onDelete)}
             title="Delete source"
             className="text-theme-text-secondary hover:text-red-400 transition-colors"
           >
@@ -266,148 +277,95 @@ function SourceRow({ source, onDelete, onForceSync, onHistory, onEditSchedule })
   );
 }
 
-function EditScheduleModal({ source, onClose, onSaved }) {
-  const [intervalMs, setIntervalMs] = useState(source.intervalMs);
-  const [startTime, setStartTime] = useState(
-    source.startMinuteOfDay != null
-      ? minuteOfDayToHHMM(source.startMinuteOfDay)
-      : "12:00"
-  );
-  const [useAnchor, setUseAnchor] = useState(source.startMinuteOfDay != null);
-  const [saving, setSaving] = useState(false);
+const SOURCE_TYPES = [
+  { value: "bookstack", label: "BookStack" },
+  { value: "zammad", label: "Zammad" },
+];
 
-  async function handleSubmit(e) {
-    e.preventDefault();
-    setSaving(true);
-    const startMinuteOfDay = useAnchor ? hhmmToMinuteOfDay(startTime) : null;
-    const startTimezone = useAnchor ? browserTimezone() : null;
-    const res = await System.experimentalFeatures.sourceSync.updateSource(
-      source.id,
-      {
-        intervalMs: Number(intervalMs),
-        startMinuteOfDay,
-        startTimezone,
-      }
-    );
-    setSaving(false);
-    if (!res.success) {
-      showToast(res.error || "Failed to update schedule.", "error", { clear: true });
-      return;
-    }
-    showToast("Schedule updated.", "success", { clear: true });
-    onSaved();
-  }
-
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
-      <div className="bg-theme-bg-secondary border border-theme-modal-border rounded-2xl w-full max-w-md p-6 shadow-xl">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-theme-text-primary text-lg font-bold">
-            Edit schedule
-          </h3>
-          <button onClick={onClose} className="text-theme-text-secondary hover:text-white">
-            <X size={20} />
-          </button>
-        </div>
-        <form onSubmit={handleSubmit} className="flex flex-col gap-y-4">
-          <div className="flex flex-col gap-y-1">
-            <label className="text-theme-text-primary text-sm font-semibold">
-              Interval
-            </label>
-            <select
-              value={intervalMs}
-              onChange={(e) => setIntervalMs(Number(e.target.value))}
-              className="bg-theme-settings-input-bg text-theme-text-primary border border-theme-modal-border rounded-lg px-3 py-2 text-sm"
-            >
-              {INTERVAL_OPTIONS.map((opt) => (
-                <option key={opt.value} value={opt.value}>
-                  {opt.label}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <label className="flex items-center gap-x-2 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={useAnchor}
-              onChange={(e) => setUseAnchor(e.target.checked)}
-              className="w-4 h-4 accent-blue-500"
-            />
-            <span className="text-theme-text-primary text-sm">
-              Anchor to a specific start time
-            </span>
-          </label>
-
-          {useAnchor && (
-            <div className="flex flex-col gap-y-1">
-              <label className="text-theme-text-primary text-sm font-semibold">
-                Start time ({browserTimezone()})
-              </label>
-              <input
-                type="time"
-                value={startTime}
-                onChange={(e) => setStartTime(e.target.value)}
-                className="bg-theme-settings-input-bg text-theme-text-primary border border-theme-modal-border rounded-lg px-3 py-2 text-sm w-fit"
-              />
-              <p className="text-theme-text-secondary text-xs">
-                The schedule will align to this time of day. Useful to stagger
-                jobs that share the same interval.
-              </p>
-            </div>
-          )}
-
-          <div className="flex justify-end gap-x-3 pt-2">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2 rounded-lg text-sm text-theme-text-secondary hover:text-white border border-theme-modal-border"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={saving}
-              className="px-4 py-2 rounded-lg text-sm bg-white text-black hover:opacity-80 disabled:opacity-50"
-            >
-              {saving ? "Saving…" : "Save"}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-  );
-}
-
-function NewSourceModal({ onClose, onCreated }) {
+function SourceModal({ source = null, onClose, onSaved }) {
+  const isEdit = !!source;
   const [workspaces, setWorkspaces] = useState([]);
-  const [form, setForm] = useState({
-    workspaceId: "",
-    baseUrl: "",
+  const [form, setForm] = useState(() => ({
+    workspaceId: source?.workspaceId ?? "",
+    type: source?.type ?? "bookstack",
+    baseUrl: source?.baseUrl ?? "",
+    // BookStack — tokens always start blank in edit (write-only).
     tokenId: "",
     tokenSecret: "",
-    bypassSSL: false,
-    intervalMs: 3600000,
-    useAnchor: false,
-    startTime: "12:00",
-  });
+    // Zammad
+    apiToken: "",
+    query: source?.query ?? "",
+    includeInternal:
+      typeof source?.includeInternal === "boolean"
+        ? source.includeInternal
+        : true,
+    // Shared
+    bypassSSL: source?.bypassSSL ?? false,
+    intervalMs: source?.intervalMs ?? 3600000,
+    useAnchor: source?.startMinuteOfDay != null,
+    startTime:
+      source?.startMinuteOfDay != null
+        ? minuteOfDayToHHMM(source.startMinuteOfDay)
+        : "12:00",
+  }));
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     Workspace.all().then((list) => {
       setWorkspaces(Array.isArray(list) ? list : []);
-      if (list?.length > 0) setForm((f) => ({ ...f, workspaceId: list[0].id }));
+      // In create mode, default to the first workspace if none selected yet.
+      if (!isEdit && list?.length > 0)
+        setForm((f) => (f.workspaceId ? f : { ...f, workspaceId: list[0].id }));
     });
-  }, []);
+  }, [isEdit]);
 
   function set(key, val) {
     setForm((f) => ({ ...f, [key]: val }));
   }
 
+  function buildConfig() {
+    if (form.type === "zammad") {
+      const cfg = {
+        baseUrl: form.baseUrl,
+        query: form.query,
+        bypassSSL: form.bypassSSL,
+        includeInternal: form.includeInternal,
+      };
+      // Only send the token when the user actually typed one — empty in edit
+      // mode means "keep the current token".
+      if (form.apiToken) cfg.apiToken = form.apiToken;
+      return cfg;
+    }
+    const cfg = {
+      baseUrl: form.baseUrl,
+      bypassSSL: form.bypassSSL,
+    };
+    if (form.tokenId) cfg.tokenId = form.tokenId;
+    if (form.tokenSecret) cfg.tokenSecret = form.tokenSecret;
+    return cfg;
+  }
+
+  function validate() {
+    if (!form.workspaceId || !form.baseUrl)
+      return "Workspace and base URL are required.";
+    if (form.type === "bookstack") {
+      // Tokens only required on create — on edit, blank means "keep existing".
+      if (!isEdit && (!form.tokenId || !form.tokenSecret))
+        return "Token ID and Token Secret are required for BookStack.";
+    } else if (form.type === "zammad") {
+      if (!isEdit && !form.apiToken)
+        return "An API token is required for Zammad.";
+      if (!form.query || !form.query.trim())
+        return "A search query is required for Zammad.";
+    }
+    return null;
+  }
+
   async function handleSubmit(e) {
     e.preventDefault();
-    if (!form.workspaceId || !form.baseUrl || !form.tokenId || !form.tokenSecret) {
-      showToast("All fields except Bypass SSL are required.", "error", { clear: true });
+    const err = validate();
+    if (err) {
+      showToast(err, "error", { clear: true });
       return;
     }
     setSaving(true);
@@ -415,33 +373,57 @@ function NewSourceModal({ onClose, onCreated }) {
       ? hhmmToMinuteOfDay(form.startTime)
       : null;
     const startTimezone = form.useAnchor ? browserTimezone() : null;
-    const { success, error } = await System.experimentalFeatures.sourceSync.createSource({
-      workspaceId: Number(form.workspaceId),
-      config: {
-        baseUrl: form.baseUrl,
-        tokenId: form.tokenId,
-        tokenSecret: form.tokenSecret,
-        bypassSSL: form.bypassSSL,
-      },
-      intervalMs: Number(form.intervalMs),
-      startMinuteOfDay,
-      startTimezone,
-    });
+
+    let result;
+    if (isEdit) {
+      result = await System.experimentalFeatures.sourceSync.updateSource(
+        source.id,
+        {
+          intervalMs: Number(form.intervalMs),
+          startMinuteOfDay,
+          startTimezone,
+          config: buildConfig(),
+        }
+      );
+    } else {
+      result = await System.experimentalFeatures.sourceSync.createSource({
+        workspaceId: Number(form.workspaceId),
+        type: form.type,
+        config: buildConfig(),
+        intervalMs: Number(form.intervalMs),
+        startMinuteOfDay,
+        startTimezone,
+      });
+    }
     setSaving(false);
-    if (!success) {
-      showToast(error || "Failed to create source.", "error", { clear: true });
+    if (!result.success) {
+      showToast(
+        result.error || (isEdit ? "Failed to save source." : "Failed to create source."),
+        "error",
+        { clear: true }
+      );
       return;
     }
-    showToast("BookStack source created.", "success", { clear: true });
-    onCreated();
+    showToast(isEdit ? "Source updated." : "Source created.", "success", {
+      clear: true,
+    });
+    onSaved();
   }
+
+  const isZammad = form.type === "zammad";
+  const tokenPlaceholder = (label) =>
+    isEdit ? "Leave blank to keep current" : label;
+  const workspaceLabel =
+    isEdit
+      ? source?.workspace?.name ?? `Workspace #${source?.workspaceId}`
+      : null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
-      <div className="bg-theme-bg-secondary border border-theme-modal-border rounded-2xl w-full max-w-md p-6 shadow-xl">
+      <div className="bg-theme-bg-secondary border border-theme-modal-border rounded-2xl w-full max-w-md p-6 shadow-xl max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-theme-text-primary text-lg font-bold">
-            Add BookStack Source
+            {isEdit ? "Edit Source" : "Add Source"}
           </h3>
           <button onClick={onClose} className="text-theme-text-secondary hover:text-white">
             <X size={20} />
@@ -450,56 +432,136 @@ function NewSourceModal({ onClose, onCreated }) {
         <form onSubmit={handleSubmit} className="flex flex-col gap-y-4">
           <div className="flex flex-col gap-y-1">
             <label className="text-theme-text-primary text-sm font-semibold">
-              Workspace
+              Type {isEdit && <span className="text-theme-text-secondary font-normal">(read-only)</span>}
             </label>
-            <select
-              value={form.workspaceId}
-              onChange={(e) => set("workspaceId", e.target.value)}
-              className="bg-theme-settings-input-bg text-theme-text-primary border border-theme-modal-border rounded-lg px-3 py-2 text-sm"
-            >
-              {workspaces.map((ws) => (
-                <option key={ws.id} value={ws.id}>
-                  {ws.name}
-                </option>
-              ))}
-            </select>
+            {isEdit ? (
+              <div className="bg-theme-settings-input-bg text-theme-text-primary border border-theme-modal-border rounded-lg px-3 py-2 text-sm opacity-70">
+                {TYPE_LABELS[form.type] ?? form.type}
+              </div>
+            ) : (
+              <select
+                value={form.type}
+                onChange={(e) => set("type", e.target.value)}
+                className="bg-theme-settings-input-bg text-theme-text-primary border border-theme-modal-border rounded-lg px-3 py-2 text-sm"
+              >
+                {SOURCE_TYPES.map((opt) => (
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </option>
+                ))}
+              </select>
+            )}
           </div>
           <div className="flex flex-col gap-y-1">
             <label className="text-theme-text-primary text-sm font-semibold">
-              BookStack URL
+              Workspace {isEdit && <span className="text-theme-text-secondary font-normal">(read-only)</span>}
+            </label>
+            {isEdit ? (
+              <div className="bg-theme-settings-input-bg text-theme-text-primary border border-theme-modal-border rounded-lg px-3 py-2 text-sm opacity-70">
+                {workspaceLabel}
+              </div>
+            ) : (
+              <select
+                value={form.workspaceId}
+                onChange={(e) => set("workspaceId", e.target.value)}
+                className="bg-theme-settings-input-bg text-theme-text-primary border border-theme-modal-border rounded-lg px-3 py-2 text-sm"
+              >
+                {workspaces.map((ws) => (
+                  <option key={ws.id} value={ws.id}>
+                    {ws.name}
+                  </option>
+                ))}
+              </select>
+            )}
+          </div>
+          <div className="flex flex-col gap-y-1">
+            <label className="text-theme-text-primary text-sm font-semibold">
+              {isZammad ? "Zammad URL" : "BookStack URL"}
             </label>
             <input
               type="url"
-              placeholder="https://bookstack.example.com"
+              placeholder={
+                isZammad
+                  ? "https://zammad.example.com"
+                  : "https://bookstack.example.com"
+              }
               value={form.baseUrl}
               onChange={(e) => set("baseUrl", e.target.value)}
               className="bg-theme-settings-input-bg text-theme-text-primary border border-theme-modal-border rounded-lg px-3 py-2 text-sm placeholder:text-theme-text-secondary"
             />
           </div>
-          <div className="flex flex-col gap-y-1">
-            <label className="text-theme-text-primary text-sm font-semibold">
-              Token ID
-            </label>
-            <input
-              type="text"
-              placeholder="API Token ID"
-              value={form.tokenId}
-              onChange={(e) => set("tokenId", e.target.value)}
-              className="bg-theme-settings-input-bg text-theme-text-primary border border-theme-modal-border rounded-lg px-3 py-2 text-sm placeholder:text-theme-text-secondary"
-            />
-          </div>
-          <div className="flex flex-col gap-y-1">
-            <label className="text-theme-text-primary text-sm font-semibold">
-              Token Secret
-            </label>
-            <input
-              type="password"
-              placeholder="API Token Secret"
-              value={form.tokenSecret}
-              onChange={(e) => set("tokenSecret", e.target.value)}
-              className="bg-theme-settings-input-bg text-theme-text-primary border border-theme-modal-border rounded-lg px-3 py-2 text-sm placeholder:text-theme-text-secondary"
-            />
-          </div>
+
+          {isZammad ? (
+            <>
+              <div className="flex flex-col gap-y-1">
+                <label className="text-theme-text-primary text-sm font-semibold">
+                  API Token
+                </label>
+                <input
+                  type="password"
+                  placeholder={tokenPlaceholder("API Token")}
+                  value={form.apiToken}
+                  onChange={(e) => set("apiToken", e.target.value)}
+                  className="bg-theme-settings-input-bg text-theme-text-primary border border-theme-modal-border rounded-lg px-3 py-2 text-sm placeholder:text-theme-text-secondary"
+                />
+              </div>
+              <div className="flex flex-col gap-y-1">
+                <label className="text-theme-text-primary text-sm font-semibold">
+                  Search query
+                </label>
+                <textarea
+                  rows={3}
+                  placeholder={'state.name:"open" AND group.name:"Soporte"'}
+                  value={form.query}
+                  onChange={(e) => set("query", e.target.value)}
+                  className="bg-theme-settings-input-bg text-theme-text-primary border border-theme-modal-border rounded-lg px-3 py-2 text-sm placeholder:text-theme-text-secondary font-mono"
+                />
+                <p className="text-theme-text-secondary text-xs">
+                  Lucene-style query. Tickets matching this query are imported
+                  and kept in sync — those that stop matching are removed.
+                </p>
+              </div>
+              <label className="flex items-center gap-x-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={form.includeInternal}
+                  onChange={(e) => set("includeInternal", e.target.checked)}
+                  className="w-4 h-4 accent-blue-500"
+                />
+                <span className="text-theme-text-primary text-sm">
+                  Include internal articles (private agent notes)
+                </span>
+              </label>
+            </>
+          ) : (
+            <>
+              <div className="flex flex-col gap-y-1">
+                <label className="text-theme-text-primary text-sm font-semibold">
+                  Token ID
+                </label>
+                <input
+                  type="text"
+                  placeholder={tokenPlaceholder("API Token ID")}
+                  value={form.tokenId}
+                  onChange={(e) => set("tokenId", e.target.value)}
+                  className="bg-theme-settings-input-bg text-theme-text-primary border border-theme-modal-border rounded-lg px-3 py-2 text-sm placeholder:text-theme-text-secondary"
+                />
+              </div>
+              <div className="flex flex-col gap-y-1">
+                <label className="text-theme-text-primary text-sm font-semibold">
+                  Token Secret
+                </label>
+                <input
+                  type="password"
+                  placeholder={tokenPlaceholder("API Token Secret")}
+                  value={form.tokenSecret}
+                  onChange={(e) => set("tokenSecret", e.target.value)}
+                  className="bg-theme-settings-input-bg text-theme-text-primary border border-theme-modal-border rounded-lg px-3 py-2 text-sm placeholder:text-theme-text-secondary"
+                />
+              </div>
+            </>
+          )}
+
           <div className="flex flex-col gap-y-1">
             <label className="text-theme-text-primary text-sm font-semibold">
               Sync interval
@@ -564,7 +626,13 @@ function NewSourceModal({ onClose, onCreated }) {
               disabled={saving}
               className="px-4 py-2 rounded-lg text-sm bg-white text-black hover:opacity-80 disabled:opacity-50"
             >
-              {saving ? "Creating…" : "Create source"}
+              {saving
+                ? isEdit
+                  ? "Saving…"
+                  : "Creating…"
+                : isEdit
+                  ? "Save"
+                  : "Create source"}
             </button>
           </div>
         </form>

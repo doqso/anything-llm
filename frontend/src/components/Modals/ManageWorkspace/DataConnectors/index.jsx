@@ -12,6 +12,7 @@ import WebsiteDepthOptions from "./Connectors/WebsiteDepth";
 import ObsidianOptions from "./Connectors/Obsidian";
 import PaperlessNgxOptions from "./Connectors/PaperlessNgx";
 import BookStackOptions from "./Connectors/BookStack";
+import ZammadOptions from "./Connectors/Zammad";
 
 export const getDataConnectors = (t) => ({
   github: {
@@ -67,6 +68,12 @@ export const getDataConnectors = (t) => ({
     image: ConnectorImages.bookstack,
     description: "Import all pages from your BookStack instance.",
     options: <BookStackOptions />,
+  },
+  zammad: {
+    name: t("connectors.zammad.name"),
+    image: ConnectorImages.zammad,
+    description: t("connectors.zammad.description"),
+    options: <ZammadOptions />,
   },
 });
 

@@ -1,0 +1,22 @@
+name: anythingllm
+
+networks:
+  anything-llm:
+    driver: bridge
+
+services:
+  anything-llm:
+    container_name: anythingllm
+    image: 10.0.0.69:5000/anything-llm:latest
+    cap_add:
+      - SYS_ADMIN
+    volumes:
+      - /opt/anythingllm/.env:/app/server/.env
+      - /opt/anythingllm/server/storage:/app/server/storage
+      - /opt/anythingllm/collector/hotdir:/app/collector/hotdir
+      - /opt/anythingllm/collector/outputs:/app/collector/outputs
+    ports:
+      - "3001:3001"
+    networks:
+      - anything-llm
+    restart: unless-stopped

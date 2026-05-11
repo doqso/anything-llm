@@ -221,6 +221,38 @@ async function resyncBookStack({ chunkSource, includeOcr = true }, response) {
   }
 }
 
+/**
+ * Fetches the content of a specific Zammad ticket via its chunkSource.
+ * Returns the rebuilt plain-text body (header + thread) for diff/embedding.
+ * @param {object} data - metadata from document (eg: chunkSource)
+ * @param {import("../../middleware/setDataSigner").ResponseWithSigner} response
+ */
+async function resyncZammad({ chunkSource }, response) {
+  if (!chunkSource) throw new Error("Invalid source property provided");
+  try {
+    const source = response.locals.encryptionWorker.expandPayload(chunkSource);
+    const { fetchZammadTicket } = require("../../utils/extensions/Zammad");
+    // chunkSource is `zammad://<ticketId>?payload=...`; URL parser puts <ticketId> in hostname.
+    const includeInternalParam = source.searchParams.get("includeInternal");
+    const { success, reason, content } = await fetchZammadTicket({
+      ticketId: source.hostname,
+      baseUrl: source.searchParams.get("baseUrl"),
+      apiToken: source.searchParams.get("apiToken"),
+      bypassSSL: source.searchParams.get("bypassSSL") === "true",
+      includeInternal: includeInternalParam !== "false",
+    });
+
+    if (!success) throw new Error(`Failed to sync Zammad ticket. ${reason}`);
+    response.status(200).json({ success, content });
+  } catch (e) {
+    console.error(e);
+    response.status(200).json({
+      success: false,
+      content: null,
+    });
+  }
+}
+
 module.exports = {
   link: resyncLink,
   youtube: resyncYouTube,
@@ -229,4 +261,5 @@ module.exports = {
   drupalwiki: resyncDrupalWiki,
   "paperless-ngx": resyncPaperlessNgx,
   bookstack: resyncBookStack,
+  zammad: resyncZammad,
 };

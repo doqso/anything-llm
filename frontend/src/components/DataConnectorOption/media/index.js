@@ -7,6 +7,7 @@ import DrupalWiki from "./drupalwiki.jpg";
 import Obsidian from "./obsidian.png";
 import PaperlessNgx from "./paperless-ngx.jpeg";
 import BookStack from "./bookstack.png";
+import Zammad from "./zammad.svg";
 
 const ConnectorImages = {
   github: GitHub,
@@ -18,6 +19,7 @@ const ConnectorImages = {
   obsidian: Obsidian,
   paperlessNgx: PaperlessNgx,
   bookstack: BookStack,
+  zammad: Zammad,
 };
 
 export default ConnectorImages;
